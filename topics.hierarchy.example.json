@@ -1,0 +1,40 @@
+{
+  "politics": { "label": "Politics" },
+  "geopolitics": {
+    "label": "Geopolitics",
+    "parent": "politics",
+    "lenses": {
+      "military": ["strike", "strikes", "missile", "missiles", "drone", "drones", "airstrike", "air defense", "troops", "idf", "irgc"],
+      "diplomacy": ["talks", "ceasefire", "negotiations", "envoy", "sanctions", "un security council", "iaea", "deal"],
+      "economy": ["oil", "brent", "shipping", "tanker", "tankers", "markets", "prices", "insurance"],
+      "humanitarian": ["civilians", "killed", "injured", "wounded", "evacuation", "refugees", "hospital", "aid"]
+    }
+  },
+  "middle-east": {
+    "label": "Middle East",
+    "parent": "geopolitics",
+    "include": ["middle east", "#MiddleEast"],
+    "exclude": []
+  },
+  "iran-war": {
+    "label": "Iran war",
+    "parents": ["middle-east", "oil"],
+    "include": ["iran", "iranian", "tehran", "irgc", "khamenei", "fordow", "natanz", "isfahan", "hormuz", "#Iran", "#IranWar", "ایران", "تهران", "איראן", "إيران"],
+    "require": ["war", "strike", "strikes", "struck", "attack", "attacks", "missile", "missiles", "drone", "drones", "airstrike", "ceasefire", "retaliation", "retaliate", "escalation", "bombing", "military", "nuclear", "#IranWar", "جنگ", "حمله", "מלחמה", "תקיפה", "حرب", "هجوم"],
+    "exclude": ["world cup", "football", "#nsfw"]
+  },
+  "gaza": {
+    "label": "Gaza war",
+    "parent": "middle-east",
+    "include": ["gaza", "hamas", "rafah", "khan younis", "#Gaza"],
+    "exclude": []
+  },
+  "economy": { "label": "Economy" },
+  "energy": { "label": "Energy", "parent": "economy" },
+  "oil": {
+    "label": "Oil",
+    "parent": "energy",
+    "include": ["oil price", "oil prices", "brent", "crude", "opec", "#OOTT"],
+    "exclude": ["olive oil", "essential oil"]
+  }
+}

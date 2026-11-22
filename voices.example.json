@@ -1,0 +1,16 @@
+{
+  "_note": "Example only. Outlets are listed by DOMAIN handle on purpose: a domain handle proves the account controls that domain, so it cannot be an impersonator. Unresolvable handles are skipped with a warning. Add beat reporters, analysts and OSINT accounts from curated lists and starter packs (see docs/design/topic-tracking.md 2.1) after checking each one.",
+  "voices": [
+    { "handle": "reuters.com", "name": "Reuters", "tier": 1, "affiliation": "Reuters", "region": "international", "topics": ["geopolitics", "oil"] },
+    { "handle": "apnews.com", "name": "AP", "tier": 1, "affiliation": "Associated Press", "region": "US", "topics": ["geopolitics"] },
+    { "handle": "nytimes.com", "name": "The New York Times", "tier": 1, "affiliation": "New York Times", "region": "US", "topics": ["geopolitics"] },
+    { "handle": "washingtonpost.com", "name": "The Washington Post", "tier": 1, "affiliation": "Washington Post", "region": "US", "topics": ["geopolitics"] },
+    { "handle": "theguardian.com", "name": "The Guardian", "tier": 1, "affiliation": "Guardian", "region": "UK", "topics": ["geopolitics"] },
+    { "handle": "ft.com", "name": "Financial Times", "tier": 1, "affiliation": "Financial Times", "region": "UK", "topics": ["geopolitics", "energy"] },
+    { "handle": "aljazeera.com", "name": "Al Jazeera", "tier": 1, "affiliation": "Al Jazeera", "region": "Qatar", "topics": ["middle-east"] },
+    { "handle": "timesofisrael.com", "name": "The Times of Israel", "tier": 1, "affiliation": "Times of Israel", "region": "Israel", "topics": ["middle-east"] },
+    { "handle": "iranintl.com", "name": "Iran International", "tier": 1, "affiliation": "Iran International", "region": "Iran (diaspora)", "topics": ["iran-war"] },
+    { "handle": "presstv.ir", "name": "Press TV", "tier": 4, "affiliation": "Press TV", "region": "Iran", "stateAffiliated": true, "topics": ["iran-war"] },
+    { "handle": "state.gov", "name": "US State Department", "tier": 4, "affiliation": "US government", "region": "US", "stateAffiliated": true, "topics": ["geopolitics"] }
+  ]
+}
