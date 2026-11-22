@@ -12,11 +12,11 @@
 //                                                      ▼
 //                     breadth quota (fewer items per child higher up)
 
-import { ago, bold, cyan, dim, formatPost, green, magenta, yellow } from './format.js';
-import { applyQuota, rankPosts } from './rank.js';
-import { searchTopic } from './search.js';
-import { buildStorylines } from './storylines.js';
-import { byDid, resolveVoices, TIER_NAME, voicesFor } from './voices.js';
+import { ago, bold, cyan, dim, formatPost, green, magenta, yellow } from './format.js?v=708ab11dd4';
+import { applyQuota, rankPosts } from './rank.js?v=708ab11dd4';
+import { searchTopic } from './search.js?v=708ab11dd4';
+import { buildStorylines } from './storylines.js?v=708ab11dd4';
+import { byDid, resolveVoices, TIER_NAME, voicesFor } from './voices.js?v=708ab11dd4';
 
 /**
  * @param {object} o

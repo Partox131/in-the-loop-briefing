@@ -4,103 +4,140 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>In the Loop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #f6f5f1; --card: #ffffff; --ink: #17181c; --muted: #55585f; --line: #e3e1da; --soft: #efede7;
-    --accent: #1d4fb8; --bar: #c9d5ef;
-    --disputed-bg: #f6e3fb; --disputed: #6a2b8f;
-    --corroborated-bg: #dff1e7; --corroborated: #1f6b45;
-    --reported-bg: #fdf0d5; --reported: #7a4a00;
-    --official-bg: #dcf0f2; --official: #0f6e7a;
-    --warn: #8a3b00;
-    --serif: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+    --bg: #F5F6F8; --raise: #FFFFFF; --ink: #1D2147; --muted: #5B6080; --line: #E2E5EF; --track: #E2E5EF;
+    --loop: #3047D6; --on-loop: #FFFFFF; --bars: #B9C1E6;
+    --reported: #8A5608; --reported-dot: #C27A10;
+    --confirmed: #0F6B5C; --disputed: #9B2C74; --new: #3047D6;
+    --warn: #8A5608; --banner-bg: #FBEFD8;
+    --display: 'Bricolage Grotesque', 'Figtree', system-ui, sans-serif;
+    --body: 'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --r1: #3047D6; --r2: #0F6B5C; --r3: #C27A10; --r4: #9B2C74; --r5: #5B6080; --r6: #7C8BE8;
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #121316; --card: #1b1c20; --ink: #ececee; --muted: #a5a8b0; --line: #2d2f35; --soft: #24262b;
-      --accent: #8fb0ff; --bar: #34446b;
-      --disputed-bg: #3a2547; --disputed: #e2b8f7;
-      --corroborated-bg: #1c3a2b; --corroborated: #9fdcba;
-      --reported-bg: #3d2f12; --reported: #f3cf8a;
-      --official-bg: #173a3e; --official: #9adbe3;
-      --warn: #f3b07a;
+      --bg: #12142B; --raise: #1B1E3B; --ink: #E7E9F5; --muted: #A3A8C8; --line: #2C3056; --track: #2A2E52;
+      --loop: #7C8FFF; --on-loop: #12142B; --bars: #4A5390;
+      --reported: #F0C27A; --reported-dot: #E0A040;
+      --confirmed: #7FD6C2; --disputed: #F0A8D6; --new: #9DB0FF;
+      --warn: #F0C27A; --banner-bg: #3A2E14;
+      --r1: #7C8FFF; --r2: #7FD6C2; --r3: #E0A040; --r4: #F0A8D6; --r5: #A3A8C8; --r6: #C2CAFF;
     }
   }
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 Inter, system-ui, -apple-system, 'Segoe UI', sans-serif; }
-  a { color: var(--accent); }
-  header.top { display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: center; justify-content: space-between; padding: 14px 32px; background: var(--card); border-bottom: 1px solid var(--line); }
-  .brand { font-family: var(--serif); font-weight: 700; font-size: 22px; }
-  nav.crumbs { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; color: var(--muted); font-size: 14px; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.55 var(--body); }
+  a { color: var(--loop); }
+  :focus-visible { outline: 3px solid var(--loop); outline-offset: 2px; border-radius: 4px; }
+  button { font: inherit; color: inherit; cursor: pointer; }
+
+  header.top { display: flex; flex-wrap: wrap; gap: 12px 32px; align-items: center; justify-content: space-between; padding: 18px 56px; max-width: 1360px; margin: 0 auto; }
+  .brand { display: flex; align-items: center; gap: 9px; font: 800 22px/1 var(--display); letter-spacing: -0.01em; }
+  nav.crumbs { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; color: var(--muted); font-size: 15px; }
   nav.crumbs a { color: var(--muted); text-decoration: none; }
   nav.crumbs a:hover { color: var(--ink); text-decoration: underline; }
   nav.crumbs .here { color: var(--ink); font-weight: 600; }
-  .seg { display: flex; background: var(--soft); border-radius: 10px; padding: 4px; gap: 4px; }
-  .seg button { border: 0; background: transparent; color: var(--ink); border-radius: 8px; padding: 8px 12px; font: inherit; font-size: 14px; cursor: pointer; min-height: 36px; }
+  .seg { display: flex; gap: 2px; }
+  .seg button { border: 0; background: none; color: var(--muted); padding: 10px 12px; min-height: 44px; border-radius: 999px; }
+  .seg button:hover { color: var(--ink); }
   .seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); font-weight: 600; }
-  main { display: flex; flex-wrap: wrap; gap: 32px; padding: 28px 32px 48px; max-width: 1320px; margin: 0 auto; }
-  .col { flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 20px; }
-  aside { flex: 1 1 320px; display: flex; flex-direction: column; gap: 20px; }
-  h1 { margin: 0; font-family: var(--serif); font-size: 40px; line-height: 1.1; }
-  .sub { margin: 6px 0 0; color: var(--muted); font-size: 14px; }
-  .pill { display: inline-block; font-size: 13px; font-weight: 600; border-radius: 999px; padding: 3px 10px; background: var(--reported-bg); color: var(--warn); }
-  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 20px 22px; }
-  .card h2 { margin: 0 0 12px; font-size: 16px; }
-  .since { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 10px 16px; align-items: baseline; }
-  .since .tag { font-size: 12px; font-weight: 700; letter-spacing: .04em; }
-  .tag.new { color: var(--accent); } .tag.corroborated, .tag.official { color: var(--corroborated); } .tag.disputed { color: var(--disputed); }
+
+  .hero { display: grid; grid-template-columns: minmax(260px, 420px) minmax(0, 1fr); gap: 24px 64px; align-items: center; padding: 16px 56px 40px; max-width: 1360px; margin: 0 auto; }
+  .dial { width: 100%; height: auto; display: block; }
+  .dial text { font-family: var(--body); fill: var(--muted); }
+  .dial .big { font: 800 64px var(--display); fill: var(--ink); }
+  h1 { margin: 0; font: 800 clamp(48px, 7vw, 80px)/1 var(--display); letter-spacing: -0.03em; }
+  .sub { margin: 14px 0 0; color: var(--muted); font-size: 17px; max-width: 60ch; }
+  .sub a { color: inherit; }
+  .since { margin-top: 26px; max-width: 640px; }
+  .since h2 { margin: 0 0 12px; font-size: 15px; font-weight: 600; color: var(--muted); }
+  .since ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; font-size: 18px; }
+  .since li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; align-items: baseline; }
+  .since li strong { font-weight: 700; }
+  .actions { margin-top: 22px; display: flex; flex-wrap: wrap; gap: 12px; }
+  .btn { border: 0; background: var(--loop); color: var(--on-loop); border-radius: 999px; padding: 11px 20px; font-weight: 600; min-height: 44px; }
+  .btn.quiet { background: var(--track); color: var(--ink); }
+
+  .dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: var(--muted); flex: none; }
+  .dot.new { background: var(--new); } .dot.reported { background: var(--reported-dot); }
+  .dot.corroborated, .dot.official { background: var(--confirmed); } .dot.disputed { background: var(--disputed); }
+
+  main { display: flex; flex-wrap: wrap; gap: 40px 64px; padding: 0 56px 64px; max-width: 1360px; margin: 0 auto; }
+  .col { flex: 999 1 600px; min-width: 0; }
+  aside { flex: 1 1 300px; display: flex; flex-direction: column; gap: 36px; padding-top: 8px; }
+  .listhead { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; justify-content: space-between; border-top: 1px solid var(--line); padding-top: 26px; }
+  .listhead h2 { margin: 0; font: 600 30px/1.1 var(--display); }
   .lenses { display: flex; flex-wrap: wrap; gap: 8px; }
-  .lenses button { border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; min-height: 40px; }
-  .lenses button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); font-weight: 600; }
-  article.story { display: flex; flex-direction: column; gap: 12px; }
-  .meta { display: flex; flex-wrap: wrap; gap: 8px 10px; align-items: center; font-size: 13px; color: var(--muted); }
-  .status { font-weight: 700; font-size: 12px; letter-spacing: .03em; border-radius: 6px; padding: 3px 8px; }
-  .status.disputed { background: var(--disputed-bg); color: var(--disputed); }
-  .status.corroborated { background: var(--corroborated-bg); color: var(--corroborated); }
-  .status.reported { background: var(--reported-bg); color: var(--reported); }
-  .status.official { background: var(--official-bg); color: var(--official); }
-  .newdot { color: var(--accent); font-weight: 700; }
-  .lead { margin: 0; font-family: var(--serif); font-size: 22px; line-height: 1.3; font-weight: 600; }
-  .lead a { color: inherit; text-decoration: none; } .lead a:hover { text-decoration: underline; }
-  .by { font-size: 13px; color: var(--muted); }
-  .sides { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
-  .side { background: var(--soft); border-radius: 10px; padding: 12px 14px; }
-  .side .num { font-size: 22px; font-weight: 700; }
-  .push { background: var(--soft); border-radius: 10px; padding: 12px 14px; font-size: 14px; }
-  .chips { display: flex; flex-wrap: wrap; gap: 6px; font-size: 13px; }
-  .chip { border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; }
-  details summary { cursor: pointer; color: var(--accent); font-size: 14px; }
-  details .rel { margin-top: 10px; display: flex; flex-direction: column; gap: 10px; font-size: 14px; }
-  .spark { display: flex; align-items: flex-end; gap: 3px; height: 80px; }
-  .spark div { flex: 1; background: var(--bar); border-radius: 2px; min-height: 2px; }
-  .spark div.hot { background: var(--accent); }
-  .cov { display: grid; grid-template-columns: minmax(0, 140px) minmax(0, 1fr) 40px; gap: 8px 10px; align-items: center; font-size: 13px; }
-  .cov .bar { height: 10px; background: var(--accent); border-radius: 5px; }
-  ol.dev { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; font-size: 14px; }
-  ol.dev li { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 10px; }
+  .lenses button { border: 0; background: var(--track); color: var(--ink); border-radius: 999px; padding: 10px 16px; min-height: 44px; font-size: 15px; }
+  .lenses button[aria-pressed="true"] { background: var(--ink); color: var(--bg); font-weight: 600; }
+
+  article.story { display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 12px 32px; padding: 28px 0; border-bottom: 1px solid var(--line); }
+  article.story:last-of-type { border-bottom: 0; }
+  .state { font-weight: 700; font-size: 16px; display: flex; gap: 8px; align-items: center; }
+  .state.reported { color: var(--reported); } .state.corroborated, .state.official { color: var(--confirmed); } .state.disputed { color: var(--disputed); }
+  ol.rail { list-style: none; margin: 12px 0 0; padding: 0; font-size: 14px; color: var(--muted); }
+  ol.rail li { display: flex; gap: 10px; align-items: center; position: relative; }
+  ol.rail li + li { margin-top: 18px; }
+  ol.rail li + li::before { content: ''; position: absolute; left: 5px; top: -16px; width: 2px; height: 14px; background: var(--line); }
+  .newtag { margin-top: 10px; display: inline-block; font-size: 13px; font-weight: 700; color: var(--new); }
+  .story h3 { margin: 0; font: 600 25px/1.22 var(--display); letter-spacing: -0.01em; }
+  .story h3 a { color: inherit; text-decoration: none; }
+  .story h3 a:hover { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
+  .by { margin: 8px 0 0; font-size: 15px; color: var(--muted); }
+  .numbers { margin-top: 18px; display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 2px; background: var(--line); border: 2px solid var(--line); border-radius: 8px; overflow: hidden; max-width: 640px; }
+  .numbers > div { background: var(--raise); padding: 14px 18px; }
+  .numbers .num { font: 800 44px/1 var(--display); }
+  .numbers .who { margin-top: 6px; font-size: 15px; }
+  .numbers a { font-size: 14px; }
+  .numcap { margin: 18px 0 0; font-size: 14px; color: var(--muted); }
+  .numcap + .numbers { margin-top: 8px; }
+  blockquote.push { margin: 18px 0 0; max-width: 640px; padding: 14px 18px; background: var(--raise); border-radius: 8px; font-size: 16px; }
+  .sources { margin: 14px 0 0; font-size: 14px; color: var(--muted); }
+  details { margin-top: 12px; }
+  details summary { cursor: pointer; color: var(--loop); font-weight: 600; font-size: 15px; min-height: 32px; display: flex; align-items: center; }
+  details .rel { margin-top: 10px; display: flex; flex-direction: column; gap: 12px; font-size: 15px; max-width: 68ch; }
+
+  aside h2 { margin: 0 0 14px; font: 600 20px/1.2 var(--display); }
+  .stack { display: flex; height: 16px; border-radius: 4px; overflow: hidden; background: var(--track); }
+  .legend { margin: 12px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
+  .legend li { display: grid; grid-template-columns: 14px minmax(0, 1fr) auto; gap: 10px; align-items: center; }
+  .legend .sw { width: 12px; height: 12px; border-radius: 3px; }
+  .notes { font-size: 14px; color: var(--muted); }
+  .warn { color: var(--warn); }
+  ol.dev { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 14px; font-size: 15px; }
+  ol.dev li { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 10px; }
+  ol.dev a { color: inherit; text-decoration: none; } ol.dev a:hover { text-decoration: underline; }
   .muted { color: var(--muted); }
-  .banner { background: var(--reported-bg); color: var(--reported); padding: 10px 32px; font-size: 14px; }
-  .notes { font-size: 13px; color: var(--muted); }
+  .banner { background: var(--banner-bg); color: var(--reported); padding: 10px 56px; font-size: 14px; }
+  .footnote { margin-top: 28px; font-size: 14px; color: var(--muted); max-width: 72ch; }
   .loading { padding: 64px 32px; text-align: center; color: var(--muted); }
-  @media (max-width: 600px) {
-    header.top, main { padding-left: 16px; padding-right: 16px; }
-    h1 { font-size: 32px; }
-    .since { grid-template-columns: 1fr; gap: 2px 0; }
-    .since .tag { margin-top: 8px; }
+  @media (max-width: 860px) {
+    .hero { grid-template-columns: 1fr; }
+    .dial { max-width: 340px; margin: 0 auto; }
+  }
+  @media (max-width: 640px) {
+    header.top, .hero, main { padding-left: 16px; padding-right: 16px; }
+    .banner { padding: 10px 16px; }
+    article.story { grid-template-columns: 1fr; }
+    ol.rail { display: flex; flex-wrap: wrap; gap: 6px 18px; }
+    ol.rail li + li { margin-top: 0; }
+    ol.rail li + li::before { display: none; }
   }
 </style>
 </head>
 <body>
 <div id="app"><p class="loading">Loading the latest from Bluesky…</p></div>
-<script>window.itlStatic = import('./src/static.js').then((m) => m.init());</script>
+<script>window.itlStatic = import('./src/static.js?v=708ab11dd4').then((m) => m.init());</script>
 <script>
 (() => {
   const params = new URLSearchParams(location.search);
   const state = { node: params.get('node') || '', since: params.get('since') || '24h', lens: 'all', data: null, baseline: null, demo: params.has('demo') };
   const href = (node) => `?node=${encodeURIComponent(node)}&since=${state.since}${state.demo ? '&demo=1' : ''}`;
-  const LENSES = [['all', 'All'], ['military', 'Military'], ['diplomacy', 'Diplomacy'], ['economy', 'Economy and energy'], ['humanitarian', 'Humanitarian']];
+  const LENSES = [['all', 'Everything'], ['military', 'Military'], ['diplomacy', 'Diplomacy'], ['economy', 'Economy and energy'], ['humanitarian', 'Humanitarian']];
   const WINDOWS = ['6h', '12h', '24h', '48h', '7d'];
-  const STATUS_LABEL = { disputed: 'DISPUTED', corroborated: 'CORROBORATED', reported: 'REPORTED', official: 'OFFICIAL' };
 
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const safeUrl = (u) => (/^https:\/\//.test(u || '') ? esc(u) : '#');
@@ -126,102 +163,173 @@
 
   function changes(d) {
     const seen = state.baseline;
-    if (!seen) return { first: true, items: d.stories.slice(0, 3).map((s) => ({ tag: 'new', label: 'NEW', s })) };
+    if (!seen) return { first: true, items: d.stories.slice(0, 3).map((s) => ({ tag: 'new', s })) };
     const items = [];
     for (const s of d.stories) {
       const before = seen.status[s.id];
-      if (!before) items.push({ tag: 'new', label: 'NEW', s });
-      else if (before !== s.status && s.status === 'disputed') items.push({ tag: 'disputed', label: 'SOURCES DISAGREE', s });
-      else if (before !== s.status && (s.status === 'corroborated' || s.status === 'official')) items.push({ tag: s.status, label: 'NOW CONFIRMED', s });
+      if (!before) items.push({ tag: 'new', s });
+      else if (before !== s.status && s.status === 'disputed') items.push({ tag: 'disputed', s });
+      else if (before !== s.status && (s.status === 'corroborated' || s.status === 'official')) items.push({ tag: s.status, s });
     }
     return { first: false, at: seen.at, items };
   }
 
-  function sinceBox(d) {
-    const c = changes(d);
-    const head = c.first ? 'Here is where things stand' : `Since you last checked <span class="muted" style="font-weight:400">· ${esc(ago(new Date(c.at).toISOString()))}</span>`;
-    const rows = c.items.length
-      ? `<div class="since">${c.items.map((i) => `<span class="tag ${i.tag}">${i.label}</span><span>${esc(title(i.s.lead.text))} <span class="muted">· ${plural(i.s.voiceCount, 'voice')}</span></span>`).join('')}</div>`
+  const STATE_LABEL = { disputed: 'Sources disagree', corroborated: 'Confirmed', reported: 'Reported once', official: 'Official statement' };
+  const KIND = { new: 'New', disputed: 'Disputed', corroborated: 'Confirmed', official: 'Confirmed' };
+  const DAY = 86400000;
+
+  // The 24-hour loop: now at the top, the past running anticlockwise.
+  const angleOf = (t, now) => 360 - (Math.min(DAY, Math.max(0, now - t)) / DAY) * 360;
+  const pt = (a, r) => { const t = (a * Math.PI) / 180; return [200 + r * Math.sin(t), 200 - r * Math.cos(t)].map((v) => v.toFixed(1)); };
+
+  function dial(d, c) {
+    const now = Date.parse(d.generatedAt);
+    const max = Math.max(1, ...d.activity.map((b) => b.count));
+    const bars = d.activity.map((b) => {
+      const a = angleOf(Date.parse(b.hour) + 1800000, now);
+      const len = b.count ? 6 + (b.count / max) * 44 : 0;
+      if (!len) return '';
+      const [x1, y1] = pt(a, 138); const [x2, y2] = pt(a, 138 - len);
+      return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--bars)" stroke-width="6" stroke-linecap="round"/>`;
+    }).join('');
+    let arc = '';
+    if (!c.first) {
+      const span = Math.min(DAY, now - c.at);
+      if (span >= DAY - 60000) arc = '<circle cx="200" cy="200" r="160" fill="none" stroke="var(--loop)" stroke-width="22"/>';
+      else if (span > 0) {
+        const [x, y] = pt(angleOf(c.at, now), 160);
+        arc = `<path d="M${x} ${y} A160 160 0 ${span > DAY / 2 ? 1 : 0} 1 200 40" fill="none" stroke="var(--loop)" stroke-width="22" stroke-linecap="round"/>`;
+      }
+    }
+    const dots = d.stories.filter((s) => now - Date.parse(s.firstSeen) < DAY).map((s) => {
+      const [x, y] = pt(angleOf(Date.parse(s.firstSeen), now), 160);
+      return `<circle cx="${x}" cy="${y}" r="9" fill="var(--${s.status === 'disputed' ? 'disputed' : s.status === 'reported' ? 'reported-dot' : 'confirmed'})" stroke="var(--bg)" stroke-width="3"><title>${esc(title(s.lead.text))}</title></circle>`;
+    }).join('');
+    const marks = [[6, '6h ago'], [12, '12h ago'], [18, '18h ago']].map(([h, l]) => {
+      const [x, y] = pt(360 - h * 15, 194);
+      return `<text x="${x}" y="${y}" font-size="13" text-anchor="middle" dominant-baseline="middle">${l}</text>`;
+    }).join('');
+    const count = c.first ? d.stories.length : c.items.length;
+    const line1 = c.first ? (count === 1 ? 'storyline in the' : 'storylines in the') : (count === 1 ? 'change since you' : 'changes since you');
+    const line2 = c.first ? 'last 24 hours' : `looked at ${esc(clock(new Date(c.at).toISOString()))}`;
+    const label = c.first ? `${count} storylines in the last 24 hours.` : `${count} changes since you last looked, ${ago(new Date(c.at).toISOString())}.`;
+    return `<svg class="dial" viewBox="-30 -30 460 460" role="img" aria-label="The last 24 hours as a loop, now at the top. ${esc(label)}">
+      <circle cx="200" cy="200" r="160" fill="none" stroke="var(--track)" stroke-width="22"/>
+      ${arc}${bars}${dots}${marks}
+      <text x="200" y="12" font-size="13" text-anchor="middle" font-weight="600" style="fill:var(--ink)">Now</text>
+      <text class="big" x="200" y="190" text-anchor="middle">${count}</text>
+      <text x="200" y="222" font-size="17" text-anchor="middle">${line1}</text>
+      <text x="200" y="244" font-size="17" text-anchor="middle">${line2}</text>
+    </svg>`;
+  }
+
+  function sinceList(d, c) {
+    const items = c.first ? d.stories.slice(0, 3).map((s) => ({ tag: s.status === 'disputed' ? 'disputed' : 'new', s })) : c.items;
+    const head = c.first ? 'Where things stand' : `Since you last checked, ${esc(ago(new Date(c.at).toISOString()))}`;
+    const rows = items.length
+      ? `<ul>${items.map((i) => `<li><span class="dot ${i.tag}"></span><span><strong>${KIND[i.tag]}:</strong> ${esc(title(i.s.lead.text))}</span></li>`).join('')}</ul>`
       : '<p style="margin:0" class="muted">Nothing new or changed.</p>';
-    return `<section class="card" aria-labelledby="since"><div style="display:flex;justify-content:space-between;gap:12px;align-items:baseline"><h2 id="since">${head}</h2>${c.first ? '' : '<button id="markread" style="border:0;background:none;color:var(--accent);font:inherit;font-size:14px;cursor:pointer;min-height:36px">Mark all as read</button>'}</div>${rows}</section>`;
+    return `<section class="since" aria-labelledby="since"><h2 id="since">${head}</h2>${rows}${c.first ? '' : '<div class="actions"><button class="btn quiet" id="markread">Mark all as read</button></div>'}</section>`;
   }
 
   function disagreement(x) {
     if (x.type === 'numbers') {
-      return `<div><div class="by" style="margin-bottom:6px">Sources give different numbers (${esc(x.kind)})</div><div class="sides">${x.sides.map((s) => `<div class="side"><div class="num">${esc(s.value.toLocaleString())}</div><div style="font-size:14px">per ${esc(s.sources.join(', '))}</div><a href="${safeUrl(s.url)}" target="_blank" rel="noopener" style="font-size:13px">${esc(clock(s.at))} · source</a></div>`).join('')}</div></div>`;
+      return `<p class="numcap">Sources give different numbers (${esc(x.kind)})</p><div class="numbers">${x.sides.map((s) => `<div><div class="num">${esc(s.value.toLocaleString())}</div><div class="who">per ${esc(s.sources.join(', '))}</div><a href="${safeUrl(s.url)}" target="_blank" rel="noopener">${esc(clock(s.at))}, view source</a></div>`).join('')}</div>`;
     }
-    return `<div class="push"><strong>${esc(x.from.affiliation)}</strong> pushes back on <strong>${esc(x.to.affiliation)}</strong>: “${esc(oneLine(x.from.text, 200))}” <a href="${safeUrl(x.from.url)}" target="_blank" rel="noopener">view</a></div>`;
+    return `<blockquote class="push"><strong>${esc(x.from.affiliation)}</strong> pushes back on <strong>${esc(x.to.affiliation)}</strong>: “${esc(oneLine(x.from.text, 200))}” <a href="${safeUrl(x.from.url)}" target="_blank" rel="noopener">View post</a></blockquote>`;
   }
+
+  // A small timeline of how the claim has moved so far.
+  function rail(s) {
+    const steps = [{ cls: 'reported', text: `Reported ${clock(s.firstSeen)}` }];
+    const latestSide = s.disagreements.flatMap((x) => (x.type === 'numbers' ? x.sides.map((y) => y.at) : [])).sort().at(-1);
+    if (s.status === 'disputed') steps.push({ cls: 'disputed', text: latestSide ? `Split ${clock(latestSide)}` : 'Challenged' });
+    else if (s.status === 'corroborated') steps.push({ cls: 'corroborated', text: `${s.sources.length} outlets agree` });
+    else if (s.status === 'official') steps.push({ cls: 'official', text: 'Officials confirm' });
+    else if (now() - Date.parse(s.lastSeen) < DAY) steps.push({ cls: '', text: 'Waiting for a second source' });
+    return `<ol class="rail">${steps.map((x) => `<li><span class="dot ${x.cls}"></span>${esc(x.text)}</li>`).join('')}</ol>`;
+  }
+  const now = () => Date.parse(state.data.generatedAt);
 
   function story(s, isNew) {
     const voice = s.lead.voice;
-    const who = voice ? `${esc(voice.name)} · ${esc(voice.tier)}${voice.stateAffiliated ? ' · state-affiliated' : ''}` : `@${esc(s.lead.handle)}`;
-    const lift = s.lead.why?.amplifiedBy ? ` · amplified by ${plural(s.lead.why.amplifiedBy, 'voice')}` : '';
-    const c = s.lead.counts || {};
-    const topic = s.topicId !== state.data.node.id ? ` · in ${esc(s.topicLabel)}` : '';
-    const lenses = s.lenses.length ? ` · ${esc(s.lenses.join(', '))}` : '';
-    const sources = s.sources.map((x) => `<span class="chip">${esc(x.affiliation)}${x.stateAffiliated ? ' · state' : ''}</span>`).join('');
+    const who = voice ? `${esc(voice.name)}${voice.stateAffiliated ? ' (state-affiliated)' : ''}` : `@${esc(s.lead.handle)}`;
+    const lift = s.lead.why?.amplifiedBy ? `, shared by ${plural(s.lead.why.amplifiedBy, 'other voice')}` : '';
+    const topic = s.topicId !== state.data.node.id ? ` In ${esc(s.topicLabel)}.` : '';
+    const sources = s.sources.length ? `<p class="sources">Sources: ${s.sources.map((x) => `${esc(x.affiliation)}${x.stateAffiliated ? ' (state)' : ''}`).join(', ')}</p>` : '';
     const related = s.related.length
-      ? `<details><summary>${s.postCount - 1 > s.related.length ? `Top ${s.related.length} of ${s.postCount - 1} related posts` : plural(s.postCount - 1, 'related post')}</summary><div class="rel">${s.related.map((p) => `<div><strong>${esc(p.voice ? p.voice.name : '@' + p.handle)}</strong> <span class="muted">· ${esc(ago(p.createdAt))}</span><br>${esc(oneLine(p.text))} <a href="${safeUrl(p.url)}" target="_blank" rel="noopener">view</a></div>`).join('')}</div></details>`
+      ? `<details><summary>${s.postCount - 1 > s.related.length ? `Top ${s.related.length} of ${s.postCount - 1} related posts` : plural(s.postCount - 1, 'related post')}</summary><div class="rel">${s.related.map((p) => `<div><strong>${esc(p.voice ? p.voice.name : '@' + p.handle)}</strong> <span class="muted">${esc(ago(p.createdAt))}</span><br>${esc(oneLine(p.text))} <a href="${safeUrl(p.url)}" target="_blank" rel="noopener">View post</a></div>`).join('')}</div></details>`
       : '';
-    return `<article class="card story">
-      <div class="meta"><span class="status ${s.status}">${STATUS_LABEL[s.status]}</span>${isNew ? '<span class="newdot">New</span>' : ''}<span>first seen ${esc(ago(s.firstSeen))}${topic}${lenses} · ${plural(s.postCount, 'post')} from ${plural(s.voiceCount, 'voice')}</span></div>
-      <p class="lead"><a href="${safeUrl(s.lead.url)}" target="_blank" rel="noopener">${esc(oneLine(s.lead.text, 280))}</a></p>
-      <div class="by">${who} · ${esc(ago(s.lead.createdAt))} · ♥ ${c.likes ?? 0} · reposts ${c.reposts ?? 0} · replies ${c.replies ?? 0}${lift}</div>
-      ${s.disagreements.map(disagreement).join('')}
-      ${sources ? `<div class="chips">${sources}</div>` : ''}
-      ${related}
+    return `<article class="story">
+      <div><div class="state ${s.status}"><span class="dot ${s.status}"></span>${STATE_LABEL[s.status]}</div>${rail(s)}${isNew ? '<span class="newtag">New to you</span>' : ''}</div>
+      <div>
+        <h3><a href="${safeUrl(s.lead.url)}" target="_blank" rel="noopener">${esc(oneLine(s.lead.text, 280))}</a></h3>
+        <p class="by">Led by ${who}, ${esc(ago(s.lead.createdAt))}${lift}. ${plural(s.postCount, 'post')} from ${plural(s.voiceCount, 'voice')}.${topic}</p>
+        ${s.disagreements.map(disagreement).join('')}
+        ${sources}
+        ${related}
+      </div>
     </article>`;
   }
 
-  function rail(d) {
-    const max = Math.max(1, ...d.activity.map((b) => b.count));
-    const recent = d.activity.slice(-4).reduce((a, b) => a + b.count, 0) / 4;
-    const before = d.activity.slice(0, -4).reduce((a, b) => a + b.count, 0) / Math.max(1, d.activity.length - 4);
-    const spark = d.activity.map((b, i) => `<div class="${i >= d.activity.length - 4 && recent > before * 1.5 ? 'hot' : ''}" style="height:${Math.round((b.count / max) * 100)}%" title="${esc(clock(b.hour))}: ${b.count}"></div>`).join('');
+  function side(d) {
+    const colors = ['--r1', '--r2', '--r3', '--r4', '--r5', '--r6'];
+    const col = (i) => `var(${colors[i % colors.length]})`;
     const cov = d.coverage.length
-      ? `<div class="cov">${d.coverage.map((r) => `<span>${esc(r.region)}</span><div class="bar" style="width:${Math.max(4, Math.round(r.share * 100))}%"></div><span>${Math.round(r.share * 100)}%</span>`).join('')}</div>`
+      ? `<div class="stack" role="img" aria-label="Share of posts by region">${d.coverage.map((r, i) => `<div style="width:${(r.share * 100).toFixed(1)}%;background:${col(i)}"></div>`).join('')}</div>
+         <ul class="legend">${d.coverage.map((r, i) => `<li><span class="sw" style="background:${col(i)}"></span><span>${esc(r.region)}</span><span class="muted">${Math.round(r.share * 100)}%</span></li>`).join('')}</ul>`
       : '<p class="muted" style="margin:0">No tracked voices yet.</p>';
     const thin = d.coverage.filter((r) => r.share < 0.1).map((r) => r.region);
     const dev = d.developments.length
-      ? `<ol class="dev">${d.developments.map((x) => `<li><span class="muted">${esc(clock(x.at))}</span><a href="${safeUrl(x.url)}" target="_blank" rel="noopener" style="color:inherit">${esc(title(x.text))}</a></li>`).join('')}</ol>`
+      ? `<ol class="dev">${d.developments.map((x) => `<li><span class="muted">${esc(clock(x.at))}</span><a href="${safeUrl(x.url)}" target="_blank" rel="noopener">${esc(title(x.text))}</a></li>`).join('')}</ol>`
       : '<p class="muted" style="margin:0">Nothing confirmed by two independent outlets yet.</p>';
     return `<aside>
-      <section class="card"><h2>Activity, last 24 hours</h2><div class="spark" role="img" aria-label="On-topic posts per hour">${spark}</div><p class="notes" style="margin:10px 0 0">${recent > before * 1.5 ? `Up ${Math.round(recent / Math.max(before, 0.1))}× in the last 4 hours.` : 'No unusual spike.'}</p></section>
-      <section class="card"><h2>Where coverage comes from</h2>${cov}${thin.length ? `<p class="notes" style="margin:10px 0 0;color:var(--warn)">Thin coverage from: ${esc(thin.join(', '))}.</p>` : ''}</section>
-      <section class="card"><h2>Key developments</h2>${dev}</section>
+      <section><h2>Who you're hearing from</h2>${cov}${thin.length ? `<p class="notes warn" style="margin:12px 0 0">Little coverage from ${esc(thin.join(', '))}. Treat early claims with care.</p>` : ''}</section>
+      <section><h2>Key developments</h2>${dev}</section>
     </aside>`;
+  }
+
+  function spikeLine(d) {
+    const recent = d.activity.slice(-4).reduce((a, b) => a + b.count, 0) / 4;
+    const before = d.activity.slice(0, -4).reduce((a, b) => a + b.count, 0) / Math.max(1, d.activity.length - 4);
+    return recent > before * 1.5 ? `Activity is up ${Math.round(recent / Math.max(before, 0.1))} times in the last 4 hours.` : 'No unusual spike in activity.';
   }
 
   function render() {
     const d = state.data;
     const app = document.getElementById('app');
-    const crumbs = d.crumbs.map((c, i) => (i === d.crumbs.length - 1 ? `<span class="here">${esc(c.label)}</span>` : `<a href="${href(c.id)}">${esc(c.label)}</a><span aria-hidden="true">›</span>`)).join('');
+    const crumbs = d.crumbs.map((c, i) => (i === d.crumbs.length - 1 ? `<span class="here" aria-current="page">${esc(c.label)}</span>` : `<a href="${href(c.id)}">${esc(c.label)}</a><span aria-hidden="true">/</span>`)).join('');
     const seen = state.baseline;
+    const c = changes(d);
     const visible = d.stories.filter((s) => state.lens === 'all' || s.lenses.includes(state.lens));
-    const broader = d.parent ? `<a href="${href(d.parent.id)}">Show broader: ${esc(d.parent.label)}</a>` : '';
-    const narrower = d.children.length ? ` · Narrower: ${d.children.map((c) => `<a href="${href(c.id)}">${esc(c.label)}</a>`).join(', ')}` : '';
-    const spike = d.activity.slice(-4).reduce((a, b) => a + b.count, 0);
+    const broader = d.parent ? ` <a href="${href(d.parent.id)}">Show broader: ${esc(d.parent.label)}</a>.` : '';
+    const narrower = d.children.length ? ` Narrower: ${d.children.map((x) => `<a href="${href(x.id)}">${esc(x.label)}</a>`).join(', ')}.` : '';
     app.innerHTML = `
       ${d.demo ? '<div class="banner" role="status">Demo mode: made-up sample posts from fictional accounts, run through the real pipeline. Live Bluesky data runs without demo mode.</div>' : ''}
       <header class="top">
-        <div style="display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center"><span class="brand">In the Loop</span><nav class="crumbs" aria-label="Topic path">${crumbs}</nav></div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px 32px;align-items:center">
+          <span class="brand"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="10" fill="none" stroke="var(--track)" stroke-width="4"/><path d="M14 4a10 10 0 0 1 9.5 13" fill="none" stroke="var(--loop)" stroke-width="4" stroke-linecap="round"/></svg>in the loop</span>
+          <nav class="crumbs" aria-label="Topic path">${crumbs}</nav>
+        </div>
         <div class="seg" role="group" aria-label="Time window">${WINDOWS.map((w) => `<button data-since="${w}" aria-pressed="${w === state.since}">${w}</button>`).join('')}</div>
       </header>
+      <section class="hero">
+        ${dial(d, c)}
+        <div>
+          <h1>${esc(d.node.label)}</h1>
+          <p class="sub">${spikeLine(d)} Following ${plural(d.stats.voices, 'voice')}, updated ${esc(ago(d.generatedAt))}.${broader}${narrower}</p>
+          ${sinceList(d, c)}
+        </div>
+      </section>
       <main>
         <div class="col">
-          <section>
-            <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center"><h1>${esc(d.node.label)}</h1>${spike ? `<span class="pill">${d.stories.length} storylines · ${d.stats.onTopic} posts</span>` : ''}</div>
-            <p class="sub">Following ${d.stats.voices} voices · updated ${esc(ago(d.generatedAt))} · ${broader}${narrower}</p>
-          </section>
-          ${sinceBox(d)}
-          <div class="lenses" role="group" aria-label="Lens">${LENSES.map(([k, l]) => `<button data-lens="${k}" aria-pressed="${k === state.lens}">${l}</button>`).join('')}</div>
-          ${visible.length ? visible.map((s) => story(s, !seen || !seen.status[s.id])).join('') : '<div class="card muted">No storylines for this lens in this window.</div>'}
-          <p class="notes">Ranked by engagement compared with each account's usual, boosted when other credible voices share or quote it. Corroborated = two independent outlets. Read-only: In the Loop never posts to Bluesky.</p>
+          <div class="listhead"><h2>Storylines</h2><div class="lenses" role="group" aria-label="Lens">${LENSES.map(([k, l]) => `<button data-lens="${k}" aria-pressed="${k === state.lens}">${l}</button>`).join('')}</div></div>
+          ${visible.length ? visible.map((s) => story(s, !seen || !seen.status[s.id])).join('') : '<p class="muted" style="padding:28px 0">No storylines for this lens in this window.</p>'}
+          <p class="footnote">Ranked by engagement compared with each account's usual, boosted when other credible voices share or quote it. Confirmed means two independent outlets. In the Loop only reads Bluesky and never posts.</p>
           ${d.missingVoices.length ? `<p class="notes">Voices not found on Bluesky: ${esc(d.missingVoices.join(', '))}</p>` : ''}
-          ${d.errors.length ? `<details class="notes"><summary>${d.errors.length} warnings</summary><ul>${d.errors.map((e) => `<li>${esc(e)}</li>`).join('')}</ul></details>` : ''}
+          ${d.errors.length ? `<details class="notes"><summary>${plural(d.errors.length, 'warning')}</summary><ul>${d.errors.map((e) => `<li>${esc(e)}</li>`).join('')}</ul></details>` : ''}
         </div>
-        ${rail(d)}
+        ${side(d)}
       </main>`;
     app.querySelectorAll('[data-lens]').forEach((b) => b.addEventListener('click', () => { state.lens = b.dataset.lens; render(); }));
     app.querySelectorAll('[data-since]').forEach((b) => b.addEventListener('click', () => { state.since = b.dataset.since; load(); }));

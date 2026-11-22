@@ -5,12 +5,12 @@
 // Search is off here: Bluesky's public search often refuses anonymous
 // callers, so the static page follows the voice list (getAuthorFeed) only.
 
-import { BskyClient } from './bsky.js';
-import { buildBrief } from './brief.js';
-import { DEMO_VOICES, demoFetch } from './demo.js';
-import { makeHierarchy } from './hierarchy.js';
-import { makeVoice } from './voices.js';
-import { briefView } from './view.js';
+import { BskyClient } from './bsky.js?v=708ab11dd4';
+import { buildBrief } from './brief.js?v=708ab11dd4';
+import { DEMO_VOICES, demoFetch } from './demo.js?v=708ab11dd4';
+import { makeHierarchy } from './hierarchy.js?v=708ab11dd4';
+import { makeVoice } from './voices.js?v=708ab11dd4';
+import { briefView } from './view.js?v=708ab11dd4';
 
 const SINCE_HOURS = { '6h': 6, '12h': 12, '24h': 24, '48h': 48, '7d': 168 };
 const CACHE_MS = 120_000;
