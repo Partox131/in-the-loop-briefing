@@ -5,15 +5,16 @@
 // Search is off here: Bluesky's public search often refuses anonymous
 // callers, so the static page follows the voice list (getAuthorFeed) only.
 
-import { BskyClient } from './bsky.js?v=4d071d303c';
-import { buildBrief } from './brief.js?v=4d071d303c';
-import { DEMO_VOICES, demoFetch } from './demo.js?v=4d071d303c';
-import { project } from './geo.js?v=4d071d303c';
-import { makeHierarchy } from './hierarchy.js?v=4d071d303c';
-import { subscribePosts } from './jetstream.js?v=4d071d303c';
-import { makeLive } from './live.js?v=4d071d303c';
-import { makeVoice } from './voices.js?v=4d071d303c';
-import { briefView } from './view.js?v=4d071d303c';
+import { BskyClient } from './bsky.js?v=be3e94bf48';
+import { buildBrief } from './brief.js?v=be3e94bf48';
+import { DEMO_VOICES, demoFetch } from './demo.js?v=be3e94bf48';
+import { project } from './geo.js?v=be3e94bf48';
+import { makeHierarchy } from './hierarchy.js?v=be3e94bf48';
+import { subscribePosts } from './jetstream.js?v=be3e94bf48';
+import { makeLive } from './live.js?v=be3e94bf48';
+import { newsPosts } from './news.js?v=be3e94bf48';
+import { makeVoice } from './voices.js?v=be3e94bf48';
+import { briefView } from './view.js?v=be3e94bf48';
 
 const SINCE_HOURS = { '6h': 6, '12h': 12, '24h': 24, '48h': 48, '7d': 168 };
 const CACHE_MS = 120_000;
@@ -22,6 +23,20 @@ async function getJson(path) {
   const res = await fetch(path, { cache: 'no-cache' });
   if (!res.ok) throw new Error(`Could not load ${path} (${res.status})`);
   return res.json();
+}
+
+/**
+ * news.json, written every 15 minutes by the site's scheduled collector
+ * (scripts/collect-news.js). Missing or broken: carry on with Bluesky only.
+ */
+export async function loadNews(base = '.') {
+  try {
+    const res = await fetch(`${base}/news.json`, { cache: 'no-cache' });
+    if (!res.ok) return null;
+    return newsPosts(await res.json());
+  } catch {
+    return null;
+  }
 }
 
 export async function init({ base = '.', defaultNode = 'iran-war' } = {}) {
@@ -43,6 +58,7 @@ export async function init({ base = '.', defaultNode = 'iran-war' } = {}) {
     if (hit && Date.now() - hit.at < CACHE_MS) return hit.value;
     const now = new Date();
     const brief = await buildBrief({
+      news: useDemo ? undefined : (await loadNews(base)) || undefined,
       client: useDemo ? demo : live,
       hierarchy,
       node: id,
@@ -74,6 +90,7 @@ export async function initLive({ base = '.', node = 'geopolitics', demo = false 
     hierarchy,
     voices: demo ? DEMO_VOICES : voices,
     node: hierarchy.nodes.has(node) ? node : 'geopolitics',
+    loadNews: demo ? async () => null : () => loadNews(base),
   });
   return {
     live,

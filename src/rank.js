@@ -7,10 +7,17 @@
 // velocity means a reporter with 5k followers getting 500 likes outranks a
 // 2M-follower outlet getting 500 likes. See docs/design/topic-tracking.md 2.4.
 
-import { engagement } from './digest.js?v=4d071d303c';
+import { engagement } from './digest.js?v=be3e94bf48';
 
 /** Weight for accounts that are not in the voice registry (the open conversation). */
 export const NON_VOICE_WEIGHT = 0.15;
+
+/**
+ * News articles have no likes or reposts of their own, so they rank as if
+ * they had their author's usual engagement (log1p(1)). Bluesky posts sharing
+ * the same article add their engagement to the storyline.
+ */
+export const NEWS_LIFT = Math.log1p(1);
 
 const HOUR = 3_600_000;
 
@@ -63,7 +70,7 @@ export function rankPosts(posts, { voices = new Map(), now = new Date(), halfLif
       const ageH = Math.max((now - new Date(p.createdAt)) / HOUR, 0);
       const relevance = p.relevance ?? 1;
       // Small floor for voices so a brand-new report with no engagement yet still shows.
-      const lift = Math.log1p(velocity(p, now) / baseline(p.did)) + (voice ? 0.1 : 0);
+      const lift = p.source === 'news' ? NEWS_LIFT : Math.log1p(velocity(p, now) / baseline(p.did)) + (voice ? 0.1 : 0);
       const score = relevance * weight * lift * (1 + amplification) * 2 ** (-ageH / halfLifeHours);
       return { ...p, voice, score, why: { weight, lift, amplifiedBy: others.length, ageH } };
     })

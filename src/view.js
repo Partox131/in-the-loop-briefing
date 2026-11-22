@@ -1,7 +1,7 @@
 // Turn a brief (see brief.js) into the JSON the briefing web page renders.
 // Kept separate from the server so it's easy to test and to reuse.
 
-import { TIER_NAME } from './voices.js?v=4d071d303c';
+import { TIER_NAME } from './voices.js?v=be3e94bf48';
 
 const HOUR = 3_600_000;
 
@@ -14,6 +14,7 @@ function postView(p) {
     displayName: p.displayName,
     createdAt: p.createdAt,
     counts: p.counts,
+    news: p.source === 'news',
     topicId: p.topicId,
     lenses: p.lenses || [],
     voice: p.voice
@@ -97,6 +98,7 @@ export function briefView(brief, h, { now = new Date() } = {}) {
     firstSeen: s.firstSeen,
     lastSeen: s.lastSeen,
     postCount: s.posts.length,
+    articleCount: s.posts.filter((p) => p.source === 'news').length,
     voiceCount: s.voices.length,
     disagreements: s.disagreements.map(disagreementView),
     related: s.posts.slice(1, 4).map(postView),
@@ -109,7 +111,14 @@ export function briefView(brief, h, { now = new Date() } = {}) {
     parent: crumbs.length > 1 ? crumbs.at(-2) : null,
     children: h.children(id).map((c) => ({ id: c, label: h.get(c).label })),
     breadth: { ...brief.breadth, perChild: Number.isFinite(brief.breadth.perChild) ? brief.breadth.perChild : null },
-    stats: { voices: brief.voices.length, scanned: brief.scanned, onTopic: brief.posts.length },
+    stats: {
+      voices: brief.voices.length,
+      scanned: brief.scanned,
+      onTopic: brief.posts.length,
+      articles: brief.posts.filter((p) => p.source === 'news').length,
+      outlets: new Set(brief.posts.filter((p) => p.source === 'news').map((p) => p.did)).size,
+    },
+    newsUpdatedAt: brief.newsUpdatedAt || null,
     stories,
     activity: activity(brief.posts, now),
     coverage: coverage(brief.posts),

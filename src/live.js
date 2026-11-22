@@ -6,10 +6,10 @@
 // up through Jetstream: a WebSocket of new posts filtered to the voices'
 // accounts, which works straight from the browser. Read-only, no login.
 
-import { buildBrief } from './brief.js?v=4d071d303c';
-import { rankPosts } from './rank.js?v=4d071d303c';
-import { buildStorylines } from './storylines.js?v=4d071d303c';
-import { byDid } from './voices.js?v=4d071d303c';
+import { buildBrief } from './brief.js?v=be3e94bf48';
+import { rankPosts } from './rank.js?v=be3e94bf48';
+import { buildStorylines } from './storylines.js?v=be3e94bf48';
+import { byDid } from './voices.js?v=be3e94bf48';
 
 const HOUR = 3_600_000;
 
@@ -49,6 +49,7 @@ function postLine(p, h) {
     topicId: p.topicId,
     topicLabel: h.get(p.topicId).label,
     live: p.source === 'live',
+    news: p.source === 'news',
   };
 }
 
@@ -104,6 +105,8 @@ export function liveView({ posts, hierarchy: h, node, now, windowHours = 1, look
         text: s.lead.text,
         url: s.lead.url,
         by: s.lead.voice?.name || s.lead.handle,
+        news: s.lead.source === 'news',
+        articles: s.posts.filter((p) => p.source === 'news').length,
         sources: s.sources,
         posts: s.posts.length,
         firstSeen: s.firstSeen,
@@ -186,15 +189,23 @@ export function worldView({ posts, hierarchy: h, node, now, windowHours = 1, loo
  * @param {import('./voices.js').Voice[]} o.voices
  * @param {string} o.node
  */
-export function makeLive({ client, hierarchy: h, voices, node = 'geopolitics', lookbackHours = 24 }) {
+export function makeLive({ client, hierarchy: h, voices, node = 'geopolitics', lookbackHours = 24, loadNews = async () => null }) {
   let posts = [];
   let voiceIndex = new Map();
-  let meta = { voices: 0, missingVoices: [], errors: [] };
+  let meta = { voices: 0, articles: 0, outlets: 0, newsUpdatedAt: null, missingVoices: [], errors: [] };
 
   return {
     /** Full reload from Bluesky (author feeds of every voice). */
     async load(now = new Date()) {
+      let news = null;
+      const newsErrors = [];
+      try {
+        news = await loadNews();
+      } catch (err) {
+        newsErrors.push(`news: ${err.message}`);
+      }
       const brief = await buildBrief({
+        news: news || undefined,
         client,
         hierarchy: h,
         node,
@@ -207,7 +218,15 @@ export function makeLive({ client, hierarchy: h, voices, node = 'geopolitics', l
       voiceIndex = byDid(brief.voices);
       const live = posts.filter((p) => p.source === 'live' && !brief.posts.some((q) => q.uri === p.uri));
       posts = [...brief.posts, ...live];
-      meta = { voices: brief.voices.length, missingVoices: brief.missingVoices, errors: brief.errors };
+      const articles = brief.posts.filter((p) => p.source === 'news');
+      meta = {
+        voices: brief.voices.length,
+        articles: articles.length,
+        outlets: new Set(articles.map((p) => p.did)).size,
+        newsUpdatedAt: news?.generatedAt || null,
+        missingVoices: brief.missingVoices,
+        errors: [...newsErrors, ...brief.errors],
+      };
     },
     /** DIDs to ask Jetstream for. */
     dids: () => [...voiceIndex.keys()],

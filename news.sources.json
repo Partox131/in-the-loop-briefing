@@ -1,0 +1,688 @@
+{
+  "_about": "News sources for In the Loop: outlets (RSS/Atom feeds, and which domains count from GDELT) and the GDELT queries per region. Read by scripts/collect-news.js. Only articles from outlets listed here are shown. stateAffiliated outlets are shown and labelled (Amir, 22 Nov 2026). affiliation matches voices.example.json so an outlet's Bluesky post and its article are one source, not two.",
+  "gdelt": {
+    "timespan": "1h",
+    "maxrecords": 250,
+    "queries": [
+      {
+        "id": "middle-east",
+        "query": "(iran OR israel OR gaza OR lebanon OR hezbollah OR syria OR iraq OR yemen OR houthis OR hormuz OR \"west bank\") sourcelang:english"
+      },
+      {
+        "id": "eastern-europe",
+        "query": "(ukraine OR russia OR kremlin OR kyiv OR nato OR poland OR baltic OR crimea) sourcelang:english"
+      },
+      {
+        "id": "east-asia",
+        "query": "(taiwan OR china OR beijing OR \"south china sea\") sourcelang:english"
+      }
+    ]
+  },
+  "outlets": [
+    {
+      "domain": "reuters.com",
+      "name": "Reuters",
+      "affiliation": "Reuters",
+      "region": "international",
+      "topics": [
+        "geopolitics"
+      ],
+      "feeds": []
+    },
+    {
+      "domain": "apnews.com",
+      "name": "Associated Press",
+      "affiliation": "Associated Press",
+      "region": "US",
+      "topics": [
+        "geopolitics"
+      ],
+      "feeds": []
+    },
+    {
+      "domain": "bbc.co.uk",
+      "name": "BBC",
+      "affiliation": "BBC",
+      "region": "UK",
+      "domains": [
+        "bbc.com"
+      ],
+      "topics": [
+        "geopolitics"
+      ],
+      "feeds": [
+        "https://feeds.bbci.co.uk/news/world/rss.xml",
+        "https://feeds.bbci.co.uk/news/world/middle_east/rss.xml",
+        "https://feeds.bbci.co.uk/news/world/europe/rss.xml",
+        "https://feeds.bbci.co.uk/news/world/asia/rss.xml"
+      ]
+    },
+    {
+      "domain": "nytimes.com",
+      "name": "New York Times",
+      "affiliation": "New York Times",
+      "region": "US",
+      "topics": [
+        "geopolitics"
+      ],
+      "feeds": [
+        "https://rss.nytimes.com/services/xml/rss/nyt/World.xml",
+        "https://rss.nytimes.com/services/xml/rss/nyt/MiddleEast.xml",
+        "https://rss.nytimes.com/services/xml/rss/nyt/Europe.xml",
+        "https://rss.nytimes.com/services/xml/rss/nyt/AsiaPacific.xml"
+      ]
+    },
+    {
+      "domain": "washingtonpost.com",
+      "name": "Washington Post",
+      "affiliation": "Washington Post",
+      "region": "US",
+      "topics": [
+        "geopolitics"
+      ],
+      "feeds": [
+        "https://feeds.washingtonpost.com/rss/world"
+      ]
+    },
+    {
+      "domain": "npr.org",
+      "name": "NPR",
+      "affiliation": "NPR",
+      "region": "US",
+      "topics": [
+        "geopolitics"
+      ],
+      "feeds": [
+        "https://feeds.npr.org/1004/rss.xml"
+      ]
+    },
+    {
+      "domain": "axios.com",
+      "name": "Axios",
+      "affiliation": "Axios",
+      "region": "US",
+      "topics": [
+        "geopolitics"
+      ],
+      "feeds": []
+    },
+    {
+      "domain": "cnn.com",
+      "name": "CNN",
+      "affiliation": "CNN",
+      "region": "US",
+      "topics": [
+        "geopolitics"
+      ],
+      "feeds": []
+    },
+    {
+      "domain": "theguardian.com",
+      "name": "Guardian",
+      "affiliation": "Guardian",
+      "region": "UK",
+      "topics": [
+        "geopolitics"
+      ],
+      "feeds": [
+        "https://www.theguardian.com/world/rss",
+        "https://www.theguardian.com/world/middleeast/rss",
+        "https://www.theguardian.com/world/ukraine/rss"
+      ]
+    },
+    {
+      "domain": "ft.com",
+      "name": "Financial Times",
+      "affiliation": "Financial Times",
+      "region": "UK",
+      "topics": [
+        "geopolitics"
+      ],
+      "feeds": []
+    },
+    {
+      "domain": "economist.com",
+      "name": "The Economist",
+      "affiliation": "The Economist",
+      "region": "UK",
+      "topics": [
+        "geopolitics"
+      ],
+      "feeds": []
+    },
+    {
+      "domain": "independent.co.uk",
+      "name": "Independent",
+      "affiliation": "Independent",
+      "region": "UK",
+      "domains": [
+        "the-independent.com"
+      ],
+      "topics": [
+        "geopolitics"
+      ],
+      "feeds": []
+    },
+    {
+      "domain": "cbc.ca",
+      "name": "CBC News",
+      "affiliation": "CBC News",
+      "region": "Canada",
+      "topics": [
+        "geopolitics"
+      ],
+      "feeds": [
+        "https://www.cbc.ca/webfeed/rss/rss-world"
+      ]
+    },
+    {
+      "domain": "france24.com",
+      "name": "France 24",
+      "affiliation": "France 24",
+      "region": "France",
+      "stateAffiliated": true,
+      "topics": [
+        "geopolitics"
+      ],
+      "feeds": [
+        "https://www.france24.com/en/rss",
+        "https://www.france24.com/en/middle-east/rss",
+        "https://www.france24.com/en/europe/rss",
+        "https://www.france24.com/en/asia-pacific/rss"
+      ]
+    },
+    {
+      "domain": "dw.com",
+      "name": "DW",
+      "affiliation": "DW",
+      "region": "Germany",
+      "stateAffiliated": true,
+      "topics": [
+        "geopolitics"
+      ],
+      "feeds": [
+        "https://rss.dw.com/rdf/rss-en-world"
+      ]
+    },
+    {
+      "domain": "euronews.com",
+      "name": "Euronews",
+      "affiliation": "Euronews",
+      "region": "Europe",
+      "topics": [
+        "geopolitics"
+      ],
+      "feeds": [
+        "https://www.euronews.com/rss?format=mrss&level=theme&name=news"
+      ]
+    },
+    {
+      "domain": "politico.eu",
+      "name": "POLITICO Europe",
+      "affiliation": "POLITICO Europe",
+      "region": "Europe",
+      "topics": [
+        "geopolitics"
+      ],
+      "feeds": [
+        "https://www.politico.eu/feed/"
+      ]
+    },
+    {
+      "domain": "news.un.org",
+      "name": "UN News",
+      "affiliation": "United Nations",
+      "region": "international",
+      "topics": [
+        "geopolitics"
+      ],
+      "feeds": [
+        "https://news.un.org/feed/subscribe/en/news/all/rss.xml"
+      ]
+    },
+    {
+      "domain": "aljazeera.com",
+      "name": "Al Jazeera",
+      "affiliation": "Al Jazeera",
+      "region": "Qatar",
+      "stateAffiliated": true,
+      "topics": [
+        "geopolitics"
+      ],
+      "feeds": [
+        "https://www.aljazeera.com/xml/rss/all.xml"
+      ]
+    },
+    {
+      "domain": "al-monitor.com",
+      "name": "Al-Monitor",
+      "affiliation": "Al-Monitor",
+      "region": "Middle East",
+      "topics": [
+        "middle-east"
+      ],
+      "feeds": [
+        "https://www.al-monitor.com/rss"
+      ]
+    },
+    {
+      "domain": "amwaj.media",
+      "name": "Amwaj.media",
+      "affiliation": "Amwaj.media",
+      "region": "Iran, Iraq and Gulf",
+      "topics": [
+        "middle-east"
+      ],
+      "feeds": []
+    },
+    {
+      "domain": "timesofisrael.com",
+      "name": "Times of Israel",
+      "affiliation": "Times of Israel",
+      "region": "Israel",
+      "topics": [
+        "middle-east"
+      ],
+      "feeds": [
+        "https://www.timesofisrael.com/feed/"
+      ]
+    },
+    {
+      "domain": "haaretz.com",
+      "name": "Haaretz",
+      "affiliation": "Haaretz",
+      "region": "Israel",
+      "topics": [
+        "middle-east"
+      ],
+      "feeds": []
+    },
+    {
+      "domain": "jpost.com",
+      "name": "Jerusalem Post",
+      "affiliation": "Jerusalem Post",
+      "region": "Israel",
+      "topics": [
+        "middle-east"
+      ],
+      "feeds": [
+        "https://www.jpost.com/rss/rssfeedsheadlines.aspx"
+      ]
+    },
+    {
+      "domain": "ynetnews.com",
+      "name": "Ynet News",
+      "affiliation": "Ynet News",
+      "region": "Israel",
+      "topics": [
+        "middle-east"
+      ],
+      "feeds": []
+    },
+    {
+      "domain": "972mag.com",
+      "name": "+972 Magazine",
+      "affiliation": "+972 Magazine",
+      "region": "Israel and Palestine",
+      "topics": [
+        "gaza",
+        "west-bank"
+      ],
+      "feeds": [
+        "https://www.972mag.com/feed/"
+      ]
+    },
+    {
+      "domain": "middleeasteye.net",
+      "name": "Middle East Eye",
+      "affiliation": "Middle East Eye",
+      "region": "UK",
+      "topics": [
+        "middle-east"
+      ],
+      "feeds": [
+        "https://www.middleeasteye.net/rss"
+      ]
+    },
+    {
+      "domain": "middleeastmonitor.com",
+      "name": "Middle East Monitor",
+      "affiliation": "Middle East Monitor",
+      "region": "UK",
+      "topics": [
+        "middle-east"
+      ],
+      "feeds": [
+        "https://www.middleeastmonitor.com/feed/"
+      ]
+    },
+    {
+      "domain": "newarab.com",
+      "name": "The New Arab",
+      "affiliation": "The New Arab",
+      "region": "Qatar",
+      "topics": [
+        "middle-east"
+      ],
+      "feeds": [
+        "https://www.newarab.com/rss"
+      ]
+    },
+    {
+      "domain": "thenationalnews.com",
+      "name": "The National",
+      "affiliation": "The National",
+      "region": "UAE",
+      "stateAffiliated": true,
+      "topics": [
+        "middle-east"
+      ],
+      "feeds": [
+        "https://www.thenationalnews.com/arc/outboundfeeds/rss/?outputType=xml"
+      ]
+    },
+    {
+      "domain": "arabnews.com",
+      "name": "Arab News",
+      "affiliation": "Arab News",
+      "region": "Saudi Arabia",
+      "stateAffiliated": true,
+      "topics": [
+        "middle-east"
+      ],
+      "feeds": [
+        "https://www.arabnews.com/rss.xml"
+      ]
+    },
+    {
+      "domain": "aa.com.tr",
+      "name": "Anadolu Agency",
+      "affiliation": "Anadolu Agency",
+      "region": "Turkey",
+      "stateAffiliated": true,
+      "topics": [
+        "geopolitics"
+      ],
+      "feeds": [
+        "https://www.aa.com.tr/en/rss/default?cat=guncel"
+      ]
+    },
+    {
+      "domain": "tehrantimes.com",
+      "name": "Tehran Times",
+      "affiliation": "Tehran Times",
+      "region": "Iran",
+      "stateAffiliated": true,
+      "topics": [
+        "middle-east"
+      ],
+      "feeds": [
+        "https://www.tehrantimes.com/rss"
+      ]
+    },
+    {
+      "domain": "presstv.ir",
+      "name": "Press TV",
+      "affiliation": "Press TV",
+      "region": "Iran",
+      "stateAffiliated": true,
+      "topics": [
+        "middle-east"
+      ],
+      "feeds": [
+        "https://www.presstv.ir/rss.xml"
+      ]
+    },
+    {
+      "domain": "kyivindependent.com",
+      "name": "Kyiv Independent",
+      "affiliation": "Kyiv Independent",
+      "region": "Ukraine",
+      "topics": [
+        "eastern-europe"
+      ],
+      "feeds": [
+        "https://kyivindependent.com/news-archive/rss/"
+      ]
+    },
+    {
+      "domain": "kyivpost.com",
+      "name": "Kyiv Post",
+      "affiliation": "Kyiv Post",
+      "region": "Ukraine",
+      "topics": [
+        "eastern-europe"
+      ],
+      "feeds": []
+    },
+    {
+      "domain": "pravda.com.ua",
+      "name": "Ukrainska Pravda",
+      "affiliation": "Ukrainska Pravda",
+      "region": "Ukraine",
+      "topics": [
+        "eastern-europe"
+      ],
+      "feeds": [
+        "https://www.pravda.com.ua/eng/rss/"
+      ]
+    },
+    {
+      "domain": "ukrinform.net",
+      "name": "Ukrinform",
+      "affiliation": "Ukrinform",
+      "region": "Ukraine",
+      "stateAffiliated": true,
+      "topics": [
+        "eastern-europe"
+      ],
+      "feeds": [
+        "https://www.ukrinform.net/rss/block-lastnews"
+      ]
+    },
+    {
+      "domain": "meduza.io",
+      "name": "Meduza",
+      "affiliation": "Meduza",
+      "region": "Russia (independent, in exile)",
+      "topics": [
+        "eastern-europe"
+      ],
+      "feeds": [
+        "https://meduza.io/rss/en/all"
+      ]
+    },
+    {
+      "domain": "tass.com",
+      "name": "TASS",
+      "affiliation": "TASS",
+      "region": "Russia",
+      "stateAffiliated": true,
+      "topics": [
+        "eastern-europe"
+      ],
+      "feeds": [
+        "https://tass.com/rss/v2.xml"
+      ]
+    },
+    {
+      "domain": "rferl.org",
+      "name": "RFE/RL",
+      "affiliation": "RFE/RL",
+      "region": "US",
+      "stateAffiliated": true,
+      "topics": [
+        "eastern-europe"
+      ],
+      "feeds": []
+    },
+    {
+      "domain": "notesfrompoland.com",
+      "name": "Notes from Poland",
+      "affiliation": "Notes from Poland",
+      "region": "Poland",
+      "topics": [
+        "nato-east"
+      ],
+      "feeds": [
+        "https://notesfrompoland.com/feed/"
+      ]
+    },
+    {
+      "domain": "news.err.ee",
+      "name": "ERR News",
+      "affiliation": "ERR News",
+      "region": "Estonia",
+      "topics": [
+        "nato-east"
+      ],
+      "feeds": [
+        "https://news.err.ee/rss"
+      ]
+    },
+    {
+      "domain": "lrt.lt",
+      "name": "LRT",
+      "affiliation": "LRT",
+      "region": "Lithuania",
+      "topics": [
+        "nato-east"
+      ],
+      "feeds": []
+    },
+    {
+      "domain": "thebarentsobserver.com",
+      "name": "Barents Observer",
+      "affiliation": "Barents Observer",
+      "region": "Nordics",
+      "topics": [
+        "nato-east"
+      ],
+      "feeds": []
+    },
+    {
+      "domain": "thediplomat.com",
+      "name": "The Diplomat",
+      "affiliation": "The Diplomat",
+      "region": "Asia-Pacific",
+      "topics": [
+        "east-asia"
+      ],
+      "feeds": [
+        "https://thediplomat.com/feed/"
+      ]
+    },
+    {
+      "domain": "asia.nikkei.com",
+      "name": "Nikkei",
+      "affiliation": "Nikkei",
+      "region": "Japan",
+      "topics": [
+        "east-asia"
+      ],
+      "feeds": []
+    },
+    {
+      "domain": "scmp.com",
+      "name": "South China Morning Post",
+      "affiliation": "South China Morning Post",
+      "region": "Hong Kong",
+      "topics": [
+        "east-asia"
+      ],
+      "feeds": [
+        "https://www.scmp.com/rss/91/feed"
+      ]
+    },
+    {
+      "domain": "japantimes.co.jp",
+      "name": "Japan Times",
+      "affiliation": "Japan Times",
+      "region": "Japan",
+      "topics": [
+        "east-asia"
+      ],
+      "feeds": [
+        "https://www.japantimes.co.jp/feed/"
+      ]
+    },
+    {
+      "domain": "en.yna.co.kr",
+      "name": "Yonhap",
+      "affiliation": "Yonhap",
+      "region": "South Korea",
+      "stateAffiliated": true,
+      "topics": [
+        "east-asia"
+      ],
+      "feeds": [
+        "https://en.yna.co.kr/RSS/news.xml"
+      ]
+    },
+    {
+      "domain": "focustaiwan.tw",
+      "name": "Central News Agency",
+      "affiliation": "Central News Agency",
+      "region": "Taiwan",
+      "stateAffiliated": true,
+      "topics": [
+        "east-asia"
+      ],
+      "feeds": [
+        "https://focustaiwan.tw/rss/aall.xml"
+      ]
+    },
+    {
+      "domain": "taipeitimes.com",
+      "name": "Taipei Times",
+      "affiliation": "Taipei Times",
+      "region": "Taiwan",
+      "topics": [
+        "east-asia"
+      ],
+      "feeds": [
+        "https://www.taipeitimes.com/xml/index.rss"
+      ]
+    },
+    {
+      "domain": "globaltimes.cn",
+      "name": "Global Times",
+      "affiliation": "Global Times",
+      "region": "China",
+      "stateAffiliated": true,
+      "topics": [
+        "east-asia"
+      ],
+      "feeds": [
+        "https://www.globaltimes.cn/rss/outbrain.xml"
+      ]
+    },
+    {
+      "domain": "cgtn.com",
+      "name": "CGTN",
+      "affiliation": "CGTN",
+      "region": "China",
+      "stateAffiliated": true,
+      "topics": [
+        "east-asia"
+      ],
+      "feeds": [
+        "https://www.cgtn.com/subscribe/rss/section/world.xml"
+      ]
+    },
+    {
+      "domain": "news.cn",
+      "name": "Xinhua",
+      "affiliation": "Xinhua",
+      "region": "China",
+      "domains": [
+        "xinhuanet.com"
+      ],
+      "stateAffiliated": true,
+      "topics": [
+        "east-asia"
+      ],
+      "feeds": []
+    }
+  ]
+}

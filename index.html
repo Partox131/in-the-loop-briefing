@@ -133,7 +133,7 @@
 </head>
 <body>
 <div id="app"><p class="loading">Loading the latest from Bluesky…</p></div>
-<script>window.itlStatic = import('./src/static.js?v=4d071d303c').then((m) => m.init());</script>
+<script>window.itlStatic = import('./src/static.js?v=be3e94bf48').then((m) => m.init());</script>
 <script>
 (() => {
   const params = new URLSearchParams(location.search);
@@ -256,18 +256,18 @@
 
   function story(s, isNew) {
     const voice = s.lead.voice;
-    const who = voice ? `${esc(voice.name)}${voice.stateAffiliated ? ' (state-affiliated)' : ''}` : `@${esc(s.lead.handle)}`;
+    const who = (voice ? `${esc(voice.name)}${voice.stateAffiliated ? ' (state-affiliated)' : ''}` : `@${esc(s.lead.handle)}`) + (s.lead.news ? ' (news article)' : '');
     const lift = s.lead.why?.amplifiedBy ? `, shared by ${plural(s.lead.why.amplifiedBy, 'other voice')}` : '';
     const topic = s.topicId !== state.data.node.id ? ` In ${esc(s.topicLabel)}.` : '';
     const sources = s.sources.length ? `<p class="sources">Sources: ${s.sources.map((x) => `${esc(x.affiliation)}${x.stateAffiliated ? ' (state)' : ''}`).join(', ')}</p>` : '';
     const related = s.related.length
-      ? `<details><summary>${s.postCount - 1 > s.related.length ? `Top ${s.related.length} of ${s.postCount - 1} related posts` : plural(s.postCount - 1, 'related post')}</summary><div class="rel">${s.related.map((p) => `<div><strong>${esc(p.voice ? p.voice.name : '@' + p.handle)}</strong> <span class="muted">${esc(ago(p.createdAt))}</span><br>${esc(oneLine(p.text))} <a href="${safeUrl(p.url)}" target="_blank" rel="noopener">View post</a></div>`).join('')}</div></details>`
+      ? `<details><summary>${s.postCount - 1 > s.related.length ? `Top ${s.related.length} of ${s.postCount - 1} related posts` : plural(s.postCount - 1, 'related post')}</summary><div class="rel">${s.related.map((p) => `<div><strong>${esc(p.voice ? p.voice.name : '@' + p.handle)}</strong> <span class="muted">${esc(ago(p.createdAt))}</span><br>${esc(oneLine(p.text))} <a href="${safeUrl(p.url)}" target="_blank" rel="noopener">${p.news ? 'Read article' : 'View post'}</a></div>`).join('')}</div></details>`
       : '';
     return `<article class="story">
       <div><div class="state ${s.status}"><span class="dot ${s.status}"></span>${STATE_LABEL[s.status]}</div>${rail(s)}${isNew ? '<span class="newtag">New to you</span>' : ''}</div>
       <div>
         <h3><a href="${safeUrl(s.lead.url)}" target="_blank" rel="noopener">${esc(oneLine(s.lead.text, 280))}</a></h3>
-        <p class="by">Led by ${who}, ${esc(ago(s.lead.createdAt))}${lift}. ${plural(s.postCount, 'post')} from ${plural(s.voiceCount, 'voice')}.${topic}</p>
+        <p class="by">Led by ${who}, ${esc(ago(s.lead.createdAt))}${lift}. ${[s.postCount - s.articleCount ? plural(s.postCount - s.articleCount, 'post') : '', s.articleCount ? plural(s.articleCount, 'news article') : ''].filter(Boolean).join(' and ')} from ${plural(s.voiceCount, 'source')}.${topic}</p>
         ${s.disagreements.map(disagreement).join('')}
         ${sources}
         ${related}
@@ -321,7 +321,7 @@
         ${dial(d, c)}
         <div>
           <h1>${esc(d.node.label)}</h1>
-          <p class="sub">${spikeLine(d)} Following ${plural(d.stats.voices, 'voice')}, updated ${esc(ago(d.generatedAt))}.${broader}${narrower}</p>
+          <p class="sub">${spikeLine(d)} Following ${plural(d.stats.voices, 'Bluesky voice')}${d.stats.articles ? ` and ${plural(d.stats.articles, 'news article')} from ${plural(d.stats.outlets, 'outlet')}` : ''}, updated ${esc(ago(d.generatedAt))}.${broader}${narrower}</p>
           ${sinceList(d, c)}
         </div>
       </section>
@@ -329,7 +329,7 @@
         <div class="col">
           <div class="listhead"><h2>Storylines</h2><div class="lenses" role="group" aria-label="Lens">${LENSES.map(([k, l]) => `<button data-lens="${k}" aria-pressed="${k === state.lens}">${l}</button>`).join('')}</div></div>
           ${visible.length ? visible.map((s) => story(s, !seen || !seen.status[s.id])).join('') : '<p class="muted" style="padding:28px 0">No storylines for this lens in this window.</p>'}
-          <p class="footnote">Ranked by engagement compared with each account's usual, boosted when other credible voices share or quote it. Confirmed means two independent outlets. In the Loop only reads Bluesky and never posts.</p>
+          <p class="footnote">Ranked by engagement compared with each account's usual, boosted when other credible voices share or quote it. Confirmed means two independent outlets. News articles come from outlets' RSS feeds and GDELT, collected every 15 minutes${d.newsUpdatedAt ? ` (last ${esc(ago(d.newsUpdatedAt))})` : ''}; a Bluesky post that links to an article joins its storyline. In the Loop only reads Bluesky and never posts.</p>
           ${d.missingVoices.length ? `<p class="notes">Voices not found on Bluesky: ${esc(d.missingVoices.join(', '))}</p>` : ''}
           ${d.errors.length ? `<details class="notes"><summary>${plural(d.errors.length, 'warning')}</summary><ul>${d.errors.map((e) => `<li>${esc(e)}</li>`).join('')}</ul></details>` : ''}
         </div>

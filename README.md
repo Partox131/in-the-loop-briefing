@@ -1,12 +1,5 @@
-# In the Loop: topic briefing
+# In the Loop: live site
 
-A static page that keeps you up to date on a topic (starting with the Iran war)
-from credible voices on Bluesky: storylines, their status (reported,
-corroborated, official, disputed), where sources disagree, activity and where
-coverage comes from.
+Built files only. Source: the private in-the-loop repo (prototypes/bluesky-tracker, `npm run build:site`). The workflow in .github/workflows/pages.yml deploys on every push and every 15 minutes, collecting news articles (RSS feeds and GDELT) into news.json first.
 
-It runs entirely in your browser and reads Bluesky's public API. It never posts
-anything. Add `?demo=1` to the URL for fictional sample data.
-
-These files are generated from a private prototype; edits made here will be
-overwritten.
+https://partox131.github.io/in-the-loop-briefing/

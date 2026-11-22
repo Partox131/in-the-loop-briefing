@@ -12,11 +12,11 @@
 //                                                      ▼
 //                     breadth quota (fewer items per child higher up)
 
-import { ago, bold, cyan, dim, formatPost, green, magenta, yellow } from './format.js?v=4d071d303c';
-import { applyQuota, rankPosts } from './rank.js?v=4d071d303c';
-import { searchTopic } from './search.js?v=4d071d303c';
-import { buildStorylines } from './storylines.js?v=4d071d303c';
-import { byDid, resolveVoices, TIER_NAME, voicesFor } from './voices.js?v=4d071d303c';
+import { ago, bold, cyan, dim, formatPost, green, magenta, yellow } from './format.js?v=be3e94bf48';
+import { applyQuota, rankPosts } from './rank.js?v=be3e94bf48';
+import { searchTopic } from './search.js?v=be3e94bf48';
+import { buildStorylines } from './storylines.js?v=be3e94bf48';
+import { byDid, resolveVoices, TIER_NAME, voicesFor } from './voices.js?v=be3e94bf48';
 
 /**
  * @param {object} o
@@ -27,8 +27,9 @@ import { byDid, resolveVoices, TIER_NAME, voicesFor } from './voices.js?v=4d071d
  * @param {Date} o.since
  * @param {Date} [o.now]
  * @param {boolean} [o.search]   also pull the open conversation via search (default true)
+ * @param {{posts: Array, voices: Map}} [o.news]  news articles as posts (see news.js newsPosts)
  */
-export async function buildBrief({ client, hierarchy: h, node, voices, since, now = new Date(), search = true, perVoice = 50, perTerm = 100 }) {
+export async function buildBrief({ client, hierarchy: h, node, voices, since, now = new Date(), search = true, perVoice = 50, perTerm = 100, news }) {
   const breadth = h.breadth(node);
   const scope = new Set([node, ...h.descendants(node)]);
   const errors = [];
@@ -36,6 +37,8 @@ export async function buildBrief({ client, hierarchy: h, node, voices, since, no
   const { voices: active, missing, errors: lookupErrors } = await resolveVoices(client, voicesFor(voices, h, node));
   errors.push(...lookupErrors);
   const voiceIndex = byDid(active);
+  // News outlets count as voices too (tier 1), keyed by "news:<domain>".
+  for (const [did, v] of news?.voices || []) if (!voiceIndex.has(did)) voiceIndex.set(did, v);
 
   const collected = new Map();
   for (const v of active) {
@@ -55,6 +58,13 @@ export async function buildBrief({ client, hierarchy: h, node, voices, since, no
         errors.push(`search for ${topic.label}: ${err.message}`);
       }
     }
+  }
+
+  let articles = 0;
+  for (const p of news?.posts || []) {
+    if (collected.has(p.uri)) continue;
+    collected.set(p.uri, p);
+    articles++;
   }
 
   // Which child of `node` does a matched topic sit under? Used for the quota.
@@ -87,6 +97,8 @@ export async function buildBrief({ client, hierarchy: h, node, voices, since, no
     voices: active,
     missingVoices: missing,
     scanned: collected.size,
+    articles,
+    newsUpdatedAt: news?.generatedAt || null,
     posts: ranked,
     stories,
     errors,

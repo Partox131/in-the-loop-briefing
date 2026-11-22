@@ -1,11 +1,20 @@
 name: Deploy to GitHub Pages
 
-# Publishes this folder as it is. The files are built from the private
-# in-the-loop repo (prototypes/bluesky-tracker: npm run build:site).
+# Publishes this folder, plus a fresh news.json. The files are built from the
+# private in-the-loop repo (prototypes/bluesky-tracker: npm run build:site),
+# including this workflow (deploy/pages.yml there). Edit it there, not here.
+#
+# Every 15 minutes the collector reads outlets' RSS feeds and GDELT
+# (tools/collect-news.js), merges with the news.json already live, and the
+# site is redeployed. Free: public repos get Actions minutes at no cost.
+# GitHub may run scheduled jobs late, and pauses them after 60 days without
+# a push to this repo.
 
 on:
   push:
     branches: [main]
+  schedule:
+    - cron: '7,22,37,52 * * * *'
   workflow_dispatch:
 
 permissions:
@@ -15,13 +24,22 @@ permissions:
 
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Collect news (RSS feeds and GDELT)
+        continue-on-error: true
+        run: node tools/collect-news.js --sources news.sources.json --hierarchy topics.hierarchy.example.json --previous https://partox131.github.io/in-the-loop-briefing/news.json --out news.json
+      - name: Keep the last news.json if collecting failed
+        run: test -s news.json || curl -sf https://partox131.github.io/in-the-loop-briefing/news.json -o news.json || true
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

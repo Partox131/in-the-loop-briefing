@@ -86,6 +86,7 @@
   .chip.c-corroborated, .chip.c-official { color: var(--confirmed); background: color-mix(in srgb, var(--confirmed) 14%, transparent); }
   .chip.c-reported { color: var(--reported); background: color-mix(in srgb, var(--reported-dot) 18%, transparent); }
   .chip.c-disputed { color: var(--disputed); background: color-mix(in srgb, var(--disputed) 14%, transparent); }
+  .news-tag { background: none; border: 1px solid var(--track); }
   .area-tag { font-size: 13px; font-weight: 600; background: var(--track); border-radius: 6px; padding: 1px 8px; color: var(--ink); }
 
   aside { flex: 1 1 340px; min-width: 0; display: flex; flex-direction: column; gap: 22px; }
@@ -117,7 +118,7 @@
 </head>
 <body>
 <div id="app"><p class="loading">Loading the live map…</p></div>
-<script>window.itlLive = (demo) => import('./src/static.js?v=4d071d303c').then((m) => m.initLive({ demo }));</script>
+<script>window.itlLive = (demo) => import('./src/static.js?v=be3e94bf48').then((m) => m.initLive({ demo }));</script>
 <script>
 (() => {
   const params = new URLSearchParams(location.search);
@@ -213,11 +214,11 @@
       const st = a.count ? a.status : 'quiet';
       const c = COLOR[st] || COLOR.reported;
       const x = n.x.toFixed(1), y = n.y.toFixed(1);
-      const label = `${a.region ? 'Zoom into ' : ''}${a.label}: ${plural(a.count, 'post')} in the last ${state.window}${a.pace == null ? '' : `, ${paceText(a)}`}, ${STATUS[st]}`;
+      const label = `${a.region ? 'Zoom into ' : ''}${a.label}: ${plural(a.count, 'item')} in the last ${state.window}${a.pace == null ? '' : `, ${paceText(a)}`}, ${STATUS[st]}`;
       const ring = isHot(a) ? `<circle class="ring" cx="${x}" cy="${y}" r="${n.r.toFixed(1)}" style="stroke:${c}"/>` : '';
       const flash = state.flashes.has(a.id) ? `<circle class="flash" cx="${x}" cy="${y}" r="${n.r.toFixed(1)}"/>` : '';
       const ly = n.y + n.r + 16 * k;
-      const meta = a.count ? `<text class="meta" style="font-size:${13 * k}px" x="${x}" y="${(ly + 15 * k).toFixed(1)}" text-anchor="middle">${plural(a.count, 'post')}${a.pace == null ? '' : ` · ${esc(paceText(a))}`}</text>` : '';
+      const meta = a.count ? `<text class="meta" style="font-size:${13 * k}px" x="${x}" y="${(ly + 15 * k).toFixed(1)}" text-anchor="middle">${plural(a.count, 'item')}${a.pace == null ? '' : ` · ${esc(paceText(a))}`}</text>` : '';
       return `<g class="bubble${a.count ? '' : ' quiet'}${state.area === a.id ? ' sel' : ''}" data-area="${esc(a.id)}" tabindex="0" role="button" aria-label="${esc(label)}">
         ${ring}<circle class="disc" cx="${x}" cy="${y}" r="${n.r.toFixed(1)}" style="fill:color-mix(in srgb, ${c} ${a.count ? 30 : 12}%, transparent);stroke:${c}${a.count ? '' : ';stroke-dasharray:3 3'}"/>${flash}
         <text class="name" style="font-size:${(a.count ? 15 : 13) * k}px" x="${x}" y="${ly.toFixed(1)}" text-anchor="middle">${esc(a.label)}</text>${meta}
@@ -233,14 +234,14 @@
     const st = a.count ? a.status : 'quiet';
     const stories = a.storylines.length
       ? `<ul class="plain">${a.storylines.map((s) => `<li>
-          <div class="row"><span class="chip c-${esc(s.status)}">${esc(STATUS[s.status] || s.status)}</span><span>${esc(ago(s.firstSeen))}</span><span>${plural(s.posts, 'post')}${s.sources.length ? ` · ${esc(s.sources.slice(0, 3).join(', '))}` : ''}</span></div>
+          <div class="row"><span class="chip c-${esc(s.status)}">${esc(STATUS[s.status] || s.status)}</span><span>${esc(ago(s.firstSeen))}</span><span>${plural(s.posts, 'item')}${s.articles ? ` (${s.articles} ${s.articles === 1 ? 'article' : 'articles'})` : ''}${s.sources.length ? ` · ${esc(s.sources.slice(0, 3).join(', '))}` : ''}</span></div>
           <a class="txt" href="${safeUrl(s.url)}" target="_blank" rel="noopener">${esc(oneLine(s.text, 220))}</a>
         </li>`).join('')}</ul>`
       : `<p class="muted" style="margin:0">Nothing from tracked voices in the last ${esc(state.window)}.</p>`;
     return `<section class="panel" aria-labelledby="dh">
       <div class="phead"><h2 id="dh">${esc(a.label)}</h2><button class="close" id="close" aria-label="Close ${esc(a.label)}">×</button></div>
       <div class="stats">
-        <div><strong>${a.count}</strong>posts in ${esc(state.window)}</div>
+        <div><strong>${a.count}</strong>posts and articles in ${esc(state.window)}</div>
         <div><strong>${a.pace == null ? '–' : `${a.pace}×`}</strong>${a.pace == null ? 'no earlier posts' : 'its usual pace'}</div>
         <div><strong>${a.voices}</strong>${a.voices === 1 ? 'outlet' : 'outlets'}</div>
       </div>
@@ -256,7 +257,7 @@
     return `<section class="panel" aria-labelledby="fh">
       <div class="phead"><h2 id="fh">Just in</h2><span class="muted" style="font-size:13px">newest first</span></div>
       ${items.length ? `<ul class="plain" style="margin-top:8px">${items.map((p) => `<li class="${state.fresh.has(p.uri) ? 'fresh' : ''}">
-        <div class="row"><strong style="color:var(--ink)">${esc(ago(p.at))}</strong>${label(p.area) ? `<span class="area-tag">${esc(label(p.area))}</span>` : `<span class="area-tag">${esc(p.topicLabel)}</span>`}<span>${esc(p.who)}${p.stateAffiliated ? ' (state)' : ''}</span>${state.fresh.has(p.uri) ? '<strong style="color:var(--loop)">Live</strong>' : ''}</div>
+        <div class="row"><strong style="color:var(--ink)">${esc(ago(p.at))}</strong>${label(p.area) ? `<span class="area-tag">${esc(label(p.area))}</span>` : `<span class="area-tag">${esc(p.topicLabel)}</span>`}<span>${esc(p.who)}${p.stateAffiliated ? ' (state)' : ''}</span>${p.news ? '<span class="area-tag news-tag">Article</span>' : ''}${state.fresh.has(p.uri) ? '<strong style="color:var(--loop)">Live</strong>' : ''}</div>
         <a class="txt" href="${safeUrl(p.url)}" target="_blank" rel="noopener">${esc(oneLine(p.text))}</a>
       </li>`).join('')}</ul>` : '<p class="muted" style="margin:8px 0 0">Nothing from tracked voices in the last day.</p>'}
     </section>`;
@@ -276,8 +277,8 @@
     const hot = d.areas.filter(isHot).map((a) => a.label);
     const world = state.view === 'world';
     const sub = active.length
-      ? `${plural(active.reduce((s, a) => s + a.count, 0), 'post')} from tracked voices in the last ${state.window} across ${plural(active.length, world ? 'region' : 'place')}.${hot.length ? ` Busier than usual: ${esc(hot.join(', '))}.` : ''}`
-      : `No posts from tracked voices in the last ${state.window}.`;
+      ? `${plural(active.reduce((s, a) => s + a.count, 0), 'item')} from tracked voices and outlets in the last ${state.window} across ${plural(active.length, world ? 'region' : 'place')}.${hot.length ? ` Busier than usual: ${esc(hot.join(', '))}.` : ''}`
+      : `No posts or articles from tracked voices in the last ${state.window}.`;
     const focused = document.activeElement?.dataset?.area;
     app.innerHTML = `
       ${state.demo ? '<div class="banner" role="status">Demo mode: made-up sample posts from fictional accounts, run through the real pipeline.</div>' : ''}
@@ -289,7 +290,7 @@
           <div class="status ${state.conn === 'open' && !state.demo ? 'on' : ''}" role="status"><span class="pulse-dot" aria-hidden="true"></span><span>${statusText(d)}</span></div>
         </header>
         <div class="bar">
-          <div><h1>${world ? "What's moving around the world" : `What's moving in ${d.node.id === 'middle-east' ? 'the ' : ''}${esc(d.node.label)}`}</h1><p class="sub">${sub} Bubble size is posts from tracked voices; colour is where the main stories stand.</p></div>
+          <div><h1>${world ? "What's moving around the world" : `What's moving in ${d.node.id === 'middle-east' ? 'the ' : ''}${esc(d.node.label)}`}</h1><p class="sub">${sub} Bubble size is posts and articles; colour is where the main stories stand.</p></div>
           <div class="controls">
             <div class="seg" role="group" aria-label="Map">${[['world', 'World'], ...regions().map((r) => [r.id, r.label])].map(([k, l]) => `<button data-view="${k}" aria-pressed="${k === state.view}">${l}</button>`).join('')}</div>
             <div class="seg" role="group" aria-label="Time window">${Object.keys(HOURS).map((w) => `<button data-window="${w}" aria-pressed="${w === state.window}">Last ${w}</button>`).join('')}</div>
@@ -306,7 +307,7 @@
               <span>Pulsing ring: at least 1.5× its usual pace</span>
             </div>
             ${world ? `<p class="footnote">One bubble per tracked region: ${esc(regions().map((r) => r.label).join(', '))}. Click a bubble to zoom in. More regions come with more voices and keywords.</p>` : ''}
-            <p class="footnote">Counts are posts from the ${plural(d.voices, 'tracked voice')} that match each place's keywords, compared with their pace over the last 24 hours. New posts arrive live from Bluesky. In the Loop only reads Bluesky and never posts. Map: Natural Earth.</p>
+            <p class="footnote">Counts are posts from the ${plural(d.voices, 'tracked voice')} on Bluesky${d.articles ? ` plus ${plural(d.articles, 'news article')} from ${plural(d.outlets, 'outlet')}` : ''} that match each place's keywords, compared with their pace over the last 24 hours. New posts arrive live from Bluesky; news articles come from outlets' RSS feeds and GDELT every 15 minutes${d.newsUpdatedAt ? ` (last ${esc(ago(d.newsUpdatedAt))})` : ''}. In the Loop only reads Bluesky and never posts. Map: Natural Earth.</p>
             ${d.errors?.length ? `<details class="footnote"><summary>${plural(d.errors.length, 'warning')}</summary><ul>${d.errors.map((e) => `<li>${esc(e)}</li>`).join('')}</ul></details>` : ''}
           </div>
           <aside>${state.view === 'world' ? '' : detail(d)}${feed(d)}</aside>
