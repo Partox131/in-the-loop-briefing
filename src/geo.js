@@ -6,6 +6,8 @@
 /** Each view: a lon/lat box and the pixel width it is drawn at. */
 export const MAP_VIEWS = {
   'middle-east': { label: 'Middle East', west: 24, east: 64, south: 11, north: 41, width: 1000 },
+  'eastern-europe': { label: 'Eastern Europe', west: 11, east: 47, south: 43, north: 63, width: 1000 },
+  'east-asia': { label: 'East Asia', west: 100, east: 136, south: 8, north: 43, width: 1000 },
   world: { label: 'World', west: -180, east: 180, south: -56, north: 78, width: 1000 },
 };
 

@@ -5,7 +5,7 @@
 // The data goes through the real pipeline (classify, rank, storylines), so
 // the demo also shows what the code does with it.
 
-import { makeVoice } from './voices.js?v=50ba1b5a55';
+import { makeVoice } from './voices.js?v=12d6f5a75c';
 
 const MIN = 60_000;
 
@@ -47,11 +47,15 @@ function demoFeeds(now) {
       pv('wire-a.example.com', 'a2', 120, 'Update: 12 killed in the Isfahan strikes, provincial officials say.', { ...o, likes: 1500, reposts: 600, link: isfahan }),
       pv('wire-a.example.com', 'a5', 12, 'Gaza ceasefire talks: mediators say a new proposal is under review.', { ...o, likes: 600, reposts: 150 }),
       pv('wire-a.example.com', 'a3', 600, 'Election count continues in Chile.', { ...o, likes: 300 }),
+      pv('wire-a.example.com', 'a6', 55, 'Russian drones hit power stations in Kharkiv overnight, Ukraine says; parts of the city without electricity.', { ...o, likes: 700, reposts: 210 }),
+      pv('wire-a.example.com', 'a7', 95, 'Taiwan reports Chinese warships and aircraft near the island as PLA drills continue.', { ...o, likes: 650, reposts: 180 }),
       pv('wire-a.example.com', 'a4', 300, 'Talks planned in Muscat between Iran and US envoys are postponed amid the war, mediators say.', { ...o, likes: 900, reposts: 200, link: 'https://wire-a.example.com/world/muscat-talks' }),
     ],
     'wire-b.example.com': [
       pv('wire-b.example.com', 'b1', 165, 'Iran: strikes reported on a military site outside Isfahan.', { ...o, likes: 1100, reposts: 400, link: 'https://www.wire-a.example.com/world/isfahan-strikes' }),
       pv('wire-b.example.com', 'b2', 280, 'Muscat round of talks on the Iran war delayed, not cancelled, mediators tell us.', { ...o, likes: 700, reposts: 150, link: 'https://wire-a.example.com/world/muscat-talks' }),
+      pv('wire-b.example.com', 'b3', 80, 'Poland closes airspace near the border after a Russian drone incursion, NATO allies consulted.', { ...o, likes: 500, reposts: 140 }),
+      pv('wire-b.example.com', 'b4', 45, 'Ukraine front line: Russian forces press near Pokrovsk, Ukraine military says.', { ...o, likes: 420, reposts: 90 }),
     ],
     'gulf-outlet.example.com': [
       pv('gulf-outlet.example.com', 'g1', 40, 'A doctor at a local hospital says 30 killed in the strike near Isfahan, Iran.', { ...o, likes: 800, reposts: 350, link: isfahan }),

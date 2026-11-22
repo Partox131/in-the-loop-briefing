@@ -51,8 +51,8 @@
   h1 { margin: 0; font: 800 clamp(30px, 4vw, 46px)/1.05 var(--display); letter-spacing: -0.02em; }
   .sub { margin: 8px 0 0; color: var(--muted); font-size: 16px; max-width: 70ch; }
   .controls { display: flex; flex-wrap: wrap; gap: 12px; }
-  .seg { display: flex; gap: 2px; background: var(--raise); border: 1px solid var(--line); border-radius: 999px; padding: 3px; }
-  .seg button { border: 0; background: none; color: var(--muted); padding: 8px 14px; min-height: 40px; border-radius: 999px; font-size: 15px; }
+  .seg { display: flex; gap: 2px; background: var(--raise); border: 1px solid var(--line); border-radius: 999px; padding: 3px; max-width: 100%; overflow-x: auto; scrollbar-width: none; }
+  .seg button { border: 0; background: none; color: var(--muted); padding: 8px 14px; min-height: 40px; border-radius: 999px; font-size: 15px; white-space: nowrap; flex: none; }
   .seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); font-weight: 600; }
 
   .layout { display: flex; flex-wrap: wrap; gap: 28px; padding-bottom: 48px; }
@@ -117,12 +117,12 @@
 </head>
 <body>
 <div id="app"><p class="loading">Loading the live map…</p></div>
-<script>window.itlLive = (demo) => import('./src/static.js?v=50ba1b5a55').then((m) => m.initLive({ demo }));</script>
+<script>window.itlLive = (demo) => import('./src/static.js?v=12d6f5a75c').then((m) => m.initLive({ demo }));</script>
 <script>
 (() => {
   const params = new URLSearchParams(location.search);
   const state = {
-    view: params.get('view') === 'world' ? 'world' : 'middle-east',
+    view: params.get('view') || 'world', // "world" or a region id; checked once regions load
     window: ['1h', '6h', '24h'].includes(params.get('window')) ? params.get('window') : '6h',
     area: params.get('area') || null,
     demo: params.has('demo'),
@@ -153,23 +153,26 @@
 
   function syncUrl() {
     const q = new URLSearchParams();
-    if (state.view !== 'middle-east') q.set('view', state.view);
+    if (state.view !== 'world') q.set('view', state.view);
     if (state.window !== '6h') q.set('window', state.window);
     if (state.area) q.set('area', state.area);
     if (state.demo) q.set('demo', '1');
     history.replaceState(null, '', `${location.pathname}${q.size ? `?${q}` : ''}`);
   }
 
+  const regions = () => state.api.live.regions();
+  const mapOf = (view) => (view === 'world' ? 'world' : regions().find((r) => r.id === view)?.map || 'world');
+
   // Push overlapping bubbles apart; each keeps a dashed line to its real spot.
   function layout(areas, view) {
     const m = state.api.maps[view];
     const max = Math.max(1, ...areas.map((a) => a.count));
-    const top = view === 'world' ? 34 : 70;
+    const top = view === 'world' ? 44 : 70;
     const nodes = areas.map((a) => {
       const [x0, y0] = state.api.project(m, a.place.lon, a.place.lat);
       const r = a.count ? 12 + (top - 12) * Math.sqrt(a.count / max) : 7;
       // R: room for the bubble and its two-line label underneath
-      return { a, x0, y0, x: x0, y: y0, r, R: Math.max(r + 16, view === 'world' ? 30 : 44) };
+      return { a, x0, y0, x: x0, y: y0, r, R: view === 'world' ? Math.max(r + 30, 44) : Math.max(r + 16, 44) };
     });
     for (let it = 0; it < 240; it++) {
       for (let i = 0; i < nodes.length; i++) {
@@ -195,20 +198,10 @@
     return nodes;
   }
 
-  // At world level the tracked places roll up into one bubble per region
-  // (only the Middle East so far); clicking it zooms in.
-  function regionAreas(d) {
-    const n = d.areas.reduce((s, a) => s + a.count, 0);
-    const perHour = d.areas.reduce((s, a) => s + a.perHour, 0);
-    const usual = d.areas.reduce((s, a) => s + a.usualPerHour, 0);
-    const by = (st) => d.areas.filter((a) => a.status === st).reduce((s, a) => s + a.count, 0) / Math.max(n, 1);
-    const status = !n ? 'quiet' : by('disputed') >= 0.3 ? 'disputed' : by('corroborated') >= 0.5 ? 'corroborated' : 'reported';
-    return [{ id: d.node.id, region: true, label: d.node.label, place: { lon: 44, lat: 29 }, count: n, pace: usual > 0 ? Math.round((perHour / usual) * 10) / 10 : null, status }];
-  }
-
   function mapSvg(d) {
-    const m = state.api.maps[state.view];
-    const nodes = layout(state.view === 'world' ? regionAreas(d) : d.areas, state.view);
+    const mapId = mapOf(state.view);
+    const m = state.api.maps[mapId];
+    const nodes = layout(d.areas, mapId);
     // Keep labels readable when the map is drawn small (phones).
     const k = Math.min(2.6, Math.max(1, 720 / (document.querySelector('.map')?.clientWidth || window.innerWidth)));
     const countries = m.countries.map((c) => `<path class="country" d="${c.d}"><title>${esc(c.name)}</title></path>`).join('');
@@ -281,8 +274,9 @@
     const app = document.getElementById('app');
     const active = d.areas.filter((a) => a.count);
     const hot = d.areas.filter(isHot).map((a) => a.label);
+    const world = state.view === 'world';
     const sub = active.length
-      ? `${plural(active.reduce((s, a) => s + a.count, 0), 'post')} from tracked voices in the last ${state.window} across ${plural(active.length, 'place')}.${hot.length ? ` Busier than usual: ${esc(hot.join(', '))}.` : ''}`
+      ? `${plural(active.reduce((s, a) => s + a.count, 0), 'post')} from tracked voices in the last ${state.window} across ${plural(active.length, world ? 'region' : 'place')}.${hot.length ? ` Busier than usual: ${esc(hot.join(', '))}.` : ''}`
       : `No posts from tracked voices in the last ${state.window}.`;
     const focused = document.activeElement?.dataset?.area;
     app.innerHTML = `
@@ -290,14 +284,14 @@
       <div class="wrap">
         <header class="top">
           <span class="brand"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="10" fill="none" stroke="var(--track)" stroke-width="4"/><path d="M14 4a10 10 0 0 1 9.5 13" fill="none" stroke="var(--loop)" stroke-width="4" stroke-linecap="round"/></svg>in the loop</span>
-          <nav class="crumbs" aria-label="Topic path"><span>Politics</span><span aria-hidden="true">/</span><span>Geopolitics</span><span aria-hidden="true">/</span><span class="here">${esc(d.node.label)}</span></nav>
-          <nav class="tabs" aria-label="View"><a href="index.html?node=${encodeURIComponent(d.node.id)}${state.demo ? '&demo=1' : ''}">Briefing</a><a href="#" aria-current="page">Live map</a></nav>
+          <nav class="crumbs" aria-label="Topic path"><span>Politics</span><span aria-hidden="true">/</span><span>Geopolitics</span><span aria-hidden="true">/</span>${world ? '<span class="here">World</span>' : `<span class="here">${esc(d.node.label)}</span>`}</nav>
+          <nav class="tabs" aria-label="View"><a href="index.html?node=${encodeURIComponent(world ? 'geopolitics' : d.node.id)}${state.demo ? '&demo=1' : ''}">Briefing</a><a href="#" aria-current="page">Live map</a></nav>
           <div class="status ${state.conn === 'open' && !state.demo ? 'on' : ''}" role="status"><span class="pulse-dot" aria-hidden="true"></span><span>${statusText(d)}</span></div>
         </header>
         <div class="bar">
-          <div><h1>What's moving in the ${esc(d.node.label)}</h1><p class="sub">${sub} Bubble size is posts from tracked voices; colour is where the main stories stand.</p></div>
+          <div><h1>${world ? "What's moving around the world" : `What's moving in ${d.node.id === 'middle-east' ? 'the ' : ''}${esc(d.node.label)}`}</h1><p class="sub">${sub} Bubble size is posts from tracked voices; colour is where the main stories stand.</p></div>
           <div class="controls">
-            <div class="seg" role="group" aria-label="Map">${[['middle-east', 'Middle East'], ['world', 'World']].map(([k, l]) => `<button data-view="${k}" aria-pressed="${k === state.view}">${l}</button>`).join('')}</div>
+            <div class="seg" role="group" aria-label="Map">${[['world', 'World'], ...regions().map((r) => [r.id, r.label])].map(([k, l]) => `<button data-view="${k}" aria-pressed="${k === state.view}">${l}</button>`).join('')}</div>
             <div class="seg" role="group" aria-label="Time window">${Object.keys(HOURS).map((w) => `<button data-window="${w}" aria-pressed="${w === state.window}">Last ${w}</button>`).join('')}</div>
           </div>
         </div>
@@ -311,7 +305,7 @@
               <span><i class="sw c-quiet" style="background:none;border:2px dashed var(--muted)"></i>Quiet</span>
               <span>Pulsing ring: at least 1.5× its usual pace</span>
             </div>
-            ${state.view === 'world' ? '<p class="footnote">Only the Middle East is tracked so far. Other regions (Ukraine and Russia, Sudan, the Taiwan Strait…) appear here once they have voices and keywords. Click the bubble to zoom in.</p>' : ''}
+            ${world ? `<p class="footnote">One bubble per tracked region: ${esc(regions().map((r) => r.label).join(', '))}. Click a bubble to zoom in. More regions come with more voices and keywords.</p>` : ''}
             <p class="footnote">Counts are posts from the ${plural(d.voices, 'tracked voice')} that match each place's keywords, compared with their pace over the last 24 hours. New posts arrive live from Bluesky. In the Loop only reads Bluesky and never posts. Map: Natural Earth.</p>
             ${d.errors?.length ? `<details class="footnote"><summary>${plural(d.errors.length, 'warning')}</summary><ul>${d.errors.map((e) => `<li>${esc(e)}</li>`).join('')}</ul></details>` : ''}
           </div>
@@ -323,7 +317,7 @@
     app.querySelectorAll('[data-window]').forEach((b) => b.addEventListener('click', () => { state.window = b.dataset.window; refresh(); }));
     app.querySelectorAll('.bubble').forEach((g) => {
       const pick = () => {
-        if (state.view === 'world') { state.view = 'middle-east'; refresh(); return; }
+        if (state.view === 'world') { state.view = g.dataset.area; state.area = null; refresh(); return; }
         state.area = state.area === g.dataset.area ? null : g.dataset.area; refresh(); app.querySelector(`.bubble[data-area="${CSS.escape(g.dataset.area)}"]`)?.focus();
       };
       g.addEventListener('click', pick);
@@ -335,7 +329,7 @@
 
   function refresh() {
     syncUrl();
-    state.data = state.api.live.view({ now: new Date(), windowHours: HOURS[state.window] });
+    state.data = state.api.live.view({ now: new Date(), windowHours: HOURS[state.window], region: state.view });
     render();
   }
 
@@ -343,12 +337,13 @@
     try {
       state.api = await window.itlLive(state.demo);
       await state.api.live.load();
+      if (!regions().some((r) => r.id === state.view)) state.view = 'world';
       refresh();
       const follow = () => state.api.follow({
         onPost: (post) => {
           if (!state.api.live.add(post)) return;
           state.fresh.add(post.uri);
-          const v = state.api.live.view({ now: new Date(), windowHours: HOURS[state.window] });
+          const v = state.api.live.view({ now: new Date(), windowHours: HOURS[state.window], region: state.view });
           const hit = v.feed.find((p) => p.uri === post.uri);
           if (hit?.area) state.flashes.add(hit.area);
           refresh();

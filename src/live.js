@@ -1,15 +1,15 @@
 // The live map: how much the tracked voices are posting about each place
-// under a topic (Gaza, Lebanon, the Strait of Hormuz…) right now, compared
+// in a region (Gaza, Kyiv, the Taiwan Strait…) right now, compared
 // with their usual pace, plus the newest posts as they arrive.
 //
 // It reuses the briefing pipeline (brief.js) for the first load, then keeps
 // up through Jetstream: a WebSocket of new posts filtered to the voices'
 // accounts, which works straight from the browser. Read-only, no login.
 
-import { buildBrief } from './brief.js?v=50ba1b5a55';
-import { rankPosts } from './rank.js?v=50ba1b5a55';
-import { buildStorylines } from './storylines.js?v=50ba1b5a55';
-import { byDid } from './voices.js?v=50ba1b5a55';
+import { buildBrief } from './brief.js?v=12d6f5a75c';
+import { rankPosts } from './rank.js?v=12d6f5a75c';
+import { buildStorylines } from './storylines.js?v=12d6f5a75c';
+import { byDid } from './voices.js?v=12d6f5a75c';
 
 const HOUR = 3_600_000;
 
@@ -63,6 +63,8 @@ function postLine(p, h) {
  */
 export function liveView({ posts, hierarchy: h, node, now, windowHours = 1, lookbackHours = 24 }) {
   const scope = new Set([node, ...h.descendants(node)]);
+  // The node itself may have a place (for the world map); here only what's under it counts.
+  const under = new Set(h.descendants(node));
   const t = now.getTime();
   const winStart = t - windowHours * HOUR;
   const lookStart = t - lookbackHours * HOUR;
@@ -70,12 +72,13 @@ export function liveView({ posts, hierarchy: h, node, now, windowHours = 1, look
   for (const p of posts) {
     const at = Date.parse(p.createdAt);
     if (!(at >= lookStart && at <= t + 5 * 60_000)) continue;
-    const place = placeOf(h, p.topicId, scope) || 'other';
+    if (!scope.has(p.topicId)) continue;
+    const place = placeOf(h, p.topicId, under) || 'other';
     if (!byPlace.has(place)) byPlace.set(place, []);
     byPlace.get(place).push(p);
   }
 
-  const places = [...scope].filter((id) => h.get(id).place);
+  const places = [...under].filter((id) => h.get(id).place);
   const areas = places.map((id) => {
     const all = byPlace.get(id) || [];
     const recent = all.filter((p) => Date.parse(p.createdAt) >= winStart);
@@ -112,7 +115,7 @@ export function liveView({ posts, hierarchy: h, node, now, windowHours = 1, look
     .filter((p) => scope.has(p.topicId) && Date.parse(p.createdAt) >= lookStart)
     .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))
     .slice(0, 30)
-    .map((p) => ({ ...postLine(p, h), area: placeOf(h, p.topicId, scope) }));
+    .map((p) => ({ ...postLine(p, h), area: placeOf(h, p.topicId, under) }));
 
   return {
     generatedAt: now.toISOString(),
@@ -120,6 +123,57 @@ export function liveView({ posts, hierarchy: h, node, now, windowHours = 1, look
     windowHours,
     areas: areas.sort((a, b) => b.count - a.count),
     other: (byPlace.get('other') || []).filter((p) => Date.parse(p.createdAt) >= winStart).length,
+    feed,
+  };
+}
+
+/** Regions under a node that have their own map (Middle East, Eastern Europe…). */
+export function regionsOf(h, root) {
+  const under = new Set([root, ...h.descendants(root)]);
+  // In the order the hierarchy file lists them.
+  return [...h.nodes.keys()].filter((id) => under.has(id) && h.get(id).map && h.get(id).place);
+}
+
+/**
+ * The world map: one bubble per region, adding up its places.
+ * Same shape as liveView, so the page draws both the same way.
+ */
+export function worldView({ posts, hierarchy: h, node, now, windowHours = 1, lookbackHours = 24 }) {
+  const areas = regionsOf(h, node).map((id) => {
+    const v = liveView({ posts, hierarchy: h, node: id, now, windowHours, lookbackHours });
+    const count = v.areas.reduce((s, a) => s + a.count, 0);
+    const perHour = v.areas.reduce((s, a) => s + a.perHour, 0);
+    const usual = v.areas.reduce((s, a) => s + a.usualPerHour, 0);
+    const share = (st) => v.areas.filter((a) => a.status === st).reduce((s, a) => s + a.count, 0) / Math.max(count, 1);
+    const status = !count ? 'quiet' : share('disputed') >= 0.3 ? 'disputed' : share('corroborated') >= 0.5 ? 'corroborated' : 'reported';
+    return {
+      id,
+      region: true,
+      label: h.get(id).label,
+      place: h.get(id).place,
+      count,
+      perHour: Math.round(perHour * 10) / 10,
+      usualPerHour: Math.round(usual * 10) / 10,
+      pace: usual > 0 ? Math.round((perHour / usual) * 10) / 10 : null,
+      status,
+      busiest: v.areas.filter((a) => a.count).slice(0, 3).map((a) => a.label),
+      storylines: [],
+    };
+  });
+  const scope = new Set([node, ...h.descendants(node)]);
+  const regionOf = (topicId) => regionsOf(h, node).find((r) => r === topicId || h.descendants(r).includes(topicId)) || null;
+  const lookStart = now.getTime() - lookbackHours * HOUR;
+  const feed = posts
+    .filter((p) => scope.has(p.topicId) && Date.parse(p.createdAt) >= lookStart)
+    .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))
+    .slice(0, 30)
+    .map((p) => ({ ...postLine(p, h), area: regionOf(p.topicId) }));
+  return {
+    generatedAt: now.toISOString(),
+    node: { id: node, label: 'the world' },
+    windowHours,
+    areas: areas.sort((a, b) => b.count - a.count),
+    other: 0,
     feed,
   };
 }
@@ -132,7 +186,7 @@ export function liveView({ posts, hierarchy: h, node, now, windowHours = 1, look
  * @param {import('./voices.js').Voice[]} o.voices
  * @param {string} o.node
  */
-export function makeLive({ client, hierarchy: h, voices, node, lookbackHours = 24 }) {
+export function makeLive({ client, hierarchy: h, voices, node = 'geopolitics', lookbackHours = 24 }) {
   const scope = new Set([node, ...h.descendants(node)]);
   let posts = [];
   let voiceIndex = new Map();
@@ -170,8 +224,13 @@ export function makeLive({ client, hierarchy: h, voices, node, lookbackHours = 2
       posts.push({ ...ranked, topicId: hits[0].id, matchedTerms: hits.flatMap((m) => m.terms) });
       return true;
     },
-    view({ now = new Date(), windowHours = 1 } = {}) {
-      return { ...liveView({ posts, hierarchy: h, node, now, windowHours, lookbackHours }), ...meta };
+    /** Regions with a map, for the view switcher. */
+    regions: () => regionsOf(h, node).map((id) => ({ id, label: h.get(id).label, map: h.get(id).map })),
+    /** region: a region node id, or "world" for one bubble per region. */
+    view({ now = new Date(), windowHours = 1, region = 'world' } = {}) {
+      const args = { posts, hierarchy: h, now, windowHours, lookbackHours };
+      const v = region === 'world' || !h.nodes.has(region) ? worldView({ ...args, node }) : liveView({ ...args, node: region });
+      return { ...v, ...meta };
     },
   };
 }

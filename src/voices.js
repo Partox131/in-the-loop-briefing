@@ -28,7 +28,9 @@ export function makeVoice(v) {
   if (!TIER_WEIGHT[tier]) throw new Error(`Voice ${v.handle || v.did}: tier must be 1-5.`);
   const handle = v.handle?.replace(/^@/, '').toLowerCase();
   // A domain handle (reuters.com, name.nytimes.com) proves control of the domain.
-  const domainVerified = Boolean(handle && !handle.endsWith('.bsky.social'));
+  // Bridged accounts (*.brid.gy) mirror a website or another network: the
+  // handle proves the bridge, not the outlet, so they don't count.
+  const domainVerified = Boolean(handle && !handle.endsWith('.bsky.social') && !handle.endsWith('.brid.gy'));
   return {
     handle,
     did: v.did,

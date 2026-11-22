@@ -5,15 +5,15 @@
 // Search is off here: Bluesky's public search often refuses anonymous
 // callers, so the static page follows the voice list (getAuthorFeed) only.
 
-import { BskyClient } from './bsky.js?v=50ba1b5a55';
-import { buildBrief } from './brief.js?v=50ba1b5a55';
-import { DEMO_VOICES, demoFetch } from './demo.js?v=50ba1b5a55';
-import { project } from './geo.js?v=50ba1b5a55';
-import { makeHierarchy } from './hierarchy.js?v=50ba1b5a55';
-import { subscribePosts } from './jetstream.js?v=50ba1b5a55';
-import { makeLive } from './live.js?v=50ba1b5a55';
-import { makeVoice } from './voices.js?v=50ba1b5a55';
-import { briefView } from './view.js?v=50ba1b5a55';
+import { BskyClient } from './bsky.js?v=12d6f5a75c';
+import { buildBrief } from './brief.js?v=12d6f5a75c';
+import { DEMO_VOICES, demoFetch } from './demo.js?v=12d6f5a75c';
+import { project } from './geo.js?v=12d6f5a75c';
+import { makeHierarchy } from './hierarchy.js?v=12d6f5a75c';
+import { subscribePosts } from './jetstream.js?v=12d6f5a75c';
+import { makeLive } from './live.js?v=12d6f5a75c';
+import { makeVoice } from './voices.js?v=12d6f5a75c';
+import { briefView } from './view.js?v=12d6f5a75c';
 
 const SINCE_HOURS = { '6h': 6, '12h': 12, '24h': 24, '48h': 48, '7d': 168 };
 const CACHE_MS = 120_000;
@@ -61,7 +61,7 @@ export async function init({ base = '.', defaultNode = 'iran-war' } = {}) {
  * The live map page (public/live.html). Loads the last 24 hours once, then
  * follows the voices' new posts through Jetstream (skipped in demo mode).
  */
-export async function initLive({ base = '.', node = 'middle-east', demo = false } = {}) {
+export async function initLive({ base = '.', node = 'geopolitics', demo = false } = {}) {
   const [hierarchySpec, voicesSpec, maps] = await Promise.all([
     getJson(`${base}/topics.hierarchy.example.json`),
     getJson(`${base}/voices.example.json`),
@@ -73,7 +73,7 @@ export async function initLive({ base = '.', node = 'middle-east', demo = false 
     client: demo ? new BskyClient({ fetchImpl: demoFetch() }) : new BskyClient(),
     hierarchy,
     voices: demo ? DEMO_VOICES : voices,
-    node: hierarchy.nodes.has(node) ? node : 'middle-east',
+    node: hierarchy.nodes.has(node) ? node : 'geopolitics',
   });
   return {
     live,

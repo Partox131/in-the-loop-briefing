@@ -1,5 +1,5 @@
 {
-  "_note": "Starter list for the Middle East (Iran war first), checked against Bluesky on 2026-11-22: every handle exists and posted in the last few months. Domain handles (reuters.com) prove control of the domain. *.bsky.social handles were matched by name, bio and follower count, which is weaker, so they get a slightly lower weight. Not on Bluesky as of that date: Iran International (no active official account), the US State Department, Middle East Eye and Al Arabiya (inactive), and several Iran reporters whose accounts are dormant. Added for the live Middle East map (also checked 2026-11-22): CNN, The Independent, Drop Site, +972, Mondoweiss, The National (UAE state-owned), The New Arab, Middle East Monitor, UNRWA, ICRC, HRW, Aron Lund (Syria), Yemen Data Project. Not found or dormant: L'Orient Today, OCHA, BBC News, Lloyd's List and its reporters.",
+  "_note": "Starter list for the live map regions (Middle East, Eastern Europe, East Asia), checked against Bluesky on 2026-11-22: every handle exists and posted in the last few months. Domain handles (reuters.com) prove control of the domain. *.bsky.social handles were matched by name, bio and follower count, which is weaker, so they get a slightly lower weight. Not on Bluesky as of that date: Iran International (no active official account), the US State Department, Middle East Eye and Al Arabiya (inactive), and several Iran reporters whose accounts are dormant. Added for the live Middle East map (also checked 2026-11-22): CNN, The Independent, Drop Site, +972, Mondoweiss, The National (UAE state-owned), The New Arab, Middle East Monitor, UNRWA, ICRC, HRW, Aron Lund (Syria), Yemen Data Project. Added for Eastern Europe and East Asia (checked 2026-11-22, all posting in November): Ukrainian outlets, Meduza, RFE/RL, POLITICO Europe, Notes from Poland, Barents Observer, ECFR, CEPA, The Diplomat, Nikkei Asia, Taiwan outlets and analysts. *.brid.gy handles are unofficial bridges of the outlet's website, not run by the outlet. Russian and Chinese state media have no verifiable active official account on Bluesky. Not found or dormant: L'Orient Today, OCHA, BBC News, Lloyd's List and its reporters.",
   "voices": [
     { "handle": "reuters.com", "name": "Reuters", "tier": 1, "affiliation": "Reuters", "region": "international", "topics": ["geopolitics", "oil"] },
     { "handle": "apnews.com", "name": "AP", "tier": 1, "affiliation": "Associated Press", "region": "US", "topics": ["geopolitics"] },
@@ -46,6 +46,33 @@
     { "handle": "icrc.org", "name": "ICRC", "tier": 4, "affiliation": "ICRC", "region": "international", "topics": ["geopolitics"] },
     { "handle": "hrw.org", "name": "Human Rights Watch", "tier": 3, "affiliation": "Human Rights Watch", "region": "international", "topics": ["geopolitics"] },
     { "handle": "aronlund.bsky.social", "name": "Aron Lund", "tier": 3, "affiliation": "Century International", "region": "Europe", "topics": ["syria"] },
-    { "handle": "yemendataproject.org", "name": "Yemen Data Project", "tier": 5, "affiliation": "Yemen Data Project", "region": "international", "topics": ["red-sea"] }
+    { "handle": "yemendataproject.org", "name": "Yemen Data Project", "tier": 5, "affiliation": "Yemen Data Project", "region": "international", "topics": ["red-sea"] },
+    { "handle": "kyivindependent.com", "name": "The Kyiv Independent", "tier": 1, "affiliation": "Kyiv Independent", "region": "Ukraine", "topics": ["ukraine-war"] },
+    { "handle": "kyivpost.com", "name": "Kyiv Post", "tier": 1, "affiliation": "Kyiv Post", "region": "Ukraine", "topics": ["ukraine-war"] },
+    { "handle": "pravda.ua", "name": "Ukrainska Pravda", "tier": 1, "affiliation": "Ukrainska Pravda", "region": "Ukraine", "topics": ["ukraine-war"] },
+    { "handle": "euromaidanpress.bsky.social", "name": "Euromaidan Press", "tier": 1, "affiliation": "Euromaidan Press", "region": "Ukraine", "topics": ["ukraine-war"] },
+    { "handle": "meduza.io", "name": "Meduza", "tier": 1, "affiliation": "Meduza", "region": "Russia (independent, in exile)", "topics": ["eastern-europe"] },
+    { "handle": "rferl.org.web.brid.gy", "name": "RFE/RL (unofficial bridge of its website)", "tier": 1, "affiliation": "RFE/RL", "region": "US", "stateAffiliated": true, "topics": ["eastern-europe"] },
+    { "handle": "sgutterman.bsky.social", "name": "Steve Gutterman (RFE/RL)", "tier": 2, "affiliation": "RFE/RL", "region": "US", "stateAffiliated": true, "topics": ["eastern-europe"] },
+    { "handle": "michaelkofman.bsky.social", "name": "Michael Kofman", "tier": 3, "affiliation": "Carnegie Endowment", "region": "US", "topics": ["ukraine-war"] },
+    { "handle": "politico.eu", "name": "POLITICO Europe", "tier": 1, "affiliation": "POLITICO Europe", "region": "Europe", "topics": ["eastern-europe"] },
+    { "handle": "notesfrompoland.bsky.social", "name": "Notes from Poland", "tier": 1, "affiliation": "Notes from Poland", "region": "Poland", "topics": ["nato-east"] },
+    { "handle": "thebarentsobserver.com", "name": "The Barents Observer", "tier": 1, "affiliation": "Barents Observer", "region": "Nordics", "topics": ["nato-east"] },
+    { "handle": "jonasolsson.bsky.social", "name": "Jonas Olsson (Breaking Defense)", "tier": 2, "affiliation": "Breaking Defense", "region": "Nordics", "topics": ["nato-east"] },
+    { "handle": "rikefranke.eu", "name": "Ulrike Franke", "tier": 3, "affiliation": "ECFR", "region": "Europe", "topics": ["eastern-europe"] },
+    { "handle": "ecfr.eu", "name": "ECFR", "tier": 3, "affiliation": "ECFR", "region": "Europe", "topics": ["eastern-europe"] },
+    { "handle": "cepa.org", "name": "CEPA", "tier": 3, "affiliation": "CEPA", "region": "US", "topics": ["eastern-europe"] },
+    { "handle": "thediplomat.com", "name": "The Diplomat", "tier": 1, "affiliation": "The Diplomat", "region": "Asia-Pacific", "topics": ["east-asia"] },
+    { "handle": "asia.nikkei.com", "name": "Nikkei Asia", "tier": 1, "affiliation": "Nikkei", "region": "Japan", "topics": ["east-asia"] },
+    { "handle": "focus-taiwan-en.pbs.idv.tw.ap.brid.gy", "name": "Focus Taiwan (CNA, unofficial bridge)", "tier": 1, "affiliation": "Central News Agency", "region": "Taiwan", "stateAffiliated": true, "topics": ["taiwan"] },
+    { "handle": "taipei-times.pbs.idv.tw.ap.brid.gy", "name": "Taipei Times (unofficial bridge)", "tier": 1, "affiliation": "Taipei Times", "region": "Taiwan", "topics": ["taiwan"] },
+    { "handle": "brianhioe.bsky.social", "name": "Brian Hioe (New Bloom)", "tier": 2, "affiliation": "New Bloom", "region": "Taiwan", "topics": ["taiwan"] },
+    { "handle": "codieckmann.bsky.social", "name": "Cornelius Dieckmann (Der Spiegel)", "tier": 2, "affiliation": "Der Spiegel", "region": "Germany", "topics": ["taiwan"] },
+    { "handle": "bglaser.bsky.social", "name": "Bonnie Glaser", "tier": 3, "affiliation": "German Marshall Fund", "region": "US", "topics": ["east-asia"] },
+    { "handle": "lnachman32.bsky.social", "name": "Lev Nachman", "tier": 3, "affiliation": "National Taiwan University", "region": "Taiwan", "topics": ["taiwan"] },
+    { "handle": "taiwanmonitor.bsky.social", "name": "Taiwan Security Monitor", "tier": 3, "affiliation": "George Mason University", "region": "US", "topics": ["taiwan"] },
+    { "handle": "chinafile.bsky.social", "name": "ChinaFile", "tier": 3, "affiliation": "Asia Society", "region": "US", "topics": ["east-asia"] },
+    { "handle": "csis.org", "name": "CSIS", "tier": 3, "affiliation": "CSIS", "region": "US", "topics": ["geopolitics"] },
+    { "handle": "carnegieendowment.org", "name": "Carnegie Endowment", "tier": 3, "affiliation": "Carnegie Endowment", "region": "US", "topics": ["geopolitics"] }
   ]
 }

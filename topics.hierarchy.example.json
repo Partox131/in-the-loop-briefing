@@ -14,7 +14,9 @@
     "label": "Middle East",
     "parent": "geopolitics",
     "include": ["middle east", "#MiddleEast"],
-    "exclude": []
+    "exclude": [],
+    "map": "middle-east",
+    "place": {"lon": 44, "lat": 29}
   },
   "hormuz": {
     "label": "Strait of Hormuz",
@@ -72,6 +74,108 @@
     "include": ["red sea", "houthi", "houthis", "yemen", "yemeni", "sanaa", "hodeidah", "bab el-mandeb", "bab al-mandab", "#Yemen", "اليمن", "الحوثي"],
     "exclude": ["red sea diving"],
     "place": {"lon": 43.5, "lat": 15.4}
+  },
+  "eastern-europe": {
+    "label": "Eastern Europe",
+    "parent": "geopolitics",
+    "map": "eastern-europe",
+    "place": {"lon": 30, "lat": 52}
+  },
+  "ukraine-front": {
+    "label": "Front line",
+    "parent": "ukraine-war",
+    "include": ["front line", "frontline", "pokrovsk", "kostiantynivka", "myrnohrad", "huliaipole", "zaporizhzhia", "donetsk", "donbas", "kupiansk", "siversk", "kramatorsk", "sloviansk", "lyman"],
+    "require": ["ukraine", "ukrainian", "russia", "russian", "drone", "drones", "troops", "advance", "advances", "assault", "offensive", "shelling", "killed"],
+    "exclude": [],
+    "place": {"lon": 37.6, "lat": 48.2}
+  },
+  "ukraine-cities": {
+    "label": "Strikes on Ukrainian cities",
+    "parent": "ukraine-war",
+    "include": ["kyiv", "kharkiv", "dnipro", "lviv", "kryvyi rih", "sumy", "chernihiv", "power grid", "blackout", "blackouts", "energy infrastructure"],
+    "require": ["strike", "strikes", "attack", "attacks", "missile", "missiles", "drone", "drones", "ballistic", "explosion", "explosions", "shelling", "killed", "injured", "air raid", "outage", "outages", "blackout", "blackouts"],
+    "exclude": [],
+    "place": {"lon": 30.5, "lat": 50.45}
+  },
+  "black-sea": {
+    "label": "Black Sea and Crimea",
+    "parent": "ukraine-war",
+    "include": ["black sea", "crimea", "crimean", "kerch", "sevastopol", "odesa", "odessa", "novorossiysk", "#Crimea"],
+    "exclude": [],
+    "place": {"lon": 34, "lat": 44.9}
+  },
+  "russia-strikes": {
+    "label": "Strikes inside Russia",
+    "parent": "ukraine-war",
+    "include": ["belgorod", "kursk", "bryansk", "ryazan", "saratov", "tuapse", "refinery", "refineries", "oil depot"],
+    "require": ["ukraine", "ukrainian", "drone", "drones", "missile", "missiles"],
+    "exclude": [],
+    "place": {"lon": 39.5, "lat": 53.5}
+  },
+  "ukraine-war": {
+    "label": "Ukraine war",
+    "parent": "eastern-europe",
+    "include": ["ukraine", "ukrainian", "ukrainians", "zelensky", "zelenskyy", "#Ukraine", "#StandWithUkraine", "україна", "украина"],
+    "exclude": ["eurovision"],
+    "place": {"lon": 31.5, "lat": 49}
+  },
+  "baltic": {
+    "label": "Baltic states and Baltic Sea",
+    "parent": "nato-east",
+    "include": ["estonia", "estonian", "latvia", "latvian", "lithuania", "lithuanian", "baltic sea", "baltic states", "gulf of finland", "kaliningrad", "narva"],
+    "require": ["russia", "russian", "nato", "drone", "drones", "sabotage", "cable", "cables", "spy", "spies", "plot", "airspace", "military", "troops", "missile", "missiles", "defence", "defense", "border", "shadow fleet", "hybrid"],
+    "exclude": [],
+    "place": {"lon": 24.5, "lat": 58.5}
+  },
+  "poland": {
+    "label": "Poland",
+    "parent": "nato-east",
+    "include": ["poland", "polish", "warsaw", "rzeszow", "rzeszów"],
+    "require": ["russia", "russian", "nato", "drone", "drones", "sabotage", "cable", "cables", "spy", "spies", "plot", "airspace", "military", "troops", "missile", "missiles", "defence", "defense", "border", "shadow fleet", "hybrid"],
+    "exclude": [],
+    "place": {"lon": 19.5, "lat": 52.2}
+  },
+  "nordics": {
+    "label": "Nordics",
+    "parent": "nato-east",
+    "include": ["finland", "finnish", "sweden", "swedish", "norway", "norwegian", "denmark", "danish", "gotland", "bornholm"],
+    "require": ["russia", "russian", "nato", "drone", "drones", "sabotage", "cable", "cables", "spy", "spies", "plot", "airspace", "military", "troops", "missile", "missiles", "defence", "defense", "border", "shadow fleet", "hybrid"],
+    "exclude": [],
+    "place": {"lon": 24.9, "lat": 60.6}
+  },
+  "nato-east": {
+    "label": "NATO's eastern flank",
+    "parent": "eastern-europe",
+    "include": ["nato", "eastern flank", "article 4", "article 5", "suwalki", "suwałki"],
+    "exclude": [],
+    "place": {"lon": 21.5, "lat": 55.3}
+  },
+  "east-asia": {
+    "label": "East Asia",
+    "parent": "geopolitics",
+    "map": "east-asia",
+    "place": {"lon": 118, "lat": 30}
+  },
+  "taiwan": {
+    "label": "China and Taiwan",
+    "parent": "east-asia",
+    "include": ["taiwan", "taiwanese", "taipei", "taiwan strait", "lai ching-te", "kuomintang", "kmt", "#Taiwan", "台灣", "台湾", "臺灣"],
+    "exclude": [],
+    "place": {"lon": 121, "lat": 23.7}
+  },
+  "us-china": {
+    "label": "Beijing and US–China",
+    "parent": "east-asia",
+    "include": ["xi jinping", "beijing", "us-china", "u.s.-china", "china-us", "us–china", "pla", "people's liberation army", "chinese communist party", "ccp", "中国"],
+    "exclude": [],
+    "place": {"lon": 116.4, "lat": 39.9}
+  },
+  "south-china-sea": {
+    "label": "South China Sea",
+    "parent": "east-asia",
+    "include": ["south china sea", "scarborough", "second thomas shoal", "spratly", "spratlys", "paracel", "paracels", "philippine coast guard"],
+    "exclude": [],
+    "place": {"lon": 114, "lat": 13}
   },
   "economy": { "label": "Economy" },
   "energy": { "label": "Energy", "parent": "economy" },
