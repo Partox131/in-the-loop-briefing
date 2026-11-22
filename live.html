@@ -148,7 +148,8 @@
   const STATUS = { corroborated: 'Confirmed', official: 'Official', reported: 'Reported once', disputed: 'Sources disagree', quiet: 'Quiet' };
   const COLOR = { corroborated: 'var(--confirmed)', reported: 'var(--reported-dot)', disputed: 'var(--disputed)', quiet: 'var(--muted)' };
   const paceText = (a) => (a.pace == null ? '' : `${a.pace}× usual`);
-  const isHot = (a) => a.count >= 3 && (a.pace == null || a.pace >= 1.5);
+  // Needs history to compare with: the 24h window has none, so nothing pulses there.
+  const isHot = (a) => a.count >= 3 && a.pace != null && a.pace >= 1.5;
 
   function syncUrl() {
     const q = new URLSearchParams();
