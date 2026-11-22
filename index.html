@@ -40,6 +40,9 @@
   nav.crumbs a { color: var(--muted); text-decoration: none; }
   nav.crumbs a:hover { color: var(--ink); text-decoration: underline; }
   nav.crumbs .here { color: var(--ink); font-weight: 600; }
+  .tabs { display: flex; gap: 4px; background: var(--track); border-radius: 999px; padding: 4px; }
+  .tabs a { text-decoration: none; color: var(--muted); padding: 8px 16px; border-radius: 999px; font-weight: 600; font-size: 15px; min-height: 40px; display: flex; align-items: center; }
+  .tabs a[aria-current="page"] { background: var(--ink); color: var(--bg); }
   .seg { display: flex; gap: 2px; }
   .seg button { border: 0; background: none; color: var(--muted); padding: 10px 12px; min-height: 44px; border-radius: 999px; }
   .seg button:hover { color: var(--ink); }
@@ -130,7 +133,7 @@
 </head>
 <body>
 <div id="app"><p class="loading">Loading the latest from Bluesky…</p></div>
-<script>window.itlStatic = import('./src/static.js?v=708ab11dd4').then((m) => m.init());</script>
+<script>window.itlStatic = import('./src/static.js?v=50ba1b5a55').then((m) => m.init());</script>
 <script>
 (() => {
   const params = new URLSearchParams(location.search);
@@ -310,6 +313,7 @@
         <div style="display:flex;flex-wrap:wrap;gap:12px 32px;align-items:center">
           <span class="brand"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="10" fill="none" stroke="var(--track)" stroke-width="4"/><path d="M14 4a10 10 0 0 1 9.5 13" fill="none" stroke="var(--loop)" stroke-width="4" stroke-linecap="round"/></svg>in the loop</span>
           <nav class="crumbs" aria-label="Topic path">${crumbs}</nav>
+          ${window.itlStatic ? `<nav class="tabs" aria-label="View"><a href="#" aria-current="page">Briefing</a><a href="live.html${state.demo ? '?demo=1' : ''}">Live map</a></nav>` : ''}
         </div>
         <div class="seg" role="group" aria-label="Time window">${WINDOWS.map((w) => `<button data-since="${w}" aria-pressed="${w === state.since}">${w}</button>`).join('')}</div>
       </header>

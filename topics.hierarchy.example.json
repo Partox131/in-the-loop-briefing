@@ -16,18 +16,62 @@
     "include": ["middle east", "#MiddleEast"],
     "exclude": []
   },
+  "hormuz": {
+    "label": "Strait of Hormuz",
+    "parents": ["middle-east", "oil"],
+    "include": ["hormuz", "strait of hormuz", "#Hormuz", "هرمز"],
+    "exclude": [],
+    "place": {"lon": 56.4, "lat": 26.5}
+  },
   "iran-war": {
     "label": "Iran war",
     "parents": ["middle-east", "oil"],
     "include": ["iran", "iranian", "tehran", "irgc", "khamenei", "fordow", "natanz", "isfahan", "hormuz", "#Iran", "#IranWar", "ایران", "تهران", "איראן", "إيران"],
     "require": ["war", "strike", "strikes", "struck", "attack", "attacks", "missile", "missiles", "drone", "drones", "airstrike", "ceasefire", "retaliation", "retaliate", "escalation", "bombing", "military", "nuclear", "#IranWar", "جنگ", "حمله", "מלחמה", "תקיפה", "حرب", "هجوم"],
-    "exclude": ["world cup", "football", "#nsfw"]
+    "exclude": ["world cup", "football", "#nsfw"],
+    "place": {"lon": 53.7, "lat": 32.4}
   },
   "gaza": {
-    "label": "Gaza war",
+    "label": "Gaza",
     "parent": "middle-east",
-    "include": ["gaza", "hamas", "rafah", "khan younis", "#Gaza"],
-    "exclude": []
+    "include": ["gaza", "gazan", "gazans", "hamas", "rafah", "khan younis", "deir al-balah", "#Gaza", "غزة", "עזה"],
+    "exclude": [],
+    "place": {"lon": 34.4, "lat": 31.4}
+  },
+  "west-bank": {
+    "label": "West Bank",
+    "parent": "middle-east",
+    "include": ["west bank", "jenin", "nablus", "ramallah", "hebron", "tulkarm", "#WestBank", "الضفة الغربية"],
+    "exclude": [],
+    "place": {"lon": 35.25, "lat": 32.0}
+  },
+  "lebanon": {
+    "label": "Lebanon",
+    "parent": "middle-east",
+    "include": ["lebanon", "lebanese", "hezbollah", "beirut", "litani", "#Lebanon", "لبنان", "حزب الله", "לבנון", "חיזבאללה"],
+    "exclude": [],
+    "place": {"lon": 35.9, "lat": 33.9}
+  },
+  "syria": {
+    "label": "Syria",
+    "parent": "middle-east",
+    "include": ["syria", "syrian", "damascus", "aleppo", "idlib", "homs", "latakia", "#Syria", "سوريا", "סוריה"],
+    "exclude": [],
+    "place": {"lon": 38.5, "lat": 35.0}
+  },
+  "iraq": {
+    "label": "Iraq",
+    "parent": "middle-east",
+    "include": ["iraq", "iraqi", "baghdad", "erbil", "kataib hezbollah", "popular mobilization forces", "#Iraq", "العراق"],
+    "exclude": [],
+    "place": {"lon": 43.7, "lat": 33.2}
+  },
+  "red-sea": {
+    "label": "Yemen and Red Sea",
+    "parent": "middle-east",
+    "include": ["red sea", "houthi", "houthis", "yemen", "yemeni", "sanaa", "hodeidah", "bab el-mandeb", "bab al-mandab", "#Yemen", "اليمن", "الحوثي"],
+    "exclude": ["red sea diving"],
+    "place": {"lon": 43.5, "lat": 15.4}
   },
   "economy": { "label": "Economy" },
   "energy": { "label": "Energy", "parent": "economy" },

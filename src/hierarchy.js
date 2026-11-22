@@ -6,7 +6,7 @@
 // it, but higher nodes use a longer time window and only surface the top few
 // items per child. See docs/design/topic-tracking.md.
 
-import { compileMatcher, compileTerm, makeTopic } from './topic.js?v=708ab11dd4';
+import { compileMatcher, compileTerm, makeTopic } from './topic.js?v=50ba1b5a55';
 
 /**
  * @typedef {Object} TopicNode
@@ -25,7 +25,8 @@ export function makeHierarchy(spec) {
     const topic = n.include?.length
       ? makeTopic({ id, label: n.label, include: n.include, exclude: n.exclude, langs: n.langs, require: n.require })
       : null;
-    nodes.set(id, { id, label: n.label || id, parents, topic, lenses: n.lenses || {} });
+    // place: where it sits on the live map ({ lon, lat }), for nodes tied to a place.
+    nodes.set(id, { id, label: n.label || id, parents, topic, lenses: n.lenses || {}, place: n.place || null });
   }
   const children = new Map([...nodes.keys()].map((id) => [id, []]));
   for (const n of nodes.values()) {

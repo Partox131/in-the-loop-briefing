@@ -5,12 +5,15 @@
 // Search is off here: Bluesky's public search often refuses anonymous
 // callers, so the static page follows the voice list (getAuthorFeed) only.
 
-import { BskyClient } from './bsky.js?v=708ab11dd4';
-import { buildBrief } from './brief.js?v=708ab11dd4';
-import { DEMO_VOICES, demoFetch } from './demo.js?v=708ab11dd4';
-import { makeHierarchy } from './hierarchy.js?v=708ab11dd4';
-import { makeVoice } from './voices.js?v=708ab11dd4';
-import { briefView } from './view.js?v=708ab11dd4';
+import { BskyClient } from './bsky.js?v=50ba1b5a55';
+import { buildBrief } from './brief.js?v=50ba1b5a55';
+import { DEMO_VOICES, demoFetch } from './demo.js?v=50ba1b5a55';
+import { project } from './geo.js?v=50ba1b5a55';
+import { makeHierarchy } from './hierarchy.js?v=50ba1b5a55';
+import { subscribePosts } from './jetstream.js?v=50ba1b5a55';
+import { makeLive } from './live.js?v=50ba1b5a55';
+import { makeVoice } from './voices.js?v=50ba1b5a55';
+import { briefView } from './view.js?v=50ba1b5a55';
 
 const SINCE_HOURS = { '6h': 6, '12h': 12, '24h': 24, '48h': 48, '7d': 168 };
 const CACHE_MS = 120_000;
@@ -51,5 +54,32 @@ export async function init({ base = '.', defaultNode = 'iran-war' } = {}) {
     const value = { ...briefView(brief, hierarchy, { now }), demo: useDemo };
     cache.set(key, { at: Date.now(), value });
     return value;
+  };
+}
+
+/**
+ * The live map page (public/live.html). Loads the last 24 hours once, then
+ * follows the voices' new posts through Jetstream (skipped in demo mode).
+ */
+export async function initLive({ base = '.', node = 'middle-east', demo = false } = {}) {
+  const [hierarchySpec, voicesSpec, maps] = await Promise.all([
+    getJson(`${base}/topics.hierarchy.example.json`),
+    getJson(`${base}/voices.example.json`),
+    getJson(`${base}/maps.json`),
+  ]);
+  const hierarchy = makeHierarchy(hierarchySpec);
+  const voices = (Array.isArray(voicesSpec) ? voicesSpec : voicesSpec.voices).map(makeVoice);
+  const live = makeLive({
+    client: demo ? new BskyClient({ fetchImpl: demoFetch() }) : new BskyClient(),
+    hierarchy,
+    voices: demo ? DEMO_VOICES : voices,
+    node: hierarchy.nodes.has(node) ? node : 'middle-east',
+  });
+  return {
+    live,
+    maps: maps.views,
+    project,
+    /** Start following new posts; returns { close() }, or null in demo mode. */
+    follow: ({ onPost, onStatus }) => (demo ? null : subscribePosts({ dids: live.dids(), onPost, onStatus })),
   };
 }

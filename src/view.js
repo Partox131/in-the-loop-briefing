@@ -1,7 +1,7 @@
 // Turn a brief (see brief.js) into the JSON the briefing web page renders.
 // Kept separate from the server so it's easy to test and to reuse.
 
-import { TIER_NAME } from './voices.js?v=708ab11dd4';
+import { TIER_NAME } from './voices.js?v=50ba1b5a55';
 
 const HOUR = 3_600_000;
 

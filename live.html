@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>In the Loop · Live map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F5F6F8; --raise: #FFFFFF; --ink: #1D2147; --muted: #5B6080; --line: #E2E5EF; --track: #E2E5EF;
+    --loop: #3047D6; --on-loop: #FFFFFF; --bars: #B9C1E6;
+    --reported: #8A5608; --reported-dot: #C27A10;
+    --confirmed: #0F6B5C; --disputed: #9B2C74; --new: #3047D6;
+    --warn: #8A5608; --banner-bg: #FBEFD8;
+    --display: 'Bricolage Grotesque', 'Figtree', system-ui, sans-serif;
+    --body: 'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --sea: #EAEEF7; --land: #FFFFFF; --border: #CDD3E6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #12142B; --raise: #1B1E3B; --ink: #E7E9F5; --muted: #A3A8C8; --line: #2C3056; --track: #2A2E52;
+      --loop: #7C8FFF; --on-loop: #12142B; --bars: #4A5390;
+      --reported: #F0C27A; --reported-dot: #E0A040;
+      --confirmed: #7FD6C2; --disputed: #F0A8D6; --new: #9DB0FF;
+      --warn: #F0C27A; --banner-bg: #3A2E14;
+      --sea: #161935; --land: #23274A; --border: #343A6A;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 var(--body); }
+  a { color: var(--loop); }
+  :focus-visible { outline: 3px solid var(--loop); outline-offset: 2px; border-radius: 4px; }
+  button { font: inherit; color: inherit; cursor: pointer; }
+  .wrap { max-width: 1440px; margin: 0 auto; padding: 0 40px; }
+
+  header.top { display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: center; padding: 18px 0; }
+  .brand { display: flex; align-items: center; gap: 9px; font: 800 22px/1 var(--display); letter-spacing: -0.01em; }
+  nav.crumbs { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; color: var(--muted); font-size: 15px; }
+  nav.crumbs .here { color: var(--ink); font-weight: 600; }
+  .tabs { display: flex; gap: 4px; background: var(--track); border-radius: 999px; padding: 4px; }
+  .tabs a { text-decoration: none; color: var(--muted); padding: 8px 16px; border-radius: 999px; font-weight: 600; font-size: 15px; min-height: 40px; display: flex; align-items: center; }
+  .tabs a[aria-current="page"] { background: var(--ink); color: var(--bg); }
+  .status { margin-left: auto; display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--muted); }
+  .pulse-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--muted); }
+  .status.on .pulse-dot { background: #D92D3A; animation: blink 1.6s ease-in-out infinite; }
+  @keyframes blink { 50% { opacity: .3; } }
+
+  .bar { display: flex; flex-wrap: wrap; gap: 16px 32px; align-items: flex-end; justify-content: space-between; padding: 8px 0 16px; }
+  h1 { margin: 0; font: 800 clamp(30px, 4vw, 46px)/1.05 var(--display); letter-spacing: -0.02em; }
+  .sub { margin: 8px 0 0; color: var(--muted); font-size: 16px; max-width: 70ch; }
+  .controls { display: flex; flex-wrap: wrap; gap: 12px; }
+  .seg { display: flex; gap: 2px; background: var(--raise); border: 1px solid var(--line); border-radius: 999px; padding: 3px; }
+  .seg button { border: 0; background: none; color: var(--muted); padding: 8px 14px; min-height: 40px; border-radius: 999px; font-size: 15px; }
+  .seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); font-weight: 600; }
+
+  .layout { display: flex; flex-wrap: wrap; gap: 28px; padding-bottom: 48px; }
+  .mapcol { flex: 999 1 620px; min-width: 0; }
+  .map { position: relative; background: var(--sea); border-radius: 16px; overflow: hidden; border: 1px solid var(--line); }
+  .map svg { display: block; width: 100%; height: auto; }
+  .country { fill: var(--land); stroke: var(--border); stroke-width: .8; }
+  .bubble { cursor: pointer; }
+  .bubble .disc { stroke-width: 2.5; transition: r .6s ease; }
+  .bubble:hover .disc, .bubble.sel .disc { stroke-width: 4; }
+  .bubble:focus { outline: none; }
+  .bubble:focus-visible .disc { stroke: var(--loop); stroke-width: 5; }
+  .bubble text { font-family: var(--body); fill: var(--ink); paint-order: stroke; stroke: var(--sea); stroke-width: 4px; stroke-linejoin: round; pointer-events: none; }
+  .bubble .name { font-weight: 700; font-size: 15px; }
+  .bubble .meta { font-size: 13px; fill: var(--muted); }
+  .bubble.quiet .name { font-weight: 600; fill: var(--muted); font-size: 13px; }
+  .ring { fill: none; stroke-width: 3; transform-box: fill-box; transform-origin: center; animation: ring 2s ease-out infinite; }
+  @keyframes ring { from { transform: scale(1); opacity: .7; } to { transform: scale(1.5); opacity: 0; } }
+  .flash { transform-box: fill-box; transform-origin: center; animation: flash 1.8s ease-out 1 forwards; fill: none; stroke: var(--loop); stroke-width: 4; }
+  @keyframes flash { from { transform: scale(.6); opacity: 1; } to { transform: scale(1.8); opacity: 0; } }
+  .leader { stroke: var(--muted); stroke-width: 1.2; stroke-dasharray: 3 3; }
+  .anchor { fill: var(--ink); }
+  @media (prefers-reduced-motion: reduce) { .ring, .flash, .status.on .pulse-dot { animation: none; } }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 12px 2px 0; font-size: 14px; color: var(--muted); }
+  .legend span { display: inline-flex; align-items: center; gap: 7px; }
+  .sw { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+  .c-corroborated { --c: var(--confirmed); } .c-reported { --c: var(--reported-dot); } .c-disputed { --c: var(--disputed); } .c-quiet { --c: var(--muted); }
+  .sw { background: var(--c); }
+  .chip { display: inline-block; font-size: 13px; font-weight: 700; border-radius: 6px; padding: 1px 8px; }
+  .chip.c-corroborated, .chip.c-official { color: var(--confirmed); background: color-mix(in srgb, var(--confirmed) 14%, transparent); }
+  .chip.c-reported { color: var(--reported); background: color-mix(in srgb, var(--reported-dot) 18%, transparent); }
+  .chip.c-disputed { color: var(--disputed); background: color-mix(in srgb, var(--disputed) 14%, transparent); }
+  .area-tag { font-size: 13px; font-weight: 600; background: var(--track); border-radius: 6px; padding: 1px 8px; color: var(--ink); }
+
+  aside { flex: 1 1 340px; min-width: 0; display: flex; flex-direction: column; gap: 22px; }
+  .panel { background: var(--raise); border: 1px solid var(--line); border-radius: 16px; padding: 18px 20px; }
+  .panel h2 { margin: 0; font: 700 22px/1.2 var(--display); }
+  .phead { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+  .close { border: 0; background: var(--track); border-radius: 999px; min-width: 40px; min-height: 40px; font-size: 18px; }
+  .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 14px 0; }
+  .stats div { background: var(--bg); border-radius: 10px; padding: 8px 10px; font-size: 13px; color: var(--muted); }
+  .stats strong { display: block; font: 800 24px/1.1 var(--display); color: var(--ink); }
+  ul.plain { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+  ul.plain li { padding: 12px 0; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 5px; }
+  ul.plain li:first-child { border-top: 0; }
+  .row { display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; font-size: 13px; color: var(--muted); }
+  .txt { font-size: 15px; line-height: 1.4; color: var(--ink); text-decoration: none; }
+  a.txt:hover { text-decoration: underline; }
+  li.fresh { background: color-mix(in srgb, var(--loop) 8%, transparent); margin: 0 -10px; padding-left: 10px; padding-right: 10px; border-radius: 8px; }
+  .muted { color: var(--muted); }
+  .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 18px; border-radius: 999px; background: var(--loop); color: var(--on-loop); text-decoration: none; font-weight: 600; margin-top: 12px; }
+  .banner { background: var(--banner-bg); color: var(--reported); padding: 10px 40px; font-size: 14px; }
+  .footnote { font-size: 14px; color: var(--muted); max-width: 80ch; margin: 18px 2px 0; }
+  .loading { padding: 64px 32px; text-align: center; color: var(--muted); }
+  @media (max-width: 640px) {
+    .wrap { padding: 0 16px; }
+    .banner { padding: 10px 16px; }
+    .status { margin-left: 0; }
+  }
+</style>
+</head>
+<body>
+<div id="app"><p class="loading">Loading the live map…</p></div>
+<script>window.itlLive = (demo) => import('./src/static.js?v=50ba1b5a55').then((m) => m.initLive({ demo }));</script>
+<script>
+(() => {
+  const params = new URLSearchParams(location.search);
+  const state = {
+    view: params.get('view') === 'world' ? 'world' : 'middle-east',
+    window: ['1h', '6h', '24h'].includes(params.get('window')) ? params.get('window') : '6h',
+    area: params.get('area') || null,
+    demo: params.has('demo'),
+    conn: 'connecting',
+    fresh: new Set(),   // post uris that arrived live, highlighted for a while
+    flashes: new Set(), // area ids to flash on the next render
+    api: null,
+    data: null,
+  };
+  const HOURS = { '1h': 1, '6h': 6, '24h': 24 };
+
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const safeUrl = (u) => (/^https:\/\//.test(u || '') ? esc(u) : '#');
+  const oneLine = (t, n = 200) => { const s = String(t || '').replace(/\s+/g, ' ').trim(); return s.length > n ? s.slice(0, n - 1) + '…' : s; };
+  const ago = (iso) => {
+    const m = Math.round((Date.now() - Date.parse(iso)) / 60000);
+    if (m < 1) return 'just now';
+    if (m < 60) return `${m} min ago`;
+    if (m < 1440) return `${Math.round(m / 60)}h ago`;
+    return `${Math.round(m / 1440)}d ago`;
+  };
+  const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
+  const STATUS = { corroborated: 'Confirmed', official: 'Official', reported: 'Reported once', disputed: 'Sources disagree', quiet: 'Quiet' };
+  const COLOR = { corroborated: 'var(--confirmed)', reported: 'var(--reported-dot)', disputed: 'var(--disputed)', quiet: 'var(--muted)' };
+  const paceText = (a) => (a.pace == null ? '' : `${a.pace}× usual`);
+  const isHot = (a) => a.count >= 3 && (a.pace == null || a.pace >= 1.5);
+
+  function syncUrl() {
+    const q = new URLSearchParams();
+    if (state.view !== 'middle-east') q.set('view', state.view);
+    if (state.window !== '6h') q.set('window', state.window);
+    if (state.area) q.set('area', state.area);
+    if (state.demo) q.set('demo', '1');
+    history.replaceState(null, '', `${location.pathname}${q.size ? `?${q}` : ''}`);
+  }
+
+  // Push overlapping bubbles apart; each keeps a dashed line to its real spot.
+  function layout(areas, view) {
+    const m = state.api.maps[view];
+    const max = Math.max(1, ...areas.map((a) => a.count));
+    const top = view === 'world' ? 34 : 70;
+    const nodes = areas.map((a) => {
+      const [x0, y0] = state.api.project(m, a.place.lon, a.place.lat);
+      const r = a.count ? 12 + (top - 12) * Math.sqrt(a.count / max) : 7;
+      // R: room for the bubble and its two-line label underneath
+      return { a, x0, y0, x: x0, y: y0, r, R: Math.max(r + 16, view === 'world' ? 30 : 44) };
+    });
+    for (let it = 0; it < 240; it++) {
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          const p = nodes[i], q = nodes[j];
+          let dx = q.x - p.x, dy = q.y - p.y;
+          let d = Math.hypot(dx, dy);
+          const min = p.R + q.R;
+          if (d >= min) continue;
+          if (d < 0.01) { dx = Math.cos(i + j); dy = Math.sin(i + j); d = 1; }
+          const push = (min - d) / 2;
+          const wp = q.R / (p.R + q.R), wq = p.R / (p.R + q.R); // small bubbles move more
+          p.x -= (dx / d) * push * 2 * wp; p.y -= (dy / d) * push * 2 * wp;
+          q.x += (dx / d) * push * 2 * wq; q.y += (dy / d) * push * 2 * wq;
+        }
+      }
+      for (const n of nodes) {
+        n.x += (n.x0 - n.x) * 0.03; n.y += (n.y0 - n.y) * 0.03;
+        n.x = Math.min(m.width - n.r - 2, Math.max(n.r + 2, n.x));
+        n.y = Math.min(m.height - n.r - 30, Math.max(n.r + 2, n.y));
+      }
+    }
+    return nodes;
+  }
+
+  // At world level the tracked places roll up into one bubble per region
+  // (only the Middle East so far); clicking it zooms in.
+  function regionAreas(d) {
+    const n = d.areas.reduce((s, a) => s + a.count, 0);
+    const perHour = d.areas.reduce((s, a) => s + a.perHour, 0);
+    const usual = d.areas.reduce((s, a) => s + a.usualPerHour, 0);
+    const by = (st) => d.areas.filter((a) => a.status === st).reduce((s, a) => s + a.count, 0) / Math.max(n, 1);
+    const status = !n ? 'quiet' : by('disputed') >= 0.3 ? 'disputed' : by('corroborated') >= 0.5 ? 'corroborated' : 'reported';
+    return [{ id: d.node.id, region: true, label: d.node.label, place: { lon: 44, lat: 29 }, count: n, pace: usual > 0 ? Math.round((perHour / usual) * 10) / 10 : null, status }];
+  }
+
+  function mapSvg(d) {
+    const m = state.api.maps[state.view];
+    const nodes = layout(state.view === 'world' ? regionAreas(d) : d.areas, state.view);
+    // Keep labels readable when the map is drawn small (phones).
+    const k = Math.min(2.6, Math.max(1, 720 / (document.querySelector('.map')?.clientWidth || window.innerWidth)));
+    const countries = m.countries.map((c) => `<path class="country" d="${c.d}"><title>${esc(c.name)}</title></path>`).join('');
+    const leaders = nodes.filter((n) => Math.hypot(n.x - n.x0, n.y - n.y0) > n.r * 0.6)
+      .map((n) => `<line class="leader" x1="${n.x0.toFixed(1)}" y1="${n.y0.toFixed(1)}" x2="${n.x.toFixed(1)}" y2="${n.y.toFixed(1)}"/><circle class="anchor" cx="${n.x0.toFixed(1)}" cy="${n.y0.toFixed(1)}" r="3"/>`).join('');
+    const order = [...nodes].sort((p, q) => q.r - p.r); // big ones underneath
+    const bubbles = order.map((n) => {
+      const a = n.a;
+      const st = a.count ? a.status : 'quiet';
+      const c = COLOR[st] || COLOR.reported;
+      const x = n.x.toFixed(1), y = n.y.toFixed(1);
+      const label = `${a.region ? 'Zoom into ' : ''}${a.label}: ${plural(a.count, 'post')} in the last ${state.window}${a.pace == null ? '' : `, ${paceText(a)}`}, ${STATUS[st]}`;
+      const ring = isHot(a) ? `<circle class="ring" cx="${x}" cy="${y}" r="${n.r.toFixed(1)}" style="stroke:${c}"/>` : '';
+      const flash = state.flashes.has(a.id) ? `<circle class="flash" cx="${x}" cy="${y}" r="${n.r.toFixed(1)}"/>` : '';
+      const ly = n.y + n.r + 16 * k;
+      const meta = a.count ? `<text class="meta" style="font-size:${13 * k}px" x="${x}" y="${(ly + 15 * k).toFixed(1)}" text-anchor="middle">${plural(a.count, 'post')}${a.pace == null ? '' : ` · ${esc(paceText(a))}`}</text>` : '';
+      return `<g class="bubble${a.count ? '' : ' quiet'}${state.area === a.id ? ' sel' : ''}" data-area="${esc(a.id)}" tabindex="0" role="button" aria-label="${esc(label)}">
+        ${ring}<circle class="disc" cx="${x}" cy="${y}" r="${n.r.toFixed(1)}" style="fill:color-mix(in srgb, ${c} ${a.count ? 30 : 12}%, transparent);stroke:${c}${a.count ? '' : ';stroke-dasharray:3 3'}"/>${flash}
+        <text class="name" style="font-size:${(a.count ? 15 : 13) * k}px" x="${x}" y="${ly.toFixed(1)}" text-anchor="middle">${esc(a.label)}</text>${meta}
+      </g>`;
+    }).join('');
+    state.flashes.clear();
+    return `<svg viewBox="0 0 ${m.width} ${m.height}" role="group" aria-label="Map of ${esc(m.label)} with one bubble per place">${countries}${leaders}${bubbles}</svg>`;
+  }
+
+  function detail(d) {
+    const a = d.areas.find((x) => x.id === state.area);
+    if (!a) return '';
+    const st = a.count ? a.status : 'quiet';
+    const stories = a.storylines.length
+      ? `<ul class="plain">${a.storylines.map((s) => `<li>
+          <div class="row"><span class="chip c-${esc(s.status)}">${esc(STATUS[s.status] || s.status)}</span><span>${esc(ago(s.firstSeen))}</span><span>${plural(s.posts, 'post')}${s.sources.length ? ` · ${esc(s.sources.slice(0, 3).join(', '))}` : ''}</span></div>
+          <a class="txt" href="${safeUrl(s.url)}" target="_blank" rel="noopener">${esc(oneLine(s.text, 220))}</a>
+        </li>`).join('')}</ul>`
+      : `<p class="muted" style="margin:0">Nothing from tracked voices in the last ${esc(state.window)}.</p>`;
+    return `<section class="panel" aria-labelledby="dh">
+      <div class="phead"><h2 id="dh">${esc(a.label)}</h2><button class="close" id="close" aria-label="Close ${esc(a.label)}">×</button></div>
+      <div class="stats">
+        <div><strong>${a.count}</strong>posts in ${esc(state.window)}</div>
+        <div><strong>${a.pace == null ? '–' : `${a.pace}×`}</strong>${a.pace == null ? 'no earlier posts' : 'its usual pace'}</div>
+        <div><strong>${a.voices}</strong>${a.voices === 1 ? 'outlet' : 'outlets'}</div>
+      </div>
+      <div class="row" style="margin-bottom:8px"><span class="chip c-${st}">${esc(STATUS[st])}</span><span>overall, by share of posts</span></div>
+      ${stories}
+      <a class="btn" href="index.html?node=${encodeURIComponent(a.id)}&since=24h${state.demo ? '&demo=1' : ''}">Open the ${esc(a.label)} briefing</a>
+    </section>`;
+  }
+
+  function feed(d) {
+    const label = (id) => d.areas.find((a) => a.id === id)?.label;
+    const items = d.feed.slice(0, 12);
+    return `<section class="panel" aria-labelledby="fh">
+      <div class="phead"><h2 id="fh">Just in</h2><span class="muted" style="font-size:13px">newest first</span></div>
+      ${items.length ? `<ul class="plain" style="margin-top:8px">${items.map((p) => `<li class="${state.fresh.has(p.uri) ? 'fresh' : ''}">
+        <div class="row"><strong style="color:var(--ink)">${esc(ago(p.at))}</strong>${label(p.area) ? `<span class="area-tag">${esc(label(p.area))}</span>` : `<span class="area-tag">${esc(p.topicLabel)}</span>`}<span>${esc(p.who)}${p.stateAffiliated ? ' (state)' : ''}</span>${state.fresh.has(p.uri) ? '<strong style="color:var(--loop)">Live</strong>' : ''}</div>
+        <a class="txt" href="${safeUrl(p.url)}" target="_blank" rel="noopener">${esc(oneLine(p.text))}</a>
+      </li>`).join('')}</ul>` : '<p class="muted" style="margin:8px 0 0">Nothing from tracked voices in the last day.</p>'}
+    </section>`;
+  }
+
+  function statusText(d) {
+    if (state.demo) return 'Demo · no live feed';
+    if (state.conn === 'open') return `<strong style="color:var(--ink)">Live</strong> · following ${plural(d.voices, 'voice')}`;
+    if (state.conn === 'reconnecting') return 'Reconnecting…';
+    return 'Connecting…';
+  }
+
+  function render() {
+    const d = state.data;
+    const app = document.getElementById('app');
+    const active = d.areas.filter((a) => a.count);
+    const hot = d.areas.filter(isHot).map((a) => a.label);
+    const sub = active.length
+      ? `${plural(active.reduce((s, a) => s + a.count, 0), 'post')} from tracked voices in the last ${state.window} across ${plural(active.length, 'place')}.${hot.length ? ` Busier than usual: ${esc(hot.join(', '))}.` : ''}`
+      : `No posts from tracked voices in the last ${state.window}.`;
+    const focused = document.activeElement?.dataset?.area;
+    app.innerHTML = `
+      ${state.demo ? '<div class="banner" role="status">Demo mode: made-up sample posts from fictional accounts, run through the real pipeline.</div>' : ''}
+      <div class="wrap">
+        <header class="top">
+          <span class="brand"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="10" fill="none" stroke="var(--track)" stroke-width="4"/><path d="M14 4a10 10 0 0 1 9.5 13" fill="none" stroke="var(--loop)" stroke-width="4" stroke-linecap="round"/></svg>in the loop</span>
+          <nav class="crumbs" aria-label="Topic path"><span>Politics</span><span aria-hidden="true">/</span><span>Geopolitics</span><span aria-hidden="true">/</span><span class="here">${esc(d.node.label)}</span></nav>
+          <nav class="tabs" aria-label="View"><a href="index.html?node=${encodeURIComponent(d.node.id)}${state.demo ? '&demo=1' : ''}">Briefing</a><a href="#" aria-current="page">Live map</a></nav>
+          <div class="status ${state.conn === 'open' && !state.demo ? 'on' : ''}" role="status"><span class="pulse-dot" aria-hidden="true"></span><span>${statusText(d)}</span></div>
+        </header>
+        <div class="bar">
+          <div><h1>What's moving in the ${esc(d.node.label)}</h1><p class="sub">${sub} Bubble size is posts from tracked voices; colour is where the main stories stand.</p></div>
+          <div class="controls">
+            <div class="seg" role="group" aria-label="Map">${[['middle-east', 'Middle East'], ['world', 'World']].map(([k, l]) => `<button data-view="${k}" aria-pressed="${k === state.view}">${l}</button>`).join('')}</div>
+            <div class="seg" role="group" aria-label="Time window">${Object.keys(HOURS).map((w) => `<button data-window="${w}" aria-pressed="${w === state.window}">Last ${w}</button>`).join('')}</div>
+          </div>
+        </div>
+        <div class="layout">
+          <div class="mapcol">
+            <div class="map">${mapSvg(d)}</div>
+            <div class="legend">
+              <span><i class="sw c-corroborated"></i>Mostly confirmed</span>
+              <span><i class="sw c-reported"></i>Mostly reported once</span>
+              <span><i class="sw c-disputed"></i>Sources disagree</span>
+              <span><i class="sw c-quiet" style="background:none;border:2px dashed var(--muted)"></i>Quiet</span>
+              <span>Pulsing ring: at least 1.5× its usual pace</span>
+            </div>
+            ${state.view === 'world' ? '<p class="footnote">Only the Middle East is tracked so far. Other regions (Ukraine and Russia, Sudan, the Taiwan Strait…) appear here once they have voices and keywords. Click the bubble to zoom in.</p>' : ''}
+            <p class="footnote">Counts are posts from the ${plural(d.voices, 'tracked voice')} that match each place's keywords, compared with their pace over the last 24 hours. New posts arrive live from Bluesky. In the Loop only reads Bluesky and never posts. Map: Natural Earth.</p>
+            ${d.errors?.length ? `<details class="footnote"><summary>${plural(d.errors.length, 'warning')}</summary><ul>${d.errors.map((e) => `<li>${esc(e)}</li>`).join('')}</ul></details>` : ''}
+          </div>
+          <aside>${state.view === 'world' ? '' : detail(d)}${feed(d)}</aside>
+        </div>
+      </div>`;
+
+    app.querySelectorAll('[data-view]').forEach((b) => b.addEventListener('click', () => { state.view = b.dataset.view; refresh(); }));
+    app.querySelectorAll('[data-window]').forEach((b) => b.addEventListener('click', () => { state.window = b.dataset.window; refresh(); }));
+    app.querySelectorAll('.bubble').forEach((g) => {
+      const pick = () => {
+        if (state.view === 'world') { state.view = 'middle-east'; refresh(); return; }
+        state.area = state.area === g.dataset.area ? null : g.dataset.area; refresh(); app.querySelector(`.bubble[data-area="${CSS.escape(g.dataset.area)}"]`)?.focus();
+      };
+      g.addEventListener('click', pick);
+      g.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(); } });
+    });
+    app.querySelector('#close')?.addEventListener('click', () => { state.area = null; refresh(); });
+    if (focused) app.querySelector(`.bubble[data-area="${CSS.escape(focused)}"]`)?.focus();
+  }
+
+  function refresh() {
+    syncUrl();
+    state.data = state.api.live.view({ now: new Date(), windowHours: HOURS[state.window] });
+    render();
+  }
+
+  async function start() {
+    try {
+      state.api = await window.itlLive(state.demo);
+      await state.api.live.load();
+      refresh();
+      const follow = () => state.api.follow({
+        onPost: (post) => {
+          if (!state.api.live.add(post)) return;
+          state.fresh.add(post.uri);
+          const v = state.api.live.view({ now: new Date(), windowHours: HOURS[state.window] });
+          const hit = v.feed.find((p) => p.uri === post.uri);
+          if (hit?.area) state.flashes.add(hit.area);
+          refresh();
+        },
+        onStatus: (s) => { state.conn = s.type; if (state.data) render(); },
+      });
+      let sub = follow();
+      setInterval(refresh, 60_000); // keep "x min ago" and the window current
+      let rt; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(render, 150); });
+      setInterval(async () => { // full reload: engagement counts, missed posts
+        try { await state.api.live.load(); sub?.close(); sub = follow(); refresh(); } catch {}
+      }, 10 * 60_000);
+    } catch (err) {
+      document.getElementById('app').innerHTML = `<p class="loading">Could not load the live map: ${esc(err.message)}</p>`;
+    }
+  }
+  if (!window.itlLive) {
+    document.getElementById('app').innerHTML = '<p class="loading">The live map runs in the static build. Run <code>npm run build:site</code> and open _site/live.html through any static web server.</p>';
+  } else start();
+})();
+</script>
+</body>
+</html>

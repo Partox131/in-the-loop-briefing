@@ -1,5 +1,5 @@
 {
-  "_note": "Starter list for the Iran war, checked against Bluesky on 2026-11-22: every handle exists and posted in the last few months. Domain handles (reuters.com) prove control of the domain. *.bsky.social handles were matched by name, bio and follower count, which is weaker, so they get a slightly lower weight. Not on Bluesky as of that date: Iran International (no active official account), the US State Department, Middle East Eye and Al Arabiya (inactive), and several Iran reporters whose accounts are dormant.",
+  "_note": "Starter list for the Middle East (Iran war first), checked against Bluesky on 2026-11-22: every handle exists and posted in the last few months. Domain handles (reuters.com) prove control of the domain. *.bsky.social handles were matched by name, bio and follower count, which is weaker, so they get a slightly lower weight. Not on Bluesky as of that date: Iran International (no active official account), the US State Department, Middle East Eye and Al Arabiya (inactive), and several Iran reporters whose accounts are dormant. Added for the live Middle East map (also checked 2026-11-22): CNN, The Independent, Drop Site, +972, Mondoweiss, The National (UAE state-owned), The New Arab, Middle East Monitor, UNRWA, ICRC, HRW, Aron Lund (Syria), Yemen Data Project. Not found or dormant: L'Orient Today, OCHA, BBC News, Lloyd's List and its reporters.",
   "voices": [
     { "handle": "reuters.com", "name": "Reuters", "tier": 1, "affiliation": "Reuters", "region": "international", "topics": ["geopolitics", "oil"] },
     { "handle": "apnews.com", "name": "AP", "tier": 1, "affiliation": "Associated Press", "region": "US", "topics": ["geopolitics"] },
@@ -33,6 +33,19 @@
     { "handle": "thestudyofwar.bsky.social", "name": "Institute for the Study of War", "tier": 3, "affiliation": "Institute for the Study of War", "region": "US", "topics": ["iran-war"] },
 
     { "handle": "bellingcat.com", "name": "Bellingcat", "tier": 5, "affiliation": "Bellingcat", "region": "international", "topics": ["geopolitics"] },
-    { "handle": "geoconfirmed.org", "name": "GeoConfirmed", "tier": 5, "affiliation": "GeoConfirmed", "region": "international", "topics": ["geopolitics"] }
+    { "handle": "geoconfirmed.org", "name": "GeoConfirmed", "tier": 5, "affiliation": "GeoConfirmed", "region": "international", "topics": ["geopolitics"] },
+    { "handle": "cnn.com", "name": "CNN", "tier": 1, "affiliation": "CNN", "region": "US", "topics": ["geopolitics"] },
+    { "handle": "the-independent.com", "name": "The Independent", "tier": 1, "affiliation": "Independent", "region": "UK", "topics": ["geopolitics"] },
+    { "handle": "dropsitenews.com", "name": "Drop Site News", "tier": 1, "affiliation": "Drop Site News", "region": "US", "topics": ["middle-east"] },
+    { "handle": "972mag.com", "name": "+972 Magazine", "tier": 1, "affiliation": "+972 Magazine", "region": "Israel and Palestine", "topics": ["gaza", "west-bank"] },
+    { "handle": "mondoweiss.net", "name": "Mondoweiss", "tier": 1, "affiliation": "Mondoweiss", "region": "US", "topics": ["gaza", "west-bank"] },
+    { "handle": "thenationalnews.com", "name": "The National", "tier": 1, "affiliation": "The National", "region": "UAE", "stateAffiliated": true, "topics": ["middle-east"] },
+    { "handle": "thenewarab.bsky.social", "name": "The New Arab", "tier": 1, "affiliation": "The New Arab", "region": "Qatar", "topics": ["middle-east"] },
+    { "handle": "middleeastmonitor.bsky.social", "name": "Middle East Monitor", "tier": 1, "affiliation": "Middle East Monitor", "region": "UK", "topics": ["middle-east"] },
+    { "handle": "unrwa.org", "name": "UNRWA", "tier": 4, "affiliation": "United Nations", "region": "international", "topics": ["gaza", "west-bank"] },
+    { "handle": "icrc.org", "name": "ICRC", "tier": 4, "affiliation": "ICRC", "region": "international", "topics": ["geopolitics"] },
+    { "handle": "hrw.org", "name": "Human Rights Watch", "tier": 3, "affiliation": "Human Rights Watch", "region": "international", "topics": ["geopolitics"] },
+    { "handle": "aronlund.bsky.social", "name": "Aron Lund", "tier": 3, "affiliation": "Century International", "region": "Europe", "topics": ["syria"] },
+    { "handle": "yemendataproject.org", "name": "Yemen Data Project", "tier": 5, "affiliation": "Yemen Data Project", "region": "international", "topics": ["red-sea"] }
   ]
 }

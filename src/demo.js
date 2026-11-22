@@ -5,7 +5,7 @@
 // The data goes through the real pipeline (classify, rank, storylines), so
 // the demo also shows what the code does with it.
 
-import { makeVoice } from './voices.js?v=708ab11dd4';
+import { makeVoice } from './voices.js?v=50ba1b5a55';
 
 const MIN = 60_000;
 
@@ -17,7 +17,7 @@ export const DEMO_VOICES = [
   { handle: 'tehran-reporter.example.com', name: 'Tehran correspondent', tier: 2, affiliation: 'Wire B', region: 'International wires', topics: ['iran-war'] },
   { handle: 'iran-state.example.com', name: 'Iranian state media', tier: 4, affiliation: 'Iran state media', region: 'Iran', stateAffiliated: true, topics: ['iran-war'] },
   { handle: 'defence-analyst.example.com', name: 'Defence analyst', tier: 3, affiliation: 'Think tank', region: 'US and Europe', topics: ['middle-east'] },
-  { handle: 'ship-tracker.example.com', name: 'Ship-tracking analyst', tier: 5, affiliation: 'Ship tracker', region: 'US and Europe', topics: ['oil'] },
+  { handle: 'ship-tracker.example.com', name: 'Ship-tracking analyst', tier: 5, affiliation: 'Ship tracker', region: 'US and Europe', topics: ['oil', 'hormuz'] },
 ].map(makeVoice);
 
 const did = (handle) => `did:plc:demo-${handle.split('.')[0]}`;
@@ -45,6 +45,7 @@ function demoFeeds(now) {
     'wire-a.example.com': [
       pv('wire-a.example.com', 'a1', 175, 'Strikes hit a military site near Isfahan, Iran, two officials say. Developing.', { ...o, likes: 2400, reposts: 900, link: `${isfahan}?utm_source=bsky` }),
       pv('wire-a.example.com', 'a2', 120, 'Update: 12 killed in the Isfahan strikes, provincial officials say.', { ...o, likes: 1500, reposts: 600, link: isfahan }),
+      pv('wire-a.example.com', 'a5', 12, 'Gaza ceasefire talks: mediators say a new proposal is under review.', { ...o, likes: 600, reposts: 150 }),
       pv('wire-a.example.com', 'a3', 600, 'Election count continues in Chile.', { ...o, likes: 300 }),
       pv('wire-a.example.com', 'a4', 300, 'Talks planned in Muscat between Iran and US envoys are postponed amid the war, mediators say.', { ...o, likes: 900, reposts: 200, link: 'https://wire-a.example.com/world/muscat-talks' }),
     ],
@@ -54,8 +55,12 @@ function demoFeeds(now) {
     ],
     'gulf-outlet.example.com': [
       pv('gulf-outlet.example.com', 'g1', 40, 'A doctor at a local hospital says 30 killed in the strike near Isfahan, Iran.', { ...o, likes: 800, reposts: 350, link: isfahan }),
+      pv('gulf-outlet.example.com', 'g2', 25, 'Aid trucks enter Gaza through the southern crossing for the first time in a week.', { ...o, likes: 900, reposts: 300, link: 'https://gulf-outlet.example.com/gaza-aid' }),
+      pv('gulf-outlet.example.com', 'g3', 70, 'Houthis say they targeted a ship in the Red Sea; no confirmation from the shipping company.', { ...o, likes: 300, reposts: 80 }),
     ],
     'israel-outlet.example.com': [
+      pv('israel-outlet.example.com', 'i2', 18, 'Gaza: first aid convoy in a week crosses in the south, officials confirm.', { ...o, likes: 500, reposts: 120, link: 'https://gulf-outlet.example.com/gaza-aid' }),
+      pv('israel-outlet.example.com', 'i3', 50, 'Hezbollah drone intercepted over the Lebanon border, the army says.', { ...o, likes: 350, reposts: 60 }),
       pv('israel-outlet.example.com', 'i1', 260, 'Muscat talks with Iran postponed; Israeli officials decline to comment on the war.', { ...o, likes: 400, link: 'https://wire-a.example.com/world/muscat-talks' }),
     ],
     'tehran-reporter.example.com': [
