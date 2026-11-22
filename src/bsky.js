@@ -18,7 +18,8 @@ export class BskyClient {
   constructor({ handle, appPassword, fetchImpl = globalThis.fetch, log = () => {} } = {}) {
     this.handle = handle;
     this.appPassword = appPassword;
-    this.fetch = fetchImpl;
+    // Bind: browsers throw "Illegal invocation" when fetch is called as a method of another object.
+    this.fetch = fetchImpl === globalThis.fetch ? fetchImpl.bind(globalThis) : fetchImpl;
     this.log = log;
     this.session = null; // { accessJwt, pds }
     this.profileCache = new Map(); // did -> { handle, displayName }
