@@ -12,11 +12,11 @@
 //                                                      ▼
 //                     breadth quota (fewer items per child higher up)
 
-import { ago, bold, cyan, dim, formatPost, green, magenta, yellow } from './format.js?v=12d6f5a75c';
-import { applyQuota, rankPosts } from './rank.js?v=12d6f5a75c';
-import { searchTopic } from './search.js?v=12d6f5a75c';
-import { buildStorylines } from './storylines.js?v=12d6f5a75c';
-import { byDid, resolveVoices, TIER_NAME, voicesFor } from './voices.js?v=12d6f5a75c';
+import { ago, bold, cyan, dim, formatPost, green, magenta, yellow } from './format.js?v=4d071d303c';
+import { applyQuota, rankPosts } from './rank.js?v=4d071d303c';
+import { searchTopic } from './search.js?v=4d071d303c';
+import { buildStorylines } from './storylines.js?v=4d071d303c';
+import { byDid, resolveVoices, TIER_NAME, voicesFor } from './voices.js?v=4d071d303c';
 
 /**
  * @param {object} o
@@ -64,7 +64,7 @@ export async function buildBrief({ client, hierarchy: h, node, voices, since, no
   const onTopic = [];
   for (const p of collected.values()) {
     if (new Date(p.createdAt) < since) continue;
-    const hits = h.classify(p).filter((m) => scope.has(m.id));
+    const hits = h.classify(p, node);
     if (!hits.length) continue; // e.g. a correspondent posting about something else
     const deepest = hits[0].id;
     onTopic.push({

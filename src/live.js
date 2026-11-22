@@ -6,10 +6,10 @@
 // up through Jetstream: a WebSocket of new posts filtered to the voices'
 // accounts, which works straight from the browser. Read-only, no login.
 
-import { buildBrief } from './brief.js?v=12d6f5a75c';
-import { rankPosts } from './rank.js?v=12d6f5a75c';
-import { buildStorylines } from './storylines.js?v=12d6f5a75c';
-import { byDid } from './voices.js?v=12d6f5a75c';
+import { buildBrief } from './brief.js?v=4d071d303c';
+import { rankPosts } from './rank.js?v=4d071d303c';
+import { buildStorylines } from './storylines.js?v=4d071d303c';
+import { byDid } from './voices.js?v=4d071d303c';
 
 const HOUR = 3_600_000;
 
@@ -187,7 +187,6 @@ export function worldView({ posts, hierarchy: h, node, now, windowHours = 1, loo
  * @param {string} o.node
  */
 export function makeLive({ client, hierarchy: h, voices, node = 'geopolitics', lookbackHours = 24 }) {
-  const scope = new Set([node, ...h.descendants(node)]);
   let posts = [];
   let voiceIndex = new Map();
   let meta = { voices: 0, missingVoices: [], errors: [] };
@@ -216,7 +215,7 @@ export function makeLive({ client, hierarchy: h, voices, node = 'geopolitics', l
     add(post) {
       const voice = voiceIndex.get(post.did);
       if (!voice || posts.some((p) => p.uri === post.uri)) return false;
-      const hits = h.classify(post).filter((m) => scope.has(m.id));
+      const hits = h.classify(post, node);
       if (!hits.length) return false;
       const [ranked] = rankPosts([{ ...post, handle: post.handle || voice.handle, displayName: post.displayName || voice.name }], {
         voices: voiceIndex,

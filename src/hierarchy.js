@@ -6,7 +6,7 @@
 // it, but higher nodes use a longer time window and only surface the top few
 // items per child. See docs/design/topic-tracking.md.
 
-import { compileMatcher, compileTerm, makeTopic } from './topic.js?v=12d6f5a75c';
+import { compileMatcher, compileTerm, makeTopic } from './topic.js?v=4d071d303c';
 
 /**
  * @typedef {Object} TopicNode
@@ -27,7 +27,10 @@ export function makeHierarchy(spec) {
       : null;
     // place: where it sits on the live map ({ lon, lat }), for nodes tied to a place.
     // map: the live-map view a region is drawn with (src/geo.js MAP_VIEWS).
-    nodes.set(id, { id, label: n.label || id, parents, topic, lenses: n.lenses || {}, place: n.place || null, map: n.map || null });
+    // gate: terms a post must also contain to count anywhere under this node
+    // (Geopolitics uses it so "Taiwan" film-award news stays off the map).
+    const gate = n.gate?.length ? n.gate.map(compileTerm) : null;
+    nodes.set(id, { id, label: n.label || id, parents, topic, gate, lenses: n.lenses || {}, place: n.place || null, map: n.map || null });
   }
   const children = new Map([...nodes.keys()].map((id) => [id, []]));
   for (const n of nodes.values()) {
@@ -75,19 +78,34 @@ export function makeHierarchy(spec) {
     [...nodes.values()].filter((n) => n.topic).map((n) => [n.id, compileMatcher(n.topic)]),
   );
 
+  const gated = [...nodes.values()].filter((n) => n.gate).map((n) => n.id);
+  const under = (id, top) => id === top || ancestors(id).includes(top);
+
   /**
    * Which nodes does this post belong to? Returns the deepest matching nodes
    * (a post about Iran strikes goes to "iran-war", not to "middle-east" too).
+   *
+   * With `root`, only nodes at or under `root` are returned, and a gated node
+   * between them (or above `root`) must also pass its gate. A gate does not
+   * apply when reading from another branch: Hormuz under Oil is not gated by
+   * Geopolitics.
    */
-  const classify = (post) => {
+  const classify = (post, root) => {
     const hits = new Map();
     for (const [id, m] of matchers) {
       const r = m(post);
       if (r.matched) hits.set(id, r.terms);
     }
-    return [...hits.keys()]
+    let out = [...hits.keys()]
       .filter((id) => !descendants(id).some((d) => hits.has(d)))
       .map((id) => ({ id, terms: hits.get(id) }));
+    if (root === undefined) return out;
+    out = out.filter((m) => under(m.id, root));
+    const gates = gated.filter((g) => under(root, g) || under(g, root));
+    if (!gates.length || !out.length) return out;
+    const text = (post.text || '').toLowerCase();
+    const tags = new Set((post.tags || []).map((t) => t.toLowerCase()));
+    return out.filter((m) => gates.every((g) => !under(m.id, g) || get(g).gate.some((test) => test(text, tags))));
   };
 
   /** All include terms of a node and its descendants, for search backfill. */
