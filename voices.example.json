@@ -1,16 +1,38 @@
 {
-  "_note": "Example only. Outlets are listed by DOMAIN handle on purpose: a domain handle proves the account controls that domain, so it cannot be an impersonator. Unresolvable handles are skipped with a warning. Add beat reporters, analysts and OSINT accounts from curated lists and starter packs (see docs/design/topic-tracking.md 2.1) after checking each one.",
+  "_note": "Starter list for the Iran war, checked against Bluesky on 2026-11-22: every handle exists and posted in the last few months. Domain handles (reuters.com) prove control of the domain. *.bsky.social handles were matched by name, bio and follower count, which is weaker, so they get a slightly lower weight. Not on Bluesky as of that date: Iran International (no active official account), the US State Department, Middle East Eye and Al Arabiya (inactive), and several Iran reporters whose accounts are dormant.",
   "voices": [
     { "handle": "reuters.com", "name": "Reuters", "tier": 1, "affiliation": "Reuters", "region": "international", "topics": ["geopolitics", "oil"] },
     { "handle": "apnews.com", "name": "AP", "tier": 1, "affiliation": "Associated Press", "region": "US", "topics": ["geopolitics"] },
     { "handle": "nytimes.com", "name": "The New York Times", "tier": 1, "affiliation": "New York Times", "region": "US", "topics": ["geopolitics"] },
     { "handle": "washingtonpost.com", "name": "The Washington Post", "tier": 1, "affiliation": "Washington Post", "region": "US", "topics": ["geopolitics"] },
+    { "handle": "npr.org", "name": "NPR", "tier": 1, "affiliation": "NPR", "region": "US", "topics": ["geopolitics"] },
+    { "handle": "axios.com", "name": "Axios", "tier": 1, "affiliation": "Axios", "region": "US", "topics": ["geopolitics"] },
     { "handle": "theguardian.com", "name": "The Guardian", "tier": 1, "affiliation": "Guardian", "region": "UK", "topics": ["geopolitics"] },
-    { "handle": "ft.com", "name": "Financial Times", "tier": 1, "affiliation": "Financial Times", "region": "UK", "topics": ["geopolitics", "energy"] },
-    { "handle": "aljazeera.com", "name": "Al Jazeera", "tier": 1, "affiliation": "Al Jazeera", "region": "Qatar", "topics": ["middle-east"] },
+    { "handle": "financialtimes.com", "name": "Financial Times", "tier": 1, "affiliation": "Financial Times", "region": "UK", "topics": ["geopolitics", "energy"] },
+    { "handle": "economist.com", "name": "The Economist", "tier": 1, "affiliation": "The Economist", "region": "UK", "topics": ["geopolitics", "energy"] },
+    { "handle": "en.france24.com", "name": "France 24", "tier": 1, "affiliation": "France 24", "region": "France", "stateAffiliated": true, "topics": ["geopolitics"] },
+    { "handle": "euronews.com", "name": "Euronews", "tier": 1, "affiliation": "Euronews", "region": "Europe", "topics": ["geopolitics"] },
+    { "handle": "aljazeera.com", "name": "Al Jazeera", "tier": 1, "affiliation": "Al Jazeera", "region": "Qatar", "stateAffiliated": true, "topics": ["middle-east"] },
+    { "handle": "almonitor.bsky.social", "name": "Al-Monitor", "tier": 1, "affiliation": "Al-Monitor", "region": "Middle East", "topics": ["middle-east"] },
+    { "handle": "amwajmedia.bsky.social", "name": "Amwaj.media", "tier": 1, "affiliation": "Amwaj.media", "region": "Iran, Iraq and Gulf", "topics": ["iran-war"] },
     { "handle": "timesofisrael.com", "name": "The Times of Israel", "tier": 1, "affiliation": "Times of Israel", "region": "Israel", "topics": ["middle-east"] },
-    { "handle": "iranintl.com", "name": "Iran International", "tier": 1, "affiliation": "Iran International", "region": "Iran (diaspora)", "topics": ["iran-war"] },
-    { "handle": "presstv.ir", "name": "Press TV", "tier": 4, "affiliation": "Press TV", "region": "Iran", "stateAffiliated": true, "topics": ["iran-war"] },
-    { "handle": "state.gov", "name": "US State Department", "tier": 4, "affiliation": "US government", "region": "US", "stateAffiliated": true, "topics": ["geopolitics"] }
+    { "handle": "haaretzcom.bsky.social", "name": "Haaretz", "tier": 1, "affiliation": "Haaretz", "region": "Israel", "topics": ["middle-east"] },
+    { "handle": "thejerusalempost.bsky.social", "name": "The Jerusalem Post", "tier": 1, "affiliation": "Jerusalem Post", "region": "Israel", "topics": ["middle-east"] },
+    { "handle": "presstv.bsky.social", "name": "Press TV", "tier": 4, "affiliation": "Press TV", "region": "Iran", "stateAffiliated": true, "topics": ["iran-war"] },
+
+    { "handle": "lkrozen.bsky.social", "name": "Laura Rozen", "tier": 2, "affiliation": "Diplomatic (newsletter)", "region": "US", "topics": ["iran-war"] },
+    { "handle": "shashj.bsky.social", "name": "Shashank Joshi", "tier": 2, "affiliation": "The Economist", "region": "UK", "topics": ["geopolitics"] },
+
+    { "handle": "alivaez.bsky.social", "name": "Ali Vaez", "tier": 3, "affiliation": "International Crisis Group", "region": "international", "topics": ["iran-war"] },
+    { "handle": "crisisgroup.org", "name": "International Crisis Group", "tier": 3, "affiliation": "International Crisis Group", "region": "international", "topics": ["geopolitics"] },
+    { "handle": "tparsi.bsky.social", "name": "Trita Parsi", "tier": 3, "affiliation": "Quincy Institute", "region": "US", "topics": ["iran-war"] },
+    { "handle": "valinasr.bsky.social", "name": "Vali Nasr", "tier": 3, "affiliation": "Johns Hopkins SAIS", "region": "US", "topics": ["iran-war"] },
+    { "handle": "aaronstein1.bsky.social", "name": "Aaron Stein", "tier": 3, "affiliation": "Foreign Policy Research Institute", "region": "US", "topics": ["middle-east"] },
+    { "handle": "phillipspobrien.bsky.social", "name": "Phillips O'Brien", "tier": 3, "affiliation": "University of St Andrews", "region": "UK", "topics": ["geopolitics"] },
+    { "handle": "chathamhouse.org", "name": "Chatham House", "tier": 3, "affiliation": "Chatham House", "region": "UK", "topics": ["geopolitics"] },
+    { "handle": "thestudyofwar.bsky.social", "name": "Institute for the Study of War", "tier": 3, "affiliation": "Institute for the Study of War", "region": "US", "topics": ["iran-war"] },
+
+    { "handle": "bellingcat.com", "name": "Bellingcat", "tier": 5, "affiliation": "Bellingcat", "region": "international", "topics": ["geopolitics"] },
+    { "handle": "geoconfirmed.org", "name": "GeoConfirmed", "tier": 5, "affiliation": "GeoConfirmed", "region": "international", "topics": ["geopolitics"] }
   ]
 }
