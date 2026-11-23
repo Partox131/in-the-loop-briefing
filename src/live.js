@@ -6,10 +6,10 @@
 // up through Jetstream: a WebSocket of new posts filtered to the voices'
 // accounts, which works straight from the browser. Read-only, no login.
 
-import { buildBrief } from './brief.js?v=453846a99e';
-import { rankPosts } from './rank.js?v=453846a99e';
-import { buildStorylines } from './storylines.js?v=453846a99e';
-import { byDid } from './voices.js?v=453846a99e';
+import { buildBrief } from './brief.js?v=cb10c15e2f';
+import { rankPosts } from './rank.js?v=cb10c15e2f';
+import { buildStorylines } from './storylines.js?v=cb10c15e2f';
+import { byDid } from './voices.js?v=cb10c15e2f';
 
 const HOUR = 3_600_000;
 
@@ -46,6 +46,7 @@ function postLine(p, h) {
     who: p.voice?.name || p.displayName || p.handle || 'unknown',
     tier: p.voice?.tier,
     stateAffiliated: Boolean(p.voice?.stateAffiliated),
+    country: p.voice?.country,
     topicId: p.topicId,
     topicLabel: h.get(p.topicId).label,
     live: p.source === 'live',
@@ -110,6 +111,7 @@ export function liveView({ posts, hierarchy: h, node, now, windowHours = 1, look
         telegram: Boolean(s.lead.telegram),
         articles: s.posts.filter((p) => p.source === 'news').length,
         sources: s.sources,
+        flags: s.flags,
         posts: s.posts.length,
         firstSeen: s.firstSeen,
       })),
@@ -190,6 +192,7 @@ export function regionSummary({ posts, hierarchy: h, node, now, recentHours = 6,
       url: s.lead.url,
       status: s.status,
       sources: s.sources,
+      flags: s.flags,
       posts: s.posts.length,
       articles: s.posts.filter((p) => p.source === 'news').length,
       place: placeLabel(s.posts),

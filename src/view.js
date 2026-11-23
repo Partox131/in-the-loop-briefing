@@ -1,7 +1,7 @@
 // Turn a brief (see brief.js) into the JSON the briefing web page renders.
 // Kept separate from the server so it's easy to test and to reuse.
 
-import { TIER_NAME } from './voices.js?v=453846a99e';
+import { TIER_NAME } from './voices.js?v=cb10c15e2f';
 
 const HOUR = 3_600_000;
 
@@ -25,6 +25,7 @@ function postView(p) {
           affiliation: p.voice.affiliation,
           region: p.voice.region,
           stateAffiliated: p.voice.stateAffiliated,
+          country: p.voice.country,
           verified: Boolean(p.voice.verified),
         }
       : null,
@@ -95,7 +96,7 @@ export function briefView(brief, h, { now = new Date() } = {}) {
     topicLabel: h.get(s.lead.topicId).label,
     lenses: [...new Set(s.posts.flatMap((p) => p.lenses || []))],
     // One chip per outlet: a reporter and their outlet are not two sources.
-    sources: [...new Map(s.voices.map((v) => [v.affiliation, { affiliation: v.affiliation, region: v.region, stateAffiliated: v.stateAffiliated }])).values()],
+    sources: [...new Map(s.voices.map((v) => [v.affiliation, { affiliation: v.affiliation, region: v.region, stateAffiliated: v.stateAffiliated, country: v.country }])).values()],
     firstSeen: s.firstSeen,
     lastSeen: s.lastSeen,
     postCount: s.posts.length,

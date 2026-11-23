@@ -19,11 +19,12 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { BskyClient } from '../src/bsky.js?v=453846a99e';
-import { buildBrief } from '../src/brief.js?v=453846a99e';
-import { makeHierarchy } from '../src/hierarchy.js?v=453846a99e';
-import { newsPosts } from '../src/news.js?v=453846a99e';
-import { TIER_NAME, makeVoice } from '../src/voices.js?v=453846a99e';
+import { BskyClient } from '../src/bsky.js?v=cb10c15e2f';
+import { buildBrief } from '../src/brief.js?v=cb10c15e2f';
+import { makeHierarchy } from '../src/hierarchy.js?v=cb10c15e2f';
+import { newsPosts } from '../src/news.js?v=cb10c15e2f';
+import { TIER_NAME, makeVoice } from '../src/voices.js?v=cb10c15e2f';
+import { stateCountry } from '../src/flags.js?v=cb10c15e2f';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const HOUR = 3_600_000;
@@ -153,6 +154,7 @@ export function sourceList({ voices, missing = [], outlets, sources = [], items 
       role: tg ? ROLE[o.tier] || 'Outlet' : 'Outlet',
       based_in: o.region || '',
       state_affiliated: o.stateAffiliated ? 'Yes' : 'No',
+      state_country: stateCountry(o) || '',
       status,
       items_24h: c.d1,
       items_48h: c.d2,
@@ -173,6 +175,7 @@ export function sourceList({ voices, missing = [], outlets, sources = [], items 
       role: ROLE[v.tier] || 'Other',
       based_in: v.region || '',
       state_affiliated: v.stateAffiliated ? 'Yes' : 'No',
+      state_country: v.country || '',
       status,
       items_24h: c.d1,
       items_48h: c.d2,
@@ -194,7 +197,7 @@ export function toCsv(rows, columns = Object.keys(rows[0] || {})) {
 export const COLUMNS = {
   items: ['window', 'channel', 'source', 'account', 'affiliation', 'role', 'state_affiliated', 'coverage', 'based_in', 'items', 'bluesky_likes_reposts'],
   hourly: ['hour', 'channel', 'items'],
-  sources: ['type', 'name', 'affiliation', 'handle', 'link', 'role', 'based_in', 'state_affiliated', 'status', 'items_24h', 'items_48h', 'detail'],
+  sources: ['type', 'name', 'affiliation', 'handle', 'link', 'role', 'based_in', 'state_affiliated', 'state_country', 'status', 'items_24h', 'items_48h', 'detail'],
   outlets: ['outlet', 'domain', 'kind', 'state_affiliated', 'based_in', 'feeds', 'feeds_working', 'status', 'articles_in_feed', 'articles_kept_24h', 'problem'],
 };
 export { FEED_STATUS };

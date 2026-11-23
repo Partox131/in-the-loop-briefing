@@ -183,6 +183,7 @@
       "affiliation": "France 24",
       "region": "France",
       "stateAffiliated": true,
+      "country": "FR",
       "topics": [
         "geopolitics"
       ],
@@ -199,6 +200,7 @@
       "affiliation": "DW",
       "region": "Germany",
       "stateAffiliated": true,
+      "country": "DE",
       "topics": [
         "geopolitics"
       ],
@@ -248,6 +250,7 @@
       "affiliation": "Al Jazeera",
       "region": "Qatar",
       "stateAffiliated": true,
+      "country": "QA",
       "topics": [
         "geopolitics"
       ],
@@ -376,6 +379,7 @@
       "affiliation": "The National",
       "region": "UAE",
       "stateAffiliated": true,
+      "country": "AE",
       "topics": [
         "middle-east"
       ],
@@ -389,6 +393,7 @@
       "affiliation": "Arab News",
       "region": "Saudi Arabia",
       "stateAffiliated": true,
+      "country": "SA",
       "topics": [
         "middle-east"
       ],
@@ -402,6 +407,7 @@
       "affiliation": "Anadolu Agency",
       "region": "Turkey",
       "stateAffiliated": true,
+      "country": "TR",
       "topics": [
         "geopolitics"
       ],
@@ -415,6 +421,7 @@
       "affiliation": "Tehran Times",
       "region": "Iran",
       "stateAffiliated": true,
+      "country": "IR",
       "topics": [
         "middle-east"
       ],
@@ -428,6 +435,7 @@
       "affiliation": "Press TV",
       "region": "Iran",
       "stateAffiliated": true,
+      "country": "IR",
       "topics": [
         "middle-east"
       ],
@@ -473,6 +481,7 @@
       "affiliation": "Ukrinform",
       "region": "Ukraine",
       "stateAffiliated": true,
+      "country": "UA",
       "topics": [
         "eastern-europe"
       ],
@@ -498,6 +507,7 @@
       "affiliation": "TASS",
       "region": "Russia",
       "stateAffiliated": true,
+      "country": "RU",
       "topics": [
         "eastern-europe"
       ],
@@ -511,6 +521,7 @@
       "affiliation": "RFE/RL",
       "region": "US",
       "stateAffiliated": true,
+      "country": "US",
       "topics": [
         "eastern-europe"
       ],
@@ -612,6 +623,7 @@
       "affiliation": "Yonhap",
       "region": "South Korea",
       "stateAffiliated": true,
+      "country": "KR",
       "topics": [
         "east-asia"
       ],
@@ -625,6 +637,7 @@
       "affiliation": "Central News Agency",
       "region": "Taiwan",
       "stateAffiliated": true,
+      "country": "TW",
       "topics": [
         "east-asia"
       ],
@@ -648,6 +661,7 @@
       "affiliation": "Global Times",
       "region": "China",
       "stateAffiliated": true,
+      "country": "CN",
       "topics": [
         "east-asia"
       ],
@@ -661,6 +675,7 @@
       "affiliation": "CGTN",
       "region": "China",
       "stateAffiliated": true,
+      "country": "CN",
       "topics": [
         "east-asia"
       ],
@@ -677,6 +692,7 @@
         "xinhuanet.com"
       ],
       "stateAffiliated": true,
+      "country": "CN",
       "topics": [
         "east-asia"
       ],
@@ -697,7 +713,8 @@
           "middle-east"
         ],
         "verified": true,
-        "stateAffiliated": true
+        "stateAffiliated": true,
+        "country": "IL"
       },
       {
         "channel": "PressTV",
@@ -711,6 +728,7 @@
         ],
         "verified": false,
         "stateAffiliated": true,
+        "country": "IR",
         "note": "No badge, but the channel Press TV has run for years; already a Bluesky voice and RSS outlet"
       },
       {
@@ -725,6 +743,7 @@
         ],
         "verified": false,
         "stateAffiliated": true,
+        "country": "IR",
         "note": "No badge; Iran's state news agency English channel"
       },
       {
@@ -762,7 +781,8 @@
           "eastern-europe"
         ],
         "verified": true,
-        "stateAffiliated": true
+        "stateAffiliated": true,
+        "country": "RU"
       },
       {
         "channel": "MFARussia",
@@ -775,7 +795,8 @@
           "eastern-europe"
         ],
         "verified": true,
-        "stateAffiliated": true
+        "stateAffiliated": true,
+        "country": "RU"
       },
       {
         "channel": "V_Zelenskiy_official",
@@ -788,7 +809,8 @@
           "ukraine-war"
         ],
         "verified": true,
-        "stateAffiliated": true
+        "stateAffiliated": true,
+        "country": "UA"
       },
       {
         "channel": "GeneralStaffZSU",
@@ -801,7 +823,8 @@
           "ukraine-war"
         ],
         "verified": true,
-        "stateAffiliated": true
+        "stateAffiliated": true,
+        "country": "UA"
       },
       {
         "channel": "kpszsu",
@@ -814,7 +837,8 @@
           "ukraine-war"
         ],
         "verified": true,
-        "stateAffiliated": true
+        "stateAffiliated": true,
+        "country": "UA"
       },
       {
         "channel": "DeepStateUA",
@@ -864,7 +888,8 @@
           "ukraine-war"
         ],
         "verified": true,
-        "stateAffiliated": true
+        "stateAffiliated": true,
+        "country": "UA"
       }
     ]
   }

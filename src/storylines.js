@@ -8,7 +8,7 @@
 // each other. Embeddings and LLM claim extraction would plug in at
 // `mergeSimilar`/`claimsOf` later.
 
-import { mergeSimilar } from './similar.js?v=453846a99e';
+import { mergeSimilar } from './similar.js?v=cb10c15e2f';
 
 const TRACKING_PARAMS = /^(utm_|fbclid|gclid|ref|smid|cmpid|at_|taid|ito|mc_)/i;
 
@@ -121,6 +121,8 @@ export function buildStorylines(posts, { textMatch = true } = {}) {
       posts: group,
       voices: voicesInvolved,
       sources: [...new Set(voicesInvolved.map((v) => v.affiliation))],
+      // affiliation -> country code, for state-affiliated sources (their flag is shown)
+      flags: Object.fromEntries(voicesInvolved.filter((v) => v.country).map((v) => [v.affiliation, v.country])),
       regions: [...new Set(voicesInvolved.map((v) => v.region))],
       firstSeen: new Date(Math.min(...times)).toISOString(),
       lastSeen: new Date(Math.max(...times)).toISOString(),

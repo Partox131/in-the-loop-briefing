@@ -5,16 +5,16 @@
 // Search is off here: Bluesky's public search often refuses anonymous
 // callers, so the static page follows the voice list (getAuthorFeed) only.
 
-import { BskyClient } from './bsky.js?v=453846a99e';
-import { buildBrief } from './brief.js?v=453846a99e';
-import { DEMO_VOICES, demoFetch } from './demo.js?v=453846a99e';
-import { project } from './geo.js?v=453846a99e';
-import { makeHierarchy } from './hierarchy.js?v=453846a99e';
-import { subscribePosts } from './jetstream.js?v=453846a99e';
-import { makeLive } from './live.js?v=453846a99e';
-import { newsPosts } from './news.js?v=453846a99e';
-import { makeVoice } from './voices.js?v=453846a99e';
-import { briefView } from './view.js?v=453846a99e';
+import { BskyClient } from './bsky.js?v=cb10c15e2f';
+import { buildBrief } from './brief.js?v=cb10c15e2f';
+import { DEMO_VOICES, demoFetch } from './demo.js?v=cb10c15e2f';
+import { project } from './geo.js?v=cb10c15e2f';
+import { makeHierarchy } from './hierarchy.js?v=cb10c15e2f';
+import { subscribePosts } from './jetstream.js?v=cb10c15e2f';
+import { makeLive } from './live.js?v=cb10c15e2f';
+import { newsPosts } from './news.js?v=cb10c15e2f';
+import { makeVoice } from './voices.js?v=cb10c15e2f';
+import { briefView } from './view.js?v=cb10c15e2f';
 
 const SINCE_HOURS = { '6h': 6, '12h': 12, '24h': 24, '48h': 48, '7d': 168 };
 const CACHE_MS = 120_000;

@@ -5,6 +5,8 @@
 // A voice file lists accounts by handle (easier to curate); at runtime we
 // resolve handles to DIDs, which is what we key on (handles can change).
 
+import { stateCountry } from './flags.js?v=cb10c15e2f';
+
 /** Base weight per tier. Officials and OSINT are useful but never promoted alone. */
 export const TIER_WEIGHT = { 1: 1.0, 2: 0.9, 3: 0.7, 4: 0.6, 5: 0.5 };
 export const TIER_NAME = { 1: 'outlet', 2: 'reporter', 3: 'analyst', 4: 'official', 5: 'OSINT' };
@@ -18,6 +20,7 @@ export const TIER_NAME = { 1: 'outlet', 2: 'reporter', 3: 'analyst', 4: 'officia
  * @property {string} affiliation   outlet or employer; two voices with the same one are not independent
  * @property {string} region        where the source is based / whose perspective it carries
  * @property {boolean} stateAffiliated
+ * @property {string|undefined} country  state-affiliated only: the state's two-letter country code (its flag is shown)
  * @property {string[]} topics      topic node ids this voice covers
  * @property {number} weight
  */
@@ -39,6 +42,7 @@ export function makeVoice(v) {
     affiliation: v.affiliation || v.name || handle,
     region: v.region || 'unknown',
     stateAffiliated: Boolean(v.stateAffiliated),
+    country: stateCountry(v),
     topics: v.topics || [],
     domainVerified,
     weight: TIER_WEIGHT[tier] * (domainVerified ? 1 : 0.9),

@@ -130,11 +130,13 @@
     ol.rail li + li { margin-top: 0; }
     ol.rail li + li::before { display: none; }
   }
+  .statetag { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+  .flag { width: 16px; height: 12px; border-radius: 2px; box-shadow: 0 0 0 1px color-mix(in srgb, currentColor 20%, transparent); object-fit: cover; flex: none; }
 </style>
 </head>
 <body>
 <div id="app"><p class="loading">Loading the latest from Bluesky…</p></div>
-<script>window.itlStatic = import('./src/static.js?v=453846a99e').then((m) => m.init());</script>
+<script>window.itlStatic = import('./src/static.js?v=cb10c15e2f').then((m) => m.init());</script>
 <script>
 (() => {
   const params = new URLSearchParams(location.search);
@@ -144,6 +146,14 @@
   const WINDOWS = ['6h', '12h', '24h', '48h', '7d'];
 
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  // State-affiliated sources: the state's flag and a "state" label (src/flags.js).
+  const countryName = (c) => { try { return new Intl.DisplayNames(['en'], { type: 'region' }).of(c); } catch { return c; } };
+  const stateTag = (c, long) => {
+    const name = c ? countryName(c) : '';
+    const title = name ? `State-affiliated: ${name}` : 'State-affiliated';
+    const img = /^[A-Z]{2}$/.test(c || '') ? `<img class="flag" src="flags/${c.toLowerCase()}.svg" alt="${esc(name)}" width="16" height="12">` : '';
+    return ` <span class="statetag" title="${esc(title)}">${img}${long ? 'state-affiliated' : 'state'}</span>`;
+  };
   const safeUrl = (u) => (/^https:\/\//.test(u || '') ? esc(u) : '#');
   const ago = (iso) => {
     const m = Math.round((Date.now() - Date.parse(iso)) / 60000);
@@ -257,12 +267,12 @@
 
   function story(s, isNew) {
     const voice = s.lead.voice;
-    const who = (voice ? `${esc(voice.name)}${voice.stateAffiliated ? ' (state-affiliated)' : ''}` : `@${esc(s.lead.handle)}`) + (s.lead.telegram ? ' (Telegram)' : s.lead.news ? ' (news article)' : '');
+    const who = (voice ? `${esc(voice.name)}${voice.stateAffiliated ? stateTag(voice.country, true) : ''}` : `@${esc(s.lead.handle)}`) + (s.lead.telegram ? ' (Telegram)' : s.lead.news ? ' (news article)' : '');
     const lift = s.lead.why?.amplifiedBy ? `, shared by ${plural(s.lead.why.amplifiedBy, 'other voice')}` : '';
     const topic = s.topicId !== state.data.node.id ? ` In ${esc(s.topicLabel)}.` : '';
-    const sources = s.sources.length ? `<p class="sources">Sources: ${s.sources.map((x) => `${esc(x.affiliation)}${x.stateAffiliated ? ' (state)' : ''}`).join(', ')}</p>` : '';
+    const sources = s.sources.length ? `<p class="sources">Sources: ${s.sources.map((x) => `${esc(x.affiliation)}${x.stateAffiliated ? stateTag(x.country) : ''}`).join(', ')}</p>` : '';
     const related = s.related.length
-      ? `<details><summary>${s.postCount - 1 > s.related.length ? `Top ${s.related.length} of ${s.postCount - 1} related posts` : plural(s.postCount - 1, 'related post')}</summary><div class="rel">${s.related.map((p) => `<div><strong>${esc(p.voice ? p.voice.name : '@' + p.handle)}</strong> <span class="muted">${esc(ago(p.createdAt))}</span><br>${esc(oneLine(p.text))} <a href="${safeUrl(p.url)}" target="_blank" rel="noopener">${p.telegram ? 'View on Telegram' : p.news ? 'Read article' : 'View post'}</a></div>`).join('')}</div></details>`
+      ? `<details><summary>${s.postCount - 1 > s.related.length ? `Top ${s.related.length} of ${s.postCount - 1} related posts` : plural(s.postCount - 1, 'related post')}</summary><div class="rel">${s.related.map((p) => `<div><strong>${esc(p.voice ? p.voice.name : '@' + p.handle)}</strong>${p.voice?.stateAffiliated ? stateTag(p.voice.country) : ''} <span class="muted">${esc(ago(p.createdAt))}</span><br>${esc(oneLine(p.text))} <a href="${safeUrl(p.url)}" target="_blank" rel="noopener">${p.telegram ? 'View on Telegram' : p.news ? 'Read article' : 'View post'}</a></div>`).join('')}</div></details>`
       : '';
     return `<article class="story">
       <div><div class="state ${s.status}"><span class="dot ${s.status}"></span>${STATE_LABEL[s.status]}</div>${rail(s)}${isNew ? '<span class="newtag">New to you</span>' : ''}</div>

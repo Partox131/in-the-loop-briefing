@@ -11,8 +11,8 @@
 //
 // Browser-safe: no Node imports. No AI: parsing and matching are rules.
 
-import { canonicalUrl } from './storylines.js?v=453846a99e';
-import { makeVoice } from './voices.js?v=453846a99e';
+import { canonicalUrl } from './storylines.js?v=cb10c15e2f';
+import { makeVoice } from './voices.js?v=cb10c15e2f';
 
 const ENTITIES = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ', hellip: '…', mdash: '—', ndash: '–', rsquo: '’', lsquo: '‘', rdquo: '”', ldquo: '“' };
 
@@ -178,6 +178,7 @@ export function outletVoice(o) {
       affiliation: o.affiliation || o.name,
       region: o.region,
       stateAffiliated: o.stateAffiliated,
+      country: o.country,
       topics: o.topics || ['geopolitics'],
     }),
     news: true,
@@ -248,6 +249,7 @@ export function telegramOutlets(channels = []) {
     region: c.region,
     tier: c.tier || 1,
     stateAffiliated: c.stateAffiliated || undefined,
+    country: c.country,
     topics: c.topics || ['geopolitics'],
     language: c.language,
     telegram: true,
