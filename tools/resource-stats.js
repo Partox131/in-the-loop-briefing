@@ -1,0 +1,176 @@
+#!/usr/bin/env node
+// Count which sources feed the briefing site, for the "Resource breakdown"
+// dashboard. Runs the same pipeline as the static page (the voices' Bluesky
+// posts plus the site's news.json, kept for one topic node) and writes three
+// CSV files and a meta.json. Run once a day by the public site's workflow
+// (deploy/stats.yml), free and with no AI.
+//
+//   node scripts/resource-stats.js [--news <url or file of news.json>]
+//     [--voices voices.example.json] [--hierarchy topics.hierarchy.example.json]
+//     [--node geopolitics] [--out stats]
+//
+// items.csv    one row per source, channel, region covered and window
+//              ("Last 24 hours" or "24 to 48 hours ago"), with item counts
+// hourly.csv   items per UTC hour and channel over the last 48 hours
+// outlets.csv  every listed news outlet with its RSS feeds' last result
+
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { BskyClient } from '../src/bsky.js?v=296db795d6';
+import { buildBrief } from '../src/brief.js?v=296db795d6';
+import { makeHierarchy } from '../src/hierarchy.js?v=296db795d6';
+import { newsPosts } from '../src/news.js?v=296db795d6';
+import { TIER_NAME, makeVoice } from '../src/voices.js?v=296db795d6';
+
+const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const HOUR = 3_600_000;
+const ROLE = Object.fromEntries(Object.entries(TIER_NAME).map(([k, v]) => [k, v === 'OSINT' ? v : v[0].toUpperCase() + v.slice(1)]));
+const COVERAGE = { 'middle-east': 'Middle East', 'eastern-europe': 'Ukraine, Russia and NATO east', 'east-asia': 'China and Taiwan' };
+const FEED_STATUS = ['Working', 'Partly failing', 'Failing', 'No RSS feed'];
+
+/**
+ * Turn the briefing's posts into the dashboard's rows.
+ * @param {object} o
+ * @param {Array} o.posts      the brief's posts (Bluesky posts and news articles, each with did, handle, node, createdAt)
+ * @param {Array} o.voices     voices with did, as resolved for the brief
+ * @param {Array} o.outlets    news.json's outlets
+ * @param {Array} [o.sources]  news.json's per-feed report
+ */
+export function resourceStats({ posts, voices, outlets, sources = [], now = new Date() }) {
+  const byDid = new Map(voices.filter((v) => v.did).map((v) => [v.did, v]));
+  const byDomain = new Map(outlets.map((o) => [o.domain, o]));
+  const t0 = now.getTime();
+  const groups = new Map();
+  const hours = new Map();
+  for (const p of posts) {
+    const t = Date.parse(p.createdAt);
+    if (!(t <= t0 && t0 - t <= 48 * HOUR)) continue;
+    const isNews = p.source === 'news' || String(p.did).startsWith('news:');
+    const v = isNews ? null : byDid.get(p.did);
+    const o = isNews ? byDomain.get(p.handle) : null;
+    const channel = isNews ? 'RSS' : 'Bluesky';
+    const row = {
+      window: t0 - t <= 24 * HOUR ? 'Last 24 hours' : '24 to 48 hours ago',
+      channel,
+      source: (o?.name || v?.name || p.displayName || p.handle),
+      account: p.handle,
+      affiliation: o?.affiliation || o?.name || v?.affiliation || v?.name || p.handle,
+      role: isNews ? 'Outlet' : ROLE[v?.tier] || 'Other',
+      state_affiliated: (o || v)?.stateAffiliated ? 'Yes' : 'No',
+      coverage: COVERAGE[p.node] || 'General',
+      based_in: (o || v)?.region || '',
+    };
+    const key = [row.window, channel, row.account, row.coverage].join('|');
+    const g = groups.get(key) || { ...row, items: 0, bluesky_likes_reposts: isNews ? '' : 0 };
+    g.items++;
+    if (!isNews) g.bluesky_likes_reposts += (p.counts?.likes || 0) + (p.counts?.reposts || 0);
+    groups.set(key, g);
+    const hour = `${new Date(Math.floor(t / HOUR) * HOUR).toISOString().slice(0, 13)}:00Z`;
+    const hk = `${hour}|${channel}`;
+    hours.set(hk, (hours.get(hk) || 0) + 1);
+  }
+  const items = [...groups.values()].sort((a, b) => a.window.localeCompare(b.window) || b.items - a.items || a.account.localeCompare(b.account));
+  const hourly = [...hours].map(([k, n]) => { const [hour, channel] = k.split('|'); return { hour, channel, items: n }; })
+    .sort((a, b) => a.hour.localeCompare(b.hour) || a.channel.localeCompare(b.channel));
+
+  const kept24 = new Map();
+  for (const r of items) if (r.channel === 'RSS' && r.window === 'Last 24 hours') kept24.set(r.account, (kept24.get(r.account) || 0) + r.items);
+  const feeds = new Map();
+  for (const s of sources) {
+    if (s.kind !== 'rss') continue;
+    const f = feeds.get(s.outlet) || { feeds: 0, ok: 0, items: 0, errors: new Set() };
+    f.feeds++;
+    if (s.ok) f.ok++;
+    f.items += s.items || 0;
+    if (s.error) f.errors.add(String(s.error).slice(0, 60));
+    feeds.set(s.outlet, f);
+  }
+  const outletRows = outlets.map((o) => {
+    const f = feeds.get(o.domain);
+    const status = !f ? 'No RSS feed' : f.ok === f.feeds ? 'Working' : f.ok === 0 ? 'Failing' : 'Partly failing';
+    return {
+      outlet: o.name,
+      domain: o.domain,
+      state_affiliated: o.stateAffiliated ? 'Yes' : 'No',
+      based_in: o.region || '',
+      feeds: f?.feeds || 0,
+      feeds_working: f?.ok || 0,
+      status,
+      articles_in_feed: f?.items || 0,
+      articles_kept_24h: kept24.get(o.domain) || 0,
+      problem: f ? [...f.errors].sort().join('; ') : 'No RSS feed listed',
+    };
+  });
+  return { items, hourly, outlets: outletRows };
+}
+
+export function toCsv(rows, columns = Object.keys(rows[0] || {})) {
+  const cell = (v) => {
+    const s = v == null ? '' : String(v);
+    return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  };
+  return [columns.join(','), ...rows.map((r) => columns.map((c) => cell(r[c])).join(','))].join('\n') + '\n';
+}
+
+export const COLUMNS = {
+  items: ['window', 'channel', 'source', 'account', 'affiliation', 'role', 'state_affiliated', 'coverage', 'based_in', 'items', 'bluesky_likes_reposts'],
+  hourly: ['hour', 'channel', 'items'],
+  outlets: ['outlet', 'domain', 'state_affiliated', 'based_in', 'feeds', 'feeds_working', 'status', 'articles_in_feed', 'articles_kept_24h', 'problem'],
+};
+export { FEED_STATUS };
+
+function args(argv) {
+  const o = {
+    news: 'https://partox131.github.io/in-the-loop-briefing/news.json',
+    voices: join(root, 'voices.example.json'),
+    hierarchy: join(root, 'topics.hierarchy.example.json'),
+    node: 'geopolitics',
+    out: 'stats',
+  };
+  for (let i = 0; i < argv.length; i++) if (argv[i].startsWith('--')) o[argv[i].slice(2)] = argv[++i];
+  return o;
+}
+
+async function readJson(where) {
+  if (/^https?:\/\//.test(where)) {
+    const res = await fetch(`${where}?t=${Date.now()}`, { signal: AbortSignal.timeout(30_000) });
+    if (!res.ok) throw new Error(`${where}: HTTP ${res.status}`);
+    return res.json();
+  }
+  return JSON.parse(readFileSync(where, 'utf8'));
+}
+
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  const o = args(process.argv.slice(2));
+  const hierarchy = makeHierarchy(await readJson(o.hierarchy));
+  const voicesSpec = await readJson(o.voices);
+  const voices = (Array.isArray(voicesSpec) ? voicesSpec : voicesSpec.voices).map(makeVoice);
+  const newsDoc = await readJson(o.news);
+  const now = new Date();
+  const brief = await buildBrief({
+    client: new BskyClient(),
+    hierarchy,
+    node: o.node,
+    voices,
+    now,
+    since: new Date(now - 48 * HOUR),
+    search: false,
+    news: newsPosts(newsDoc),
+    perVoice: 150,
+  });
+  const stats = resourceStats({ posts: brief.posts, voices: brief.voices, outlets: newsDoc.outlets || [], sources: newsDoc.sources || [], now });
+  mkdirSync(o.out, { recursive: true });
+  for (const name of ['items', 'hourly', 'outlets']) writeFileSync(join(o.out, `${name}.csv`), toCsv(stats[name], COLUMNS[name]));
+  const meta = {
+    generatedAt: now.toISOString(),
+    newsGeneratedAt: newsDoc.generatedAt || null,
+    node: o.node,
+    voices: brief.voices.length,
+    missingVoices: brief.missingVoices?.length || 0,
+    errors: brief.errors,
+    items24h: stats.items.filter((r) => r.window === 'Last 24 hours').reduce((a, r) => a + r.items, 0),
+  };
+  writeFileSync(join(o.out, 'meta.json'), JSON.stringify(meta, null, 2) + '\n');
+  console.log(`Wrote ${o.out}/: ${meta.items24h} items in the last 24 hours, ${brief.errors.length} errors.`);
+}

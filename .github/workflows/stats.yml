@@ -1,0 +1,39 @@
+name: Resource stats
+
+# Once a day, counts which sources feed the site (scripts/resource-stats.js in
+# the private in-the-loop repo, tools/resource-stats.js here) and pushes the
+# CSV files to the "stats" branch, replacing the previous ones. Claude's daily
+# routine copies them into the "Resource breakdown" dashboard. Free: public
+# repos get Actions minutes at no cost. Built from deploy/stats.yml in the
+# private repo; edit it there, not here.
+
+on:
+  schedule:
+    - cron: '40 10 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  stats:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Count items per source
+        run: node tools/resource-stats.js --voices voices.example.json --hierarchy topics.hierarchy.example.json --out "$RUNNER_TEMP/stats"
+      - name: Push to the stats branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cd "$RUNNER_TEMP/stats"
+          git init -q -b stats
+          git config user.name "github-actions[bot]"
+          git config user.email "41898732+github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -q -m "Resource stats $(date -u +%Y-%m-%dT%H:%MZ)"
+          git push -q --force "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" stats
