@@ -92,6 +92,7 @@ export function resourceStats({ posts, voices, outlets, sources = [], now = new 
     return {
       outlet: o.name,
       domain: o.domain,
+      kind: o.telegram ? 'Telegram' : 'RSS',
       state_affiliated: o.stateAffiliated ? 'Yes' : 'No',
       based_in: o.region || '',
       feeds: f?.feeds || 0,
@@ -99,7 +100,7 @@ export function resourceStats({ posts, voices, outlets, sources = [], now = new 
       status,
       articles_in_feed: f?.items || 0,
       articles_kept_24h: kept24.get(o.domain) || 0,
-      problem: f ? [...f.errors].sort().join('; ') : 'No RSS feed listed',
+      problem: f ? [...f.errors].sort().join('; ') : o.telegram ? 'Channel not read in the last run' : 'No RSS feed listed',
     };
   });
   return { items, hourly, outlets: outletRows };
@@ -116,7 +117,7 @@ export function toCsv(rows, columns = Object.keys(rows[0] || {})) {
 export const COLUMNS = {
   items: ['window', 'channel', 'source', 'account', 'affiliation', 'role', 'state_affiliated', 'coverage', 'based_in', 'items', 'bluesky_likes_reposts'],
   hourly: ['hour', 'channel', 'items'],
-  outlets: ['outlet', 'domain', 'state_affiliated', 'based_in', 'feeds', 'feeds_working', 'status', 'articles_in_feed', 'articles_kept_24h', 'problem'],
+  outlets: ['outlet', 'domain', 'kind', 'state_affiliated', 'based_in', 'feeds', 'feeds_working', 'status', 'articles_in_feed', 'articles_kept_24h', 'problem'],
 };
 export { FEED_STATUS };
 
