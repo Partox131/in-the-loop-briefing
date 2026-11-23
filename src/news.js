@@ -11,8 +11,8 @@
 //
 // Browser-safe: no Node imports. No AI: parsing and matching are rules.
 
-import { canonicalUrl } from './storylines.js?v=02becfea99';
-import { makeVoice } from './voices.js?v=02becfea99';
+import { canonicalUrl } from './storylines.js?v=453846a99e';
+import { makeVoice } from './voices.js?v=453846a99e';
 
 const ENTITIES = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ', hellip: '…', mdash: '—', ndash: '–', rsquo: '’', lsquo: '‘', rdquo: '”', ldquo: '“' };
 
@@ -125,6 +125,8 @@ export function makeOutlets(outlets = []) {
     list: outlets,
     forUrl(url) {
       let host = hostOf(url);
+      // Telegram channels are listed as "t.me/<channel>" (see telegramOutlets).
+      if (host === 't.me') return byDomain.get(`t.me/${telegramChannelOf(url)}`) || null;
       while (host) {
         if (byDomain.has(host)) return byDomain.get(host);
         const dot = host.indexOf('.');
@@ -154,6 +156,10 @@ export function mergeArticles(...lists) {
     byKey.set(key, {
       ...prev,
       summary: prev.summary || a.summary,
+      ...(prev.language || a.language ? { language: prev.language || a.language } : {}),
+      // Telegram view counts grow: keep the latest one seen.
+      ...(a.views != null ? { views: a.views } : {}),
+      ...(prev.links || a.links ? { links: [...new Set([...(prev.links || []), ...(a.links || [])])] } : {}),
       published: times[0] || null,
       via: [...new Set([...(prev.via || []), ...(a.via || [])])],
     });
@@ -168,13 +174,14 @@ export function outletVoice(o) {
       handle: o.domain,
       did: `news:${o.domain}`,
       name: o.name,
-      tier: 1,
+      tier: o.tier || 1,
       affiliation: o.affiliation || o.name,
       region: o.region,
       stateAffiliated: o.stateAffiliated,
       topics: o.topics || ['geopolitics'],
     }),
     news: true,
+    ...(o.telegram ? { telegram: true } : {}),
   };
 }
 
@@ -201,14 +208,103 @@ export function newsPosts(doc) {
       text: a.summary && !a.summary.startsWith(a.title) ? `${a.title}. ${a.summary}` : a.title,
       title: a.title,
       tags: [],
-      links: [a.url],
+      // A Telegram post's own links (e.g. to an outlet's article) join that article's storyline.
+      links: [a.url, ...(a.links || [])],
       langs: a.language && a.language !== 'English' ? [] : ['en'],
       createdAt: a.published,
       isReply: false,
       counts: undefined,
       source: 'news',
       via: a.via || [],
+      ...(o.telegram ? { telegram: true, views: a.views } : {}),
     });
   }
   return { posts, voices, generatedAt: doc?.generatedAt || null };
+}
+
+// ---------------------------------------------------------------------------
+// Telegram public channels (docs/research/telegram.md). Each public channel
+// has a web preview at https://t.me/s/<channel> with its latest ~20 posts.
+// Browsers can't read it (no CORS), so the scheduled collector does. We keep
+// a short excerpt and link to the post on Telegram, never the full post or
+// media, and Telegram content must never go to an AI (Telegram's terms).
+
+/** "https://t.me/PressTV/123" or "https://t.me/s/PressTV" -> "presstv". */
+export function telegramChannelOf(url) {
+  try {
+    const parts = new URL(url).pathname.split('/').filter(Boolean);
+    return ((parts[0] === 's' ? parts[1] : parts[0]) || '').toLowerCase();
+  } catch {
+    return '';
+  }
+}
+
+/** Channels from news.sources.json ("telegram.channels") as outlets keyed "t.me/<channel>". */
+export function telegramOutlets(channels = []) {
+  return channels.map((c) => ({
+    domain: `t.me/${c.channel.toLowerCase()}`,
+    name: c.name,
+    affiliation: c.affiliation || c.name,
+    region: c.region,
+    tier: c.tier || 1,
+    stateAffiliated: c.stateAffiliated || undefined,
+    topics: c.topics || ['geopolitics'],
+    language: c.language,
+    telegram: true,
+  }));
+}
+
+/** "3.03K" -> 3030, "1.2M" -> 1200000. */
+export function parseCount(s) {
+  const m = /([\d.]+)\s*([KM]?)/i.exec(String(s || ''));
+  if (!m) return undefined;
+  const n = parseFloat(m[1]) * ({ k: 1e3, m: 1e6 }[m[2].toLowerCase()] || 1);
+  return Number.isFinite(n) ? Math.round(n) : undefined;
+}
+
+const EXCERPT = 280;
+
+/**
+ * Posts in a t.me/s/<channel> page. Skips service messages (pins), forwarded
+ * posts (they come from other, unchecked channels) and posts without text.
+ * @returns {{ verified: boolean, posts: { title, url, summary, published, views, links }[] }}
+ */
+export function parseTelegram(html) {
+  const page = String(html || '');
+  const header = page.slice(page.indexOf('tgme_channel_info'), page.indexOf('tgme_channel_info_counters'));
+  const verified = page.includes('tgme_channel_info') && /verified-icon/.test(header);
+  const posts = [];
+  for (const block of page.split(/<div class="tgme_widget_message_wrap/).slice(1)) {
+    const post = /data-post="([^"\/]+)\/(\d+)"/.exec(block);
+    if (!post || /service_message/.test(block.slice(0, 300)) || /tgme_widget_message_forwarded_from/.test(block)) continue;
+    const textHtml = /<div class="tgme_widget_message_text js-message_text"[^>]*>([\s\S]*?)<\/div>/.exec(block)?.[1];
+    if (!textHtml) continue;
+    const links = [...textHtml.matchAll(/<a\b[^>]*href="([^"]+)"/gi)]
+      .map((m) => decodeEntities(m[1]))
+      .filter((u) => /^https?:\/\//.test(u) && hostOf(u) !== 't.me');
+    // Emoji come as <i class="emoji"><b>🔴</b></i>; keep the character, drop the markup.
+    const lines = textHtml
+      .replace(/<br\s*\/?>/gi, '\n')
+      .split('\n')
+      .map((l) => plainText(l))
+      .filter((l) => l && !/^@\w+$/.test(l)); // the channel's own "@PressTV" signature
+    const text = lines.join(' ').trim();
+    if (!text) continue;
+    // A short lead-in ("Iran's Parliament Speaker Ghalibaf:") needs the next line to make sense.
+    const head = lines[0].length < 40 || /:$/.test(lines[0]) ? 2 : 1;
+    const first = lines.slice(0, head).join(' ');
+    const title = first.length > 200 ? `${first.slice(0, 197).replace(/\s+\S*$/, '')}…` : first;
+    const rest = lines.slice(head).join(' ');
+    const time = /<time datetime="([^"]+)"/.exec(block)?.[1];
+    const published = time && !Number.isNaN(Date.parse(time)) ? new Date(time).toISOString() : null;
+    posts.push({
+      title,
+      url: `https://t.me/${post[1]}/${post[2]}`,
+      summary: rest.length > EXCERPT ? `${rest.slice(0, EXCERPT - 1).replace(/\s+\S*$/, '')}…` : rest,
+      published,
+      views: parseCount(/<span class="tgme_widget_message_views">([^<]*)</.exec(block)?.[1]),
+      links: [...new Set(links)],
+    });
+  }
+  return { verified, posts };
 }

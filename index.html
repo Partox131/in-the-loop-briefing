@@ -134,7 +134,7 @@
 </head>
 <body>
 <div id="app"><p class="loading">Loading the latest from Bluesky…</p></div>
-<script>window.itlStatic = import('./src/static.js?v=02becfea99').then((m) => m.init());</script>
+<script>window.itlStatic = import('./src/static.js?v=453846a99e').then((m) => m.init());</script>
 <script>
 (() => {
   const params = new URLSearchParams(location.search);
@@ -257,12 +257,12 @@
 
   function story(s, isNew) {
     const voice = s.lead.voice;
-    const who = (voice ? `${esc(voice.name)}${voice.stateAffiliated ? ' (state-affiliated)' : ''}` : `@${esc(s.lead.handle)}`) + (s.lead.news ? ' (news article)' : '');
+    const who = (voice ? `${esc(voice.name)}${voice.stateAffiliated ? ' (state-affiliated)' : ''}` : `@${esc(s.lead.handle)}`) + (s.lead.telegram ? ' (Telegram)' : s.lead.news ? ' (news article)' : '');
     const lift = s.lead.why?.amplifiedBy ? `, shared by ${plural(s.lead.why.amplifiedBy, 'other voice')}` : '';
     const topic = s.topicId !== state.data.node.id ? ` In ${esc(s.topicLabel)}.` : '';
     const sources = s.sources.length ? `<p class="sources">Sources: ${s.sources.map((x) => `${esc(x.affiliation)}${x.stateAffiliated ? ' (state)' : ''}`).join(', ')}</p>` : '';
     const related = s.related.length
-      ? `<details><summary>${s.postCount - 1 > s.related.length ? `Top ${s.related.length} of ${s.postCount - 1} related posts` : plural(s.postCount - 1, 'related post')}</summary><div class="rel">${s.related.map((p) => `<div><strong>${esc(p.voice ? p.voice.name : '@' + p.handle)}</strong> <span class="muted">${esc(ago(p.createdAt))}</span><br>${esc(oneLine(p.text))} <a href="${safeUrl(p.url)}" target="_blank" rel="noopener">${p.news ? 'Read article' : 'View post'}</a></div>`).join('')}</div></details>`
+      ? `<details><summary>${s.postCount - 1 > s.related.length ? `Top ${s.related.length} of ${s.postCount - 1} related posts` : plural(s.postCount - 1, 'related post')}</summary><div class="rel">${s.related.map((p) => `<div><strong>${esc(p.voice ? p.voice.name : '@' + p.handle)}</strong> <span class="muted">${esc(ago(p.createdAt))}</span><br>${esc(oneLine(p.text))} <a href="${safeUrl(p.url)}" target="_blank" rel="noopener">${p.telegram ? 'View on Telegram' : p.news ? 'Read article' : 'View post'}</a></div>`).join('')}</div></details>`
       : '';
     return `<article class="story">
       <div><div class="state ${s.status}"><span class="dot ${s.status}"></span>${STATE_LABEL[s.status]}</div>${rail(s)}${isNew ? '<span class="newtag">New to you</span>' : ''}</div>

@@ -2,7 +2,7 @@
   "politics": { "label": "Politics" },
   "geopolitics": {
     "label": "Geopolitics",
-    "gate": ["war", "wars", "wartime", "warship", "warships", "military", "militarily", "army", "navy", "naval", "air force", "troops", "soldier", "soldiers", "forces", "strike", "strikes", "struck", "airstrike", "airstrikes", "attack", "attacks", "attacked", "missile", "missiles", "drone", "drones", "rocket", "rockets", "bomb", "bombs", "bombing", "bombed", "shelling", "artillery", "explosion", "explosions", "air raid", "sirens", "casualties", "wounded", "kidnapped", "kidnapping", "abducted", "ceasefire", "truce", "invasion", "invaded", "occupation", "occupied", "occupier", "occupiers", "offensive", "front line", "frontline", "blockade", "sanctions", "sanctioned", "embargo", "militia", "militias", "militant", "militants", "insurgents", "rebels", "islamic state", "isis", "terrorism", "terrorist", "terrorists", "hostage", "hostages", "settler", "settlers", "genocide", "war crimes", "tribunal", "icj", "icc", "hague", "humanitarian", "aid", "refugees", "displaced", "displacement", "rubble", "airspace", "border", "sovereignty", "independence", "annexation", "nuclear", "intercept", "intercepted", "interception", "air defense", "air defenses", "air defence", "defense", "defence", "national security", "security forces", "security official", "security officials", "security guarantees", "security council", "intelligence", "spy", "spies", "espionage", "sabotage", "coup", "regime", "purge", "crackdown", "political prisoners", "crisis", "escalation", "deterrence", "alliance", "allies", "nato", "united nations", "diplomacy", "diplomat", "diplomats", "diplomatic", "envoy", "talks", "negotiations", "summit", "treaty", "peace", "foreign minister", "foreign ministry", "defense minister", "prime minister", "president", "presidential", "election", "elections", "referendum", "kremlin", "pentagon", "white house", "tariff", "tariffs", "trade war", "export controls", "tanker", "tankers", "shipping", "russia", "russian", "ukraine", "ukrainian", "israel", "israeli", "iran", "iranian", "hamas", "hezbollah", "houthi", "houthis", "irgc", "idf", "putin", "zelensky", "zelenskyy", "netanyahu", "xi jinping", "china", "chinese", "beijing", "pla", "palestinian", "palestinians", "palestine"],
+    "gate": ["war", "wars", "wartime", "warship", "warships", "military", "militarily", "army", "navy", "naval", "air force", "troops", "soldier", "soldiers", "forces", "strike", "strikes", "struck", "airstrike", "airstrikes", "attack", "attacks", "attacked", "missile", "missiles", "drone", "drones", "rocket", "rockets", "bomb", "bombs", "bombing", "bombed", "shelling", "artillery", "explosion", "explosions", "air raid", "sirens", "casualties", "wounded", "kidnapped", "kidnapping", "abducted", "ceasefire", "truce", "invasion", "invaded", "occupation", "occupied", "occupier", "occupiers", "offensive", "front line", "frontline", "blockade", "sanctions", "sanctioned", "embargo", "militia", "militias", "militant", "militants", "insurgents", "rebels", "islamic state", "isis", "terrorism", "terrorist", "terrorists", "hostage", "hostages", "settler", "settlers", "genocide", "war crimes", "tribunal", "icj", "icc", "hague", "humanitarian", "aid", "refugees", "displaced", "displacement", "rubble", "airspace", "border", "sovereignty", "independence", "annexation", "nuclear", "intercept", "intercepted", "interception", "air defense", "air defenses", "air defence", "defense", "defence", "national security", "security forces", "security official", "security officials", "security guarantees", "security council", "intelligence", "spy", "spies", "espionage", "sabotage", "coup", "regime", "purge", "crackdown", "political prisoners", "crisis", "escalation", "deterrence", "alliance", "allies", "nato", "united nations", "diplomacy", "diplomat", "diplomats", "diplomatic", "envoy", "talks", "negotiations", "summit", "treaty", "peace", "foreign minister", "foreign ministry", "defense minister", "prime minister", "president", "presidential", "election", "elections", "referendum", "kremlin", "pentagon", "white house", "tariff", "tariffs", "trade war", "export controls", "tanker", "tankers", "shipping", "russia", "russian", "ukraine", "ukrainian", "israel", "israeli", "iran", "iranian", "hamas", "hezbollah", "houthi", "houthis", "irgc", "idf", "putin", "zelensky", "zelenskyy", "netanyahu", "xi jinping", "china", "chinese", "beijing", "pla", "palestinian", "palestinians", "palestine", "війн*", "військ*", "зсу", "сили оборони", "армі*", "атак*", "удар*", "ракет*", "дрон*", "бпла", "шахед*", "обстріл*", "вибух*", "загибл*", "загинув", "загинули", "поранен*", "окупант*", "окупац*", "фронт*", "штурм*", "повітрян* тривог*", "тривог*", "санкці*", "переговор*", "перемир*", "мобілізац*", "полонен*", "обмін полоненими", "протиповітрян*", "ппо", "збит*"],
     "parent": "politics",
     "lenses": {
       "military": ["strike", "strikes", "missile", "missiles", "drone", "drones", "airstrike", "air defense", "troops", "idf", "irgc"],
@@ -85,38 +85,38 @@
   "ukraine-front": {
     "label": "Front line",
     "parent": "ukraine-war",
-    "include": ["front line", "frontline", "pokrovsk", "kostiantynivka", "myrnohrad", "huliaipole", "zaporizhzhia", "donetsk", "donbas", "kupiansk", "siversk", "kramatorsk", "sloviansk", "lyman"],
-    "require": ["ukraine", "ukrainian", "russia", "russian", "drone", "drones", "troops", "advance", "advances", "assault", "offensive", "shelling", "killed"],
+    "include": ["front line", "frontline", "pokrovsk", "kostiantynivka", "myrnohrad", "huliaipole", "zaporizhzhia", "donetsk", "donbas", "kupiansk", "siversk", "kramatorsk", "sloviansk", "lyman", "покровськ*", "костянтинівк*", "мирноград*", "гуляйпол*", "запоріж*", "донеччин*", "донецьк*", "донбас*", "куп'янськ*", "куп’янськ*", "сіверськ*", "краматорськ*", "слов'янськ*", "слов’янськ*", "лиман*"],
+    "require": ["ukraine", "ukrainian", "russia", "russian", "drone", "drones", "troops", "advance", "advances", "assault", "offensive", "shelling", "killed", "штурм*", "атак*", "обстріл*", "наступальн*", "окупант*", "ворог*", "бої", "боїв", "просув*", "дрон*", "бпла", "загибл*", "поранен*"],
     "exclude": [],
     "place": {"lon": 37.6, "lat": 48.2}
   },
   "ukraine-cities": {
     "label": "Strikes on Ukrainian cities",
     "parent": "ukraine-war",
-    "include": ["kyiv", "kharkiv", "dnipro", "lviv", "kryvyi rih", "sumy", "chernihiv", "power grid", "blackout", "blackouts", "energy infrastructure"],
-    "require": ["strike", "strikes", "attack", "attacks", "missile", "missiles", "drone", "drones", "ballistic", "explosion", "explosions", "shelling", "killed", "injured", "air raid", "outage", "outages", "blackout", "blackouts"],
+    "include": ["kyiv", "kharkiv", "dnipro", "lviv", "kryvyi rih", "sumy", "chernihiv", "power grid", "blackout", "blackouts", "energy infrastructure", "київ*", "києв*", "харків*", "дніпр*", "львів*", "одес*", "кривий ріг", "кривого рогу", "сум*", "чернігів*", "енергетик*", "енергосистем*", "знеструмлен*", "відключен* світла"],
+    "require": ["strike", "strikes", "attack", "attacks", "missile", "missiles", "drone", "drones", "ballistic", "explosion", "explosions", "shelling", "killed", "injured", "air raid", "outage", "outages", "blackout", "blackouts", "атак*", "удар*", "ракет*", "дрон*", "бпла", "шахед*", "обстріл*", "вибух*", "загибл*", "загинув", "загинули", "поранен*", "тривог*", "знеструмлен*"],
     "exclude": [],
     "place": {"lon": 30.5, "lat": 50.45}
   },
   "black-sea": {
     "label": "Black Sea and Crimea",
     "parent": "ukraine-war",
-    "include": ["black sea", "crimea", "crimean", "kerch", "sevastopol", "odesa", "odessa", "novorossiysk", "#Crimea"],
+    "include": ["black sea", "crimea", "crimean", "kerch", "sevastopol", "odesa", "odessa", "novorossiysk", "#Crimea", "чорн* мор*", "крим*", "керч*", "севастопол*"],
     "exclude": [],
     "place": {"lon": 34, "lat": 44.9}
   },
   "russia-strikes": {
     "label": "Strikes inside Russia",
     "parent": "ukraine-war",
-    "include": ["belgorod", "kursk", "bryansk", "ryazan", "saratov", "tuapse", "refinery", "refineries", "oil depot"],
-    "require": ["ukraine", "ukrainian", "drone", "drones", "missile", "missiles"],
+    "include": ["belgorod", "kursk", "bryansk", "ryazan", "saratov", "tuapse", "refinery", "refineries", "oil depot", "бєлгород*", "курськ*", "брянськ*", "рязан*", "саратов*", "туапсе", "нпз", "нафтобаз*"],
+    "require": ["ukraine", "ukrainian", "drone", "drones", "missile", "missiles", "дрон*", "бпла", "ракет*", "удар*", "вибух*", "атак*"],
     "exclude": [],
     "place": {"lon": 39.5, "lat": 53.5}
   },
   "ukraine-war": {
     "label": "Ukraine war",
     "parent": "eastern-europe",
-    "include": ["ukraine", "ukrainian", "ukrainians", "zelensky", "zelenskyy", "#Ukraine", "#StandWithUkraine", "україна", "украина"],
+    "include": ["ukraine", "ukrainian", "ukrainians", "zelensky", "zelenskyy", "#Ukraine", "#StandWithUkraine", "україна", "украина", "україн*", "зеленськ*", "зсу", "сили оборони", "окупант*", "рф", "росі*"],
     "exclude": ["eurovision"],
     "place": {"lon": 31.5, "lat": 49}
   },

@@ -682,5 +682,190 @@
       ],
       "feeds": []
     }
-  ]
+  ],
+  "telegram": {
+    "_about": "Public Telegram channels read from their web preview (https://t.me/s/<channel>) by scripts/collect-news.js. Started 23 Nov 2026 with English channels and Ukraine-war channels (Amir); more candidates in docs/research/telegram.md. Only channels with Telegram's verified badge or long-known official ones; no channels of designated armed groups, no anonymous aggregators. affiliation matches the outlet's feed/Bluesky voice so they count as one source. tier: 1 outlet, 4 official, 5 OSINT. Posts are kept as short excerpts with a link; Telegram's terms ban any AI use of its content.",
+    "channels": [
+      {
+        "channel": "idfofficial",
+        "name": "Israel Defense Forces (Telegram)",
+        "affiliation": "Israel Defense Forces",
+        "region": "Israel",
+        "tier": 4,
+        "language": "English",
+        "topics": [
+          "middle-east"
+        ],
+        "verified": true,
+        "stateAffiliated": true
+      },
+      {
+        "channel": "PressTV",
+        "name": "Press TV (Telegram)",
+        "affiliation": "Press TV",
+        "region": "Iran",
+        "tier": 1,
+        "language": "English",
+        "topics": [
+          "middle-east"
+        ],
+        "verified": false,
+        "stateAffiliated": true,
+        "note": "No badge, but the channel Press TV has run for years; already a Bluesky voice and RSS outlet"
+      },
+      {
+        "channel": "irna_en",
+        "name": "IRNA (Telegram)",
+        "affiliation": "IRNA",
+        "region": "Iran",
+        "tier": 1,
+        "language": "English",
+        "topics": [
+          "middle-east"
+        ],
+        "verified": false,
+        "stateAffiliated": true,
+        "note": "No badge; Iran's state news agency English channel"
+      },
+      {
+        "channel": "QudsNen",
+        "name": "Quds News Network (Telegram)",
+        "affiliation": "Quds News Network",
+        "region": "Palestine",
+        "tier": 1,
+        "language": "English",
+        "topics": [
+          "middle-east"
+        ],
+        "verified": true
+      },
+      {
+        "channel": "KyivIndependent_official",
+        "name": "The Kyiv Independent (Telegram)",
+        "affiliation": "Kyiv Independent",
+        "region": "Ukraine",
+        "tier": 1,
+        "language": "English",
+        "topics": [
+          "eastern-europe"
+        ],
+        "verified": true
+      },
+      {
+        "channel": "mod_russia_en",
+        "name": "Russian Ministry of Defence (Telegram)",
+        "affiliation": "Russian Government",
+        "region": "Russia",
+        "tier": 4,
+        "language": "English",
+        "topics": [
+          "eastern-europe"
+        ],
+        "verified": true,
+        "stateAffiliated": true
+      },
+      {
+        "channel": "MFARussia",
+        "name": "Russian Foreign Ministry (Telegram)",
+        "affiliation": "Russian Government",
+        "region": "Russia",
+        "tier": 4,
+        "language": "English",
+        "topics": [
+          "eastern-europe"
+        ],
+        "verified": true,
+        "stateAffiliated": true
+      },
+      {
+        "channel": "V_Zelenskiy_official",
+        "name": "President Zelensky (Telegram)",
+        "affiliation": "Ukrainian Government",
+        "region": "Ukraine",
+        "tier": 4,
+        "language": "Ukrainian",
+        "topics": [
+          "ukraine-war"
+        ],
+        "verified": true,
+        "stateAffiliated": true
+      },
+      {
+        "channel": "GeneralStaffZSU",
+        "name": "Ukraine General Staff (Telegram)",
+        "affiliation": "Ukrainian Armed Forces",
+        "region": "Ukraine",
+        "tier": 4,
+        "language": "Ukrainian",
+        "topics": [
+          "ukraine-war"
+        ],
+        "verified": true,
+        "stateAffiliated": true
+      },
+      {
+        "channel": "kpszsu",
+        "name": "Ukrainian Air Force (Telegram)",
+        "affiliation": "Ukrainian Armed Forces",
+        "region": "Ukraine",
+        "tier": 4,
+        "language": "Ukrainian",
+        "topics": [
+          "ukraine-war"
+        ],
+        "verified": true,
+        "stateAffiliated": true
+      },
+      {
+        "channel": "DeepStateUA",
+        "name": "DeepState (Telegram)",
+        "affiliation": "DeepState",
+        "region": "Ukraine",
+        "tier": 5,
+        "language": "Ukrainian",
+        "topics": [
+          "ukraine-war"
+        ],
+        "verified": true
+      },
+      {
+        "channel": "suspilnenews",
+        "name": "Suspilne News (Telegram)",
+        "affiliation": "Suspilne",
+        "region": "Ukraine",
+        "tier": 1,
+        "language": "Ukrainian",
+        "topics": [
+          "ukraine-war"
+        ],
+        "verified": true,
+        "note": "Public broadcaster"
+      },
+      {
+        "channel": "ukrpravda_news",
+        "name": "Ukrainska Pravda (Telegram)",
+        "affiliation": "Ukrainska Pravda",
+        "region": "Ukraine",
+        "tier": 1,
+        "language": "Ukrainian",
+        "topics": [
+          "ukraine-war"
+        ],
+        "verified": true
+      },
+      {
+        "channel": "ukrinform_news",
+        "name": "Ukrinform (Telegram)",
+        "affiliation": "Ukrinform",
+        "region": "Ukraine",
+        "tier": 1,
+        "language": "Ukrainian",
+        "topics": [
+          "ukraine-war"
+        ],
+        "verified": true,
+        "stateAffiliated": true
+      }
+    ]
+  }
 }

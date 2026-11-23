@@ -6,10 +6,10 @@
 // up through Jetstream: a WebSocket of new posts filtered to the voices'
 // accounts, which works straight from the browser. Read-only, no login.
 
-import { buildBrief } from './brief.js?v=02becfea99';
-import { rankPosts } from './rank.js?v=02becfea99';
-import { buildStorylines } from './storylines.js?v=02becfea99';
-import { byDid } from './voices.js?v=02becfea99';
+import { buildBrief } from './brief.js?v=453846a99e';
+import { rankPosts } from './rank.js?v=453846a99e';
+import { buildStorylines } from './storylines.js?v=453846a99e';
+import { byDid } from './voices.js?v=453846a99e';
 
 const HOUR = 3_600_000;
 
@@ -50,6 +50,7 @@ function postLine(p, h) {
     topicLabel: h.get(p.topicId).label,
     live: p.source === 'live',
     news: p.source === 'news',
+    telegram: Boolean(p.telegram),
   };
 }
 
@@ -106,6 +107,7 @@ export function liveView({ posts, hierarchy: h, node, now, windowHours = 1, look
         url: s.lead.url,
         by: s.lead.voice?.name || s.lead.handle,
         news: s.lead.source === 'news',
+        telegram: Boolean(s.lead.telegram),
         articles: s.posts.filter((p) => p.source === 'news').length,
         sources: s.sources,
         posts: s.posts.length,

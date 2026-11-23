@@ -202,7 +202,7 @@
 </head>
 <body>
 <div id="app"><p class="loading">Loading the live map…</p></div>
-<script>window.itlLive = (demo) => import('./src/static.js?v=02becfea99').then((m) => m.initLive({ demo }));</script>
+<script>window.itlLive = (demo) => import('./src/static.js?v=453846a99e').then((m) => m.initLive({ demo }));</script>
 <script>
 (() => {
   const params = new URLSearchParams(location.search);
@@ -510,7 +510,7 @@
     return `<section class="panel" aria-labelledby="fh">
       <div class="phead"><h2 id="fh">Just in</h2><span class="muted" style="font-size:13px">newest first</span></div>
       ${items.length ? `<ul class="plain" style="margin-top:8px">${items.map((p) => `<li class="${state.fresh.has(p.uri) ? 'fresh' : ''}">
-        <div class="row"><strong style="color:var(--ink)">${esc(ago(p.at))}</strong>${label(p.area) ? `<span class="area-tag">${esc(label(p.area))}</span>` : `<span class="area-tag">${esc(p.topicLabel)}</span>`}<span>${esc(p.who)}${p.stateAffiliated ? ' (state)' : ''}</span>${p.news ? '<span class="area-tag news-tag">Article</span>' : ''}${state.fresh.has(p.uri) ? '<strong style="color:var(--loop)">Live</strong>' : ''}</div>
+        <div class="row"><strong style="color:var(--ink)">${esc(ago(p.at))}</strong>${label(p.area) ? `<span class="area-tag">${esc(label(p.area))}</span>` : `<span class="area-tag">${esc(p.topicLabel)}</span>`}<span>${esc(p.who)}${p.stateAffiliated ? ' (state)' : ''}</span>${p.telegram ? '<span class="area-tag news-tag">Telegram</span>' : p.news ? '<span class="area-tag news-tag">Article</span>' : ''}${state.fresh.has(p.uri) ? '<strong style="color:var(--loop)">Live</strong>' : ''}</div>
         <a class="txt" href="${safeUrl(p.url)}" target="_blank" rel="noopener">${esc(oneLine(p.text))}</a>
       </li>`).join('')}</ul>` : '<p class="muted" style="margin:8px 0 0">Nothing from tracked voices in the last day.</p>'}
     </section>`;

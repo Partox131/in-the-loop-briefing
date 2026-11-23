@@ -17,11 +17,11 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { BskyClient } from '../src/bsky.js?v=02becfea99';
-import { buildBrief } from '../src/brief.js?v=02becfea99';
-import { makeHierarchy } from '../src/hierarchy.js?v=02becfea99';
-import { newsPosts } from '../src/news.js?v=02becfea99';
-import { TIER_NAME, makeVoice } from '../src/voices.js?v=02becfea99';
+import { BskyClient } from '../src/bsky.js?v=453846a99e';
+import { buildBrief } from '../src/brief.js?v=453846a99e';
+import { makeHierarchy } from '../src/hierarchy.js?v=453846a99e';
+import { newsPosts } from '../src/news.js?v=453846a99e';
+import { TIER_NAME, makeVoice } from '../src/voices.js?v=453846a99e';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const HOUR = 3_600_000;
@@ -49,14 +49,14 @@ export function resourceStats({ posts, voices, outlets, sources = [], now = new 
     const isNews = p.source === 'news' || String(p.did).startsWith('news:');
     const v = isNews ? null : byDid.get(p.did);
     const o = isNews ? byDomain.get(p.handle) : null;
-    const channel = isNews ? 'RSS' : 'Bluesky';
+    const channel = isNews ? (p.telegram || o?.telegram ? 'Telegram' : 'RSS') : 'Bluesky';
     const row = {
       window: t0 - t <= 24 * HOUR ? 'Last 24 hours' : '24 to 48 hours ago',
       channel,
       source: (o?.name || v?.name || p.displayName || p.handle),
       account: p.handle,
       affiliation: o?.affiliation || o?.name || v?.affiliation || v?.name || p.handle,
-      role: isNews ? 'Outlet' : ROLE[v?.tier] || 'Other',
+      role: isNews ? (o?.tier && o.tier !== 1 ? ROLE[o.tier] || 'Other' : 'Outlet') : ROLE[v?.tier] || 'Other',
       state_affiliated: (o || v)?.stateAffiliated ? 'Yes' : 'No',
       coverage: COVERAGE[p.node] || 'General',
       based_in: (o || v)?.region || '',
@@ -75,10 +75,10 @@ export function resourceStats({ posts, voices, outlets, sources = [], now = new 
     .sort((a, b) => a.hour.localeCompare(b.hour) || a.channel.localeCompare(b.channel));
 
   const kept24 = new Map();
-  for (const r of items) if (r.channel === 'RSS' && r.window === 'Last 24 hours') kept24.set(r.account, (kept24.get(r.account) || 0) + r.items);
+  for (const r of items) if (r.channel !== 'Bluesky' && r.window === 'Last 24 hours') kept24.set(r.account, (kept24.get(r.account) || 0) + r.items);
   const feeds = new Map();
   for (const s of sources) {
-    if (s.kind !== 'rss') continue;
+    if (s.kind !== 'rss' && s.kind !== 'telegram') continue;
     const f = feeds.get(s.outlet) || { feeds: 0, ok: 0, items: 0, errors: new Set() };
     f.feeds++;
     if (s.ok) f.ok++;
@@ -88,7 +88,7 @@ export function resourceStats({ posts, voices, outlets, sources = [], now = new 
   }
   const outletRows = outlets.map((o) => {
     const f = feeds.get(o.domain);
-    const status = !f ? 'No RSS feed' : f.ok === f.feeds ? 'Working' : f.ok === 0 ? 'Failing' : 'Partly failing';
+    const status = !f ? (o.telegram ? 'Not read' : 'No RSS feed') : f.ok === f.feeds ? 'Working' : f.ok === 0 ? 'Failing' : 'Partly failing';
     return {
       outlet: o.name,
       domain: o.domain,

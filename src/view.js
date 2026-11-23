@@ -1,7 +1,7 @@
 // Turn a brief (see brief.js) into the JSON the briefing web page renders.
 // Kept separate from the server so it's easy to test and to reuse.
 
-import { TIER_NAME } from './voices.js?v=02becfea99';
+import { TIER_NAME } from './voices.js?v=453846a99e';
 
 const HOUR = 3_600_000;
 
@@ -15,6 +15,7 @@ function postView(p) {
     createdAt: p.createdAt,
     counts: p.counts,
     news: p.source === 'news',
+    telegram: Boolean(p.telegram),
     topicId: p.topicId,
     lenses: p.lenses || [],
     voice: p.voice

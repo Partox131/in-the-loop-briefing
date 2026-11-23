@@ -1,12 +1,13 @@
 #!/usr/bin/env node
-// Collect news articles from outlets' RSS/Atom feeds and GDELT into one
+// Collect news articles from outlets' RSS/Atom feeds, GDELT and public
+// Telegram channels (t.me/s/<channel> web previews) into one
 // news.json for the static site. Run every 15 minutes by the public site's
 // GitHub Actions workflow (deploy/pages.yml), free and with no AI.
 //
 //   node scripts/collect-news.js [--sources news.sources.json]
 //     [--hierarchy topics.hierarchy.example.json] [--node geopolitics]
 //     [--previous <url or file of the last news.json>] [--out news.json]
-//     [--hours 48] [--no-gdelt] [--no-feeds]
+//     [--hours 48] [--no-gdelt] [--no-feeds] [--no-telegram]
 //
 // Feeds only carry their latest 20-50 items, so each run merges with the
 // previous news.json and keeps the last `--hours`. Only articles from listed
@@ -15,22 +16,24 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { makeHierarchy } from '../src/hierarchy.js?v=02becfea99';
-import { makeOutlets, mergeArticles, parseFeed, parseGdelt } from '../src/news.js?v=02becfea99';
+import { makeHierarchy } from '../src/hierarchy.js?v=453846a99e';
+import { makeOutlets, mergeArticles, parseFeed, parseGdelt, parseTelegram, telegramOutlets } from '../src/news.js?v=453846a99e';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const UA = 'InTheLoopNewsCollector/0.1 (+https://partox131.github.io/in-the-loop-briefing/)';
 const GDELT = 'https://api.gdeltproject.org/api/v2/doc/doc';
+const TELEGRAM_GAP_MS = 1_000; // one channel page a second, politely
 const GDELT_GAP_MS = 10_000; // GDELT asks for at most one request every 5 seconds
 // GDELT lists articles about 1 to 2 hours after publication, so a query
 // must look back further than that (news.sources.json: timespan 4h).
 
 function args(argv) {
-  const o = { sources: join(root, 'news.sources.json'), hierarchy: join(root, 'topics.hierarchy.example.json'), node: 'geopolitics', out: 'news.json', hours: 48, gdelt: true, feeds: true };
+  const o = { sources: join(root, 'news.sources.json'), hierarchy: join(root, 'topics.hierarchy.example.json'), node: 'geopolitics', out: 'news.json', hours: 48, gdelt: true, feeds: true, telegram: true };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--no-gdelt') o.gdelt = false;
     else if (a === '--no-feeds') o.feeds = false;
+    else if (a === '--no-telegram') o.telegram = false;
     else if (a.startsWith('--')) o[a.slice(2)] = argv[++i];
   }
   o.hours = Number(o.hours);
@@ -58,8 +61,10 @@ async function pool(items, n, fn) {
   return out;
 }
 
-export async function collectNews({ spec, hierarchy, node = 'geopolitics', previous = null, now = new Date(), hours = 48, fetchImpl = fetch, sleep = (ms) => new Promise((r) => setTimeout(r, ms)), gdelt = true, feeds = true }) {
-  const outlets = makeOutlets(spec.outlets);
+export async function collectNews({ spec, hierarchy, node = 'geopolitics', previous = null, now = new Date(), hours = 48, fetchImpl = fetch, sleep = (ms) => new Promise((r) => setTimeout(r, ms)), gdelt = true, feeds = true, telegram = true }) {
+  const channels = spec.telegram?.channels || [];
+  const tgOutlets = telegramOutlets(channels);
+  const outlets = makeOutlets([...spec.outlets, ...tgOutlets]);
   const report = [];
   const found = [];
 
@@ -102,6 +107,21 @@ export async function collectNews({ spec, hierarchy, node = 'geopolitics', previ
     }
   }
 
+  if (telegram && channels.length) {
+    for (const [i, c] of channels.entries()) {
+      if (i) await sleep(TELEGRAM_GAP_MS);
+      const url = `https://t.me/s/${c.channel}`;
+      try {
+        const { verified, posts } = parseTelegram(await get(url, { fetchImpl }));
+        found.push(...posts.map((a) => ({ ...a, language: c.language, via: ['telegram'] })));
+        // A channel that turns its preview off redirects to its info page: no posts.
+        report.push({ kind: 'telegram', outlet: `t.me/${c.channel.toLowerCase()}`, url, ok: posts.length > 0, items: posts.length, verified, ...(posts.length ? {} : { error: 'no posts (preview off or channel gone?)' }) });
+      } catch (err) {
+        report.push({ kind: 'telegram', outlet: `t.me/${c.channel.toLowerCase()}`, url, ok: false, items: 0, error: String(err.message || err) });
+      }
+    }
+  }
+
   const cutoff = now.getTime() - hours * 3_600_000;
   const fresh = found
     .filter((a) => outlets.forUrl(a.url))
@@ -113,13 +133,13 @@ export async function collectNews({ spec, hierarchy, node = 'geopolitics', previ
     .filter((a) => outlets.forUrl(a.url) && Date.parse(a.published) >= cutoff)
     .sort((a, b) => Date.parse(b.published) - Date.parse(a.published))
     .slice(0, 4000)
-    .map(({ title, url, summary, published, via }) => ({ title, url, summary, published, via }));
+    .map(({ title, url, summary, published, via, views, links, language }) => ({ title, url, summary, published, via, ...(views != null ? { views } : {}), ...(links?.length ? { links } : {}), ...(language ? { language } : {}) }));
 
   return {
     generatedAt: now.toISOString(),
-    about: 'News articles for In the Loop, collected from outlet RSS feeds and GDELT every 15 minutes. Only listed outlets, only articles matching the topic hierarchy.',
+    about: 'News articles for In the Loop, collected from outlet RSS feeds, GDELT and public Telegram channels every 15 minutes. Only listed outlets and channels, only items matching the topic hierarchy. Telegram posts are short excerpts linking to the post; Telegram content must not be used with AI (Telegram terms).',
     hours,
-    outlets: spec.outlets.map(({ feeds: _f, ...o }) => o),
+    outlets: [...spec.outlets.map(({ feeds: _f, ...o }) => o), ...tgOutlets],
     sources: report.sort((a, b) => (a.kind + (a.outlet || a.id)).localeCompare(b.kind + (b.outlet || b.id))),
     articles: kept,
   };
@@ -141,7 +161,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   const spec = JSON.parse(readFileSync(o.sources, 'utf8'));
   const hierarchy = makeHierarchy(JSON.parse(readFileSync(o.hierarchy, 'utf8')));
   const previous = await readPrevious(o.previous);
-  const doc = await collectNews({ spec, hierarchy, node: o.node, previous, hours: o.hours, gdelt: o.gdelt, feeds: o.feeds });
+  const doc = await collectNews({ spec, hierarchy, node: o.node, previous, hours: o.hours, gdelt: o.gdelt, feeds: o.feeds, telegram: o.telegram });
   writeFileSync(o.out, JSON.stringify(doc));
   const ok = doc.sources.filter((s) => s.ok).length;
   console.log(`news.json: ${doc.articles.length} articles; ${ok} of ${doc.sources.length} sources answered.`);

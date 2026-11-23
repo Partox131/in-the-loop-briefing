@@ -40,7 +40,8 @@ function escapeRe(s) {
 /**
  * Compile a term into a predicate over (lowercased text, set of lowercased tags).
  * - "#tag"   matches the hashtag facet/tag list, or "#tag" in the text.
- * - "phrase" matches on word boundaries, case-insensitive, whitespace-tolerant
+ * - "phrase" matches on word boundaries, case-insensitive, whitespace-tolerant;
+ *   a word ending in "*" matches any ending (word prefix)
  *   (substring match for Chinese/Japanese/Thai, which don't separate words).
  */
 export function compileTerm(term) {
@@ -54,7 +55,12 @@ export function compileTerm(term) {
   if (/[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Thai}]/u.test(t)) {
     return (text) => text.includes(t);
   }
-  const body = t.split(/\s+/).map(escapeRe).join('\\s+');
+  // A word ending in "*" matches any ending ("атак*" = атака, атаки, атакував),
+  // for inflected languages like Ukrainian and Russian.
+  const body = t
+    .split(/\s+/)
+    .map((w) => (w.length > 1 && w.endsWith('*') ? `${escapeRe(w.slice(0, -1))}[\\p{L}\\p{N}'’ʼ]*` : escapeRe(w)))
+    .join('\\s+');
   const re = new RegExp(`(^|[^\\p{L}\\p{N}_])${body}(?![\\p{L}\\p{N}_])`, 'u');
   return (text) => re.test(text);
 }
