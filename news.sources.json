@@ -688,7 +688,7 @@
     "channels": [
       {
         "channel": "idfofficial",
-        "name": "Israel Defense Forces (Telegram)",
+        "name": "Israel Defense Forces",
         "affiliation": "Israel Defense Forces",
         "region": "Israel",
         "tier": 4,
@@ -701,7 +701,7 @@
       },
       {
         "channel": "PressTV",
-        "name": "Press TV (Telegram)",
+        "name": "Press TV",
         "affiliation": "Press TV",
         "region": "Iran",
         "tier": 1,
@@ -715,7 +715,7 @@
       },
       {
         "channel": "irna_en",
-        "name": "IRNA (Telegram)",
+        "name": "IRNA",
         "affiliation": "IRNA",
         "region": "Iran",
         "tier": 1,
@@ -729,7 +729,7 @@
       },
       {
         "channel": "QudsNen",
-        "name": "Quds News Network (Telegram)",
+        "name": "Quds News Network",
         "affiliation": "Quds News Network",
         "region": "Palestine",
         "tier": 1,
@@ -741,7 +741,7 @@
       },
       {
         "channel": "KyivIndependent_official",
-        "name": "The Kyiv Independent (Telegram)",
+        "name": "The Kyiv Independent",
         "affiliation": "Kyiv Independent",
         "region": "Ukraine",
         "tier": 1,
@@ -753,7 +753,7 @@
       },
       {
         "channel": "mod_russia_en",
-        "name": "Russian Ministry of Defence (Telegram)",
+        "name": "Russian Ministry of Defence",
         "affiliation": "Russian Government",
         "region": "Russia",
         "tier": 4,
@@ -766,7 +766,7 @@
       },
       {
         "channel": "MFARussia",
-        "name": "Russian Foreign Ministry (Telegram)",
+        "name": "Russian Foreign Ministry",
         "affiliation": "Russian Government",
         "region": "Russia",
         "tier": 4,
@@ -779,7 +779,7 @@
       },
       {
         "channel": "V_Zelenskiy_official",
-        "name": "President Zelensky (Telegram)",
+        "name": "President Zelensky",
         "affiliation": "Ukrainian Government",
         "region": "Ukraine",
         "tier": 4,
@@ -792,7 +792,7 @@
       },
       {
         "channel": "GeneralStaffZSU",
-        "name": "Ukraine General Staff (Telegram)",
+        "name": "Ukraine General Staff",
         "affiliation": "Ukrainian Armed Forces",
         "region": "Ukraine",
         "tier": 4,
@@ -805,7 +805,7 @@
       },
       {
         "channel": "kpszsu",
-        "name": "Ukrainian Air Force (Telegram)",
+        "name": "Ukrainian Air Force",
         "affiliation": "Ukrainian Armed Forces",
         "region": "Ukraine",
         "tier": 4,
@@ -818,7 +818,7 @@
       },
       {
         "channel": "DeepStateUA",
-        "name": "DeepState (Telegram)",
+        "name": "DeepState",
         "affiliation": "DeepState",
         "region": "Ukraine",
         "tier": 5,
@@ -830,7 +830,7 @@
       },
       {
         "channel": "suspilnenews",
-        "name": "Suspilne News (Telegram)",
+        "name": "Suspilne News",
         "affiliation": "Suspilne",
         "region": "Ukraine",
         "tier": 1,
@@ -843,7 +843,7 @@
       },
       {
         "channel": "ukrpravda_news",
-        "name": "Ukrainska Pravda (Telegram)",
+        "name": "Ukrainska Pravda",
         "affiliation": "Ukrainska Pravda",
         "region": "Ukraine",
         "tier": 1,
@@ -855,7 +855,7 @@
       },
       {
         "channel": "ukrinform_news",
-        "name": "Ukrinform (Telegram)",
+        "name": "Ukrinform",
         "affiliation": "Ukrinform",
         "region": "Ukraine",
         "tier": 1,
