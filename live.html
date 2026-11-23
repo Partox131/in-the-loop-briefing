@@ -59,7 +59,7 @@
   .seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); font-weight: 600; }
 
   .layout { display: flex; flex-wrap: wrap; gap: 28px; padding-bottom: 48px; }
-  .mapcol { flex: 999 1 620px; min-width: 0; }
+  .mapcol { flex: 999 1 620px; min-width: 0; align-self: flex-start; }
   .map { position: relative; background: var(--sea); border-radius: 16px; overflow: hidden; border: 1px solid var(--line); }
   .map svg { display: block; width: 100%; height: auto; }
   .country { fill: var(--land); stroke: var(--border); stroke-width: .8; }
@@ -183,6 +183,8 @@
   ul.plain { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
   ul.plain li { padding: 12px 0; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 5px; }
   ul.plain li:first-child { border-top: 0; }
+  .feedlist { overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; padding-right: 6px; margin-right: -6px; }
+  .feedlist li.fresh { margin: 0; }
   .row { display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; font-size: 13px; color: var(--muted); }
   .txt { font-size: 15px; line-height: 1.4; color: var(--ink); text-decoration: none; }
   a.txt:hover { text-decoration: underline; }
@@ -508,10 +510,10 @@
 
   function feed(d) {
     const label = (id) => d.areas.find((a) => a.id === id)?.label;
-    const items = d.feed.slice(0, 12);
+    const items = d.feed; // up to 30; the list scrolls
     return `<section class="panel" aria-labelledby="fh">
       <div class="phead"><h2 id="fh">Just in</h2><span class="muted" style="font-size:13px">newest first</span></div>
-      ${items.length ? `<ul class="plain" style="margin-top:8px">${items.map((p) => `<li class="${state.fresh.has(p.uri) ? 'fresh' : ''}">
+      ${items.length ? `<ul class="plain feedlist" id="feedlist" tabindex="0" aria-label="Newest posts and articles" style="margin-top:8px">${items.map((p) => `<li class="${state.fresh.has(p.uri) ? 'fresh' : ''}">
         <div class="row"><strong style="color:var(--ink)">${esc(ago(p.at))}</strong>${label(p.area) ? `<span class="area-tag">${esc(label(p.area))}</span>` : `<span class="area-tag">${esc(p.topicLabel)}</span>`}<span>${esc(p.who)}${p.stateAffiliated ? ' (state)' : ''}</span>${p.telegram ? '<span class="area-tag news-tag">Telegram</span>' : p.news ? '<span class="area-tag news-tag">Article</span>' : ''}${state.fresh.has(p.uri) ? '<strong style="color:var(--loop)">Live</strong>' : ''}</div>
         <a class="txt" href="${safeUrl(p.url)}" target="_blank" rel="noopener">${esc(oneLine(p.text))}</a>
       </li>`).join('')}</ul>` : '<p class="muted" style="margin:8px 0 0">Nothing from tracked voices in the last day.</p>'}
@@ -525,6 +527,21 @@
     return 'Connecting…';
   }
 
+  // "Just in" is only as tall as the map column next to it (map, legend and
+  // the panels under it) and scrolls inside. Stacked on a phone, it scrolls
+  // within most of a screen instead.
+  let feedObserver = null;
+  function fitFeed() {
+    const col = document.querySelector('.mapcol'), list = document.getElementById('feedlist'), aside = document.querySelector('aside');
+    if (!col || !list || !aside) return;
+    const c = col.getBoundingClientRect(), a = aside.getBoundingClientRect();
+    const end = (col.lastElementChild || col).getBoundingClientRect().bottom;
+    if (a.left < c.right) { list.style.maxHeight = '70vh'; return; } // stacked under the map
+    const panel = list.closest('.panel');
+    const below = panel.getBoundingClientRect().bottom - list.getBoundingClientRect().bottom; // panel padding
+    list.style.maxHeight = `${Math.max(240, end - list.getBoundingClientRect().top - below)}px`;
+  }
+
   function render() {
     if (state.flying) return;
     const d = state.data;
@@ -536,6 +553,7 @@
       ? `${plural(active.reduce((s, a) => s + a.count, 0), 'item')} from tracked voices and outlets in the last ${state.window} across ${plural(active.length, world ? 'region' : 'place')}.${hot.length ? ` Busier than usual: ${esc(hot.join(', '))}.` : ''}`
       : `No posts or articles from tracked voices in the last ${state.window}.`;
     const focused = document.activeElement?.dataset?.area;
+    const feedTop = document.getElementById('feedlist')?.scrollTop || 0;
     app.innerHTML = `
       ${state.demo ? '<div class="banner" role="status">Demo mode: made-up sample posts from fictional accounts, run through the real pipeline.</div>' : ''}
       <div class="wrap">
@@ -585,6 +603,12 @@
     });
     app.querySelector('#close')?.addEventListener('click', () => { state.area = null; refresh(); });
     if (focused) app.querySelector(`.bubble[data-area="${CSS.escape(focused)}"]`)?.focus();
+    const list = document.getElementById('feedlist');
+    if (list) list.scrollTop = feedTop; // live updates keep your place in the list
+    fitFeed();
+    feedObserver?.disconnect();
+    const col = app.querySelector('.mapcol');
+    if (col && window.ResizeObserver) { feedObserver = new ResizeObserver(fitFeed); feedObserver.observe(col); }
   }
 
   function refresh() {
