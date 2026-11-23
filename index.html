@@ -135,8 +135,8 @@
 </style>
 </head>
 <body>
-<div id="app"><p class="loading">Loading the latest from Bluesky…</p></div>
-<script>window.itlStatic = import('./src/static.js?v=cb10c15e2f').then((m) => m.init());</script>
+<div id="app"><p class="loading">Loading the latest…</p></div>
+<script>window.itlSearch = location.search; window.itlStatic = import('./src/static.js?v=eac1f09f7f').then((m) => m.init({ search: window.itlSearch }));</script>
 <script>
 (() => {
   const params = new URLSearchParams(location.search);

@@ -208,7 +208,7 @@
 </head>
 <body>
 <div id="app"><p class="loading">Loading the live map…</p></div>
-<script>window.itlLive = (demo) => import('./src/static.js?v=cb10c15e2f').then((m) => m.initLive({ demo }));</script>
+<script>window.itlSearch = location.search; window.itlLive = (demo) => import('./src/static.js?v=eac1f09f7f').then((m) => m.initLive({ demo, search: window.itlSearch }));</script>
 <script>
 (() => {
   const params = new URLSearchParams(location.search);

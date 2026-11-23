@@ -7,7 +7,7 @@
 // velocity means a reporter with 5k followers getting 500 likes outranks a
 // 2M-follower outlet getting 500 likes. See docs/design/topic-tracking.md 2.4.
 
-import { engagement } from './digest.js?v=cb10c15e2f';
+import { engagement } from './digest.js?v=eac1f09f7f';
 
 /** Weight for accounts that are not in the voice registry (the open conversation). */
 export const NON_VOICE_WEIGHT = 0.15;

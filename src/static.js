@@ -4,20 +4,34 @@
 //
 // Search is off here: Bluesky's public search often refuses anonymous
 // callers, so the static page follows the voice list (getAuthorFeed) only.
+//
+// Since 23 Nov 2026 the voices' posts and the news come from our server's
+// snapshot.json (one request) when it is fresh, with this browser-only mode
+// as the fallback (src/snapshot.js). Add ?direct=1 to the URL to skip the
+// server, or ?snapshot=<url> to try another one.
 
-import { BskyClient } from './bsky.js?v=cb10c15e2f';
-import { buildBrief } from './brief.js?v=cb10c15e2f';
-import { DEMO_VOICES, demoFetch } from './demo.js?v=cb10c15e2f';
-import { project } from './geo.js?v=cb10c15e2f';
-import { makeHierarchy } from './hierarchy.js?v=cb10c15e2f';
-import { subscribePosts } from './jetstream.js?v=cb10c15e2f';
-import { makeLive } from './live.js?v=cb10c15e2f';
-import { newsPosts } from './news.js?v=cb10c15e2f';
-import { makeVoice } from './voices.js?v=cb10c15e2f';
-import { briefView } from './view.js?v=cb10c15e2f';
+import { BskyClient } from './bsky.js?v=eac1f09f7f';
+import { buildBrief } from './brief.js?v=eac1f09f7f';
+import { DEMO_VOICES, demoFetch } from './demo.js?v=eac1f09f7f';
+import { project } from './geo.js?v=eac1f09f7f';
+import { makeHierarchy } from './hierarchy.js?v=eac1f09f7f';
+import { subscribePosts } from './jetstream.js?v=eac1f09f7f';
+import { makeLive } from './live.js?v=eac1f09f7f';
+import { newsPosts } from './news.js?v=eac1f09f7f';
+import { SnapshotClient } from './snapshot.js?v=eac1f09f7f';
+import { makeVoice } from './voices.js?v=eac1f09f7f';
+import { briefView } from './view.js?v=eac1f09f7f';
 
 const SINCE_HOURS = { '6h': 6, '12h': 12, '24h': 24, '48h': 48, '7d': 168 };
 const CACHE_MS = 120_000;
+export const SNAPSHOT_URL = 'https://159-203-56-41.sslip.io/snapshot.json';
+
+/** The server's snapshot in front of Bluesky, unless the URL says ?direct=1. */
+export function makeClient({ search = globalThis.location?.search || '', url = SNAPSHOT_URL } = {}) {  const direct = new BskyClient();
+  const q = new URLSearchParams(search);
+  if (q.has('direct')) return direct;
+  return new SnapshotClient({ url: q.get('snapshot') || url, fallback: direct });
+}
 
 async function getJson(path) {
   const res = await fetch(path, { cache: 'no-cache' });
@@ -29,7 +43,13 @@ async function getJson(path) {
  * news.json, written every 15 minutes by the site's scheduled collector
  * (scripts/collect-news.js). Missing or broken: carry on with Bluesky only.
  */
-export async function loadNews(base = '.') {
+export async function loadNews(base = '.', client = null) {
+  try {
+    const fromServer = await client?.news?.();
+    if (fromServer) return newsPosts(fromServer);
+  } catch {
+    // fall through to the site's own news.json
+  }
   try {
     const res = await fetch(`${base}/news.json`, { cache: 'no-cache' });
     if (!res.ok) return null;
@@ -39,14 +59,14 @@ export async function loadNews(base = '.') {
   }
 }
 
-export async function init({ base = '.', defaultNode = 'iran-war' } = {}) {
+export async function init({ base = '.', defaultNode = 'iran-war', search } = {}) {
   const [hierarchySpec, voicesSpec] = await Promise.all([
     getJson(`${base}/topics.hierarchy.example.json`),
     getJson(`${base}/voices.example.json`),
   ]);
   const hierarchy = makeHierarchy(hierarchySpec);
   const voices = (Array.isArray(voicesSpec) ? voicesSpec : voicesSpec.voices).map(makeVoice);
-  const live = new BskyClient();
+  const live = makeClient({ search });
   const demo = new BskyClient({ fetchImpl: demoFetch() });
   const cache = new Map();
 
@@ -58,7 +78,7 @@ export async function init({ base = '.', defaultNode = 'iran-war' } = {}) {
     if (hit && Date.now() - hit.at < CACHE_MS) return hit.value;
     const now = new Date();
     const brief = await buildBrief({
-      news: useDemo ? undefined : (await loadNews(base)) || undefined,
+      news: useDemo ? undefined : (await loadNews(base, live)) || undefined,
       client: useDemo ? demo : live,
       hierarchy,
       node: id,
@@ -67,7 +87,7 @@ export async function init({ base = '.', defaultNode = 'iran-war' } = {}) {
       since: new Date(now - hours * 3_600_000),
       search: false,
     });
-    const value = { ...briefView(brief, hierarchy, { now }), demo: useDemo };
+    const value = { ...briefView(brief, hierarchy, { now }), demo: useDemo, source: useDemo ? 'demo' : live.mode || 'direct' };
     cache.set(key, { at: Date.now(), value });
     return value;
   };
@@ -77,7 +97,7 @@ export async function init({ base = '.', defaultNode = 'iran-war' } = {}) {
  * The live map page (public/live.html). Loads the last 24 hours once, then
  * follows the voices' new posts through Jetstream (skipped in demo mode).
  */
-export async function initLive({ base = '.', node = 'geopolitics', demo = false } = {}) {
+export async function initLive({ base = '.', node = 'geopolitics', demo = false, search } = {}) {
   const [hierarchySpec, voicesSpec, maps] = await Promise.all([
     getJson(`${base}/topics.hierarchy.example.json`),
     getJson(`${base}/voices.example.json`),
@@ -85,12 +105,13 @@ export async function initLive({ base = '.', node = 'geopolitics', demo = false 
   ]);
   const hierarchy = makeHierarchy(hierarchySpec);
   const voices = (Array.isArray(voicesSpec) ? voicesSpec : voicesSpec.voices).map(makeVoice);
+  const client = demo ? new BskyClient({ fetchImpl: demoFetch() }) : makeClient({ search });
   const live = makeLive({
-    client: demo ? new BskyClient({ fetchImpl: demoFetch() }) : new BskyClient(),
+    client,
     hierarchy,
     voices: demo ? DEMO_VOICES : voices,
     node: hierarchy.nodes.has(node) ? node : 'geopolitics',
-    loadNews: demo ? async () => null : () => loadNews(base),
+    loadNews: demo ? async () => null : () => loadNews(base, client),
   });
   return {
     live,

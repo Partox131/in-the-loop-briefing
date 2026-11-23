@@ -9,7 +9,7 @@
 // reconnect resumes without gaps, and a cursor in the recent past replays
 // the last few minutes/hours (Jetstream keeps a rolling buffer).
 
-import { fromJetstream } from './normalize.js?v=cb10c15e2f';
+import { fromJetstream } from './normalize.js?v=eac1f09f7f';
 
 export const JETSTREAM_HOSTS = [
   'jetstream2.us-east.bsky.network',
@@ -27,10 +27,12 @@ export function jetstreamUrl(host, { cursorUs, dids } = {}) {
 }
 
 /**
- * Subscribe to new posts. Calls onPost(post, timeUs) for every created post.
- * Reconnects with backoff and rotates hosts. Returns { close() }.
+ * Subscribe to new posts. Calls onPost(post, timeUs) for every created post,
+ * and onDelete(uri, timeUs), if given, for every deleted one (we must honour
+ * Bluesky deletes once we keep posts). Reconnects with backoff and rotates
+ * hosts. Returns { close() }.
  */
-export function subscribePosts({ onPost, onStatus = () => {}, cursorUs, dids, WebSocketImpl = globalThis.WebSocket }) {
+export function subscribePosts({ onPost, onDelete, onStatus = () => {}, cursorUs, dids, WebSocketImpl = globalThis.WebSocket }) {
   if (dids && dids.length > 10_000) throw new Error('Jetstream allows at most 10,000 DIDs per connection.');
   if (!WebSocketImpl) throw new Error('This Node.js has no global WebSocket. Use Node 22 or newer.');
   let lastUs = cursorUs;
@@ -56,8 +58,12 @@ export function subscribePosts({ onPost, onStatus = () => {}, cursorUs, dids, We
         return;
       }
       if (evt.time_us) lastUs = evt.time_us;
-      if (evt.kind !== 'commit' || evt.commit?.operation !== 'create') return;
-      if (evt.commit.collection !== 'app.bsky.feed.post') return;
+      if (evt.kind !== 'commit' || evt.commit?.collection !== 'app.bsky.feed.post') return;
+      if (evt.commit.operation === 'delete') {
+        onDelete?.(`at://${evt.did}/${evt.commit.collection}/${evt.commit.rkey}`, evt.time_us);
+        return;
+      }
+      if (evt.commit.operation !== 'create') return;
       onPost(fromJetstream(evt), evt.time_us);
     };
     ws.onerror = (e) => onStatus({ type: 'error', host, error: e?.message || 'websocket error' });
