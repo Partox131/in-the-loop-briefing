@@ -6,10 +6,10 @@
 // up through Jetstream: a WebSocket of new posts filtered to the voices'
 // accounts, which works straight from the browser. Read-only, no login.
 
-import { buildBrief } from './brief.js?v=296db795d6';
-import { rankPosts } from './rank.js?v=296db795d6';
-import { buildStorylines } from './storylines.js?v=296db795d6';
-import { byDid } from './voices.js?v=296db795d6';
+import { buildBrief } from './brief.js?v=02becfea99';
+import { rankPosts } from './rank.js?v=02becfea99';
+import { buildStorylines } from './storylines.js?v=02becfea99';
+import { byDid } from './voices.js?v=02becfea99';
 
 const HOUR = 3_600_000;
 
@@ -130,6 +130,73 @@ export function liveView({ posts, hierarchy: h, node, now, windowHours = 1, look
   };
 }
 
+const round1 = (x) => Math.round(x * 10) / 10;
+
+/** A story's headline: an article's title, a link card's title, or a post's first sentence. */
+export function headlineOf(p) {
+  const raw = (p.source !== 'news' && p.linkTitle) || p.text || '';
+  const t = String(raw).replace(/\s+/g, ' ').trim();
+  const m = t.match(/^(.{20,180}?[.!?])(?=\s|$)/);
+  const out = m ? m[1] : t;
+  return out.length > 180 ? `${out.slice(0, 179)}…` : out;
+}
+
+/**
+ * "Last 24 hours" for a region, built from the data (no AI): how many stories,
+ * how many are confirmed or disputed, what's new, the pace, and the stories
+ * the most sources are covering. Storylines come from buildStorylines, which
+ * joins posts and articles about the same event by links, quotes and wording.
+ */
+export function regionSummary({ posts, hierarchy: h, node, now, recentHours = 6, lookbackHours = 24 }) {
+  const under = new Set(h.descendants(node));
+  const scope = new Set([node, ...under]);
+  const t = now.getTime();
+  const lookStart = t - lookbackHours * HOUR;
+  const recentStart = t - recentHours * HOUR;
+  const day = posts.filter((p) => {
+    const at = Date.parse(p.createdAt);
+    return scope.has(p.topicId) && at >= lookStart && at <= t + 5 * 60_000;
+  });
+  const stories = buildStorylines(day);
+  const recent = day.filter((p) => Date.parse(p.createdAt) >= recentStart).length;
+  const earlier = day.length - recent;
+  const placeLabel = (group) => {
+    const counts = new Map();
+    for (const p of group) {
+      const id = placeOf(h, p.topicId, under);
+      if (id) counts.set(id, (counts.get(id) || 0) + 1);
+    }
+    const [id] = [...counts].sort((a, b) => b[1] - a[1])[0] || [];
+    return id ? { id, label: h.get(id).label, count: counts.get(id) } : null;
+  };
+  const ranked = [...stories].sort((a, b) => b.sources.length - a.sources.length || b.posts.length - a.posts.length || b.score - a.score);
+  return {
+    hours: lookbackHours,
+    recentHours,
+    posts: day.length,
+    articles: day.filter((p) => p.source === 'news').length,
+    sources: new Set(day.filter((p) => p.voice).map((p) => p.voice.affiliation)).size,
+    stories: stories.length,
+    confirmed: stories.filter((s) => s.status === 'corroborated' || s.status === 'official').length,
+    disputed: stories.filter((s) => s.status === 'disputed').length,
+    newStories: stories.filter((s) => Date.parse(s.firstSeen) >= recentStart).length,
+    // Last few hours against the rest of the day; null without earlier posts.
+    pace: earlier && recent ? round1(recent / recentHours / (earlier / (lookbackHours - recentHours))) : null,
+    busiestPlace: placeLabel(day),
+    top: ranked.slice(0, 3).map((s) => ({
+      headline: headlineOf(s.lead),
+      url: s.lead.url,
+      status: s.status,
+      sources: s.sources,
+      posts: s.posts.length,
+      articles: s.posts.filter((p) => p.source === 'news').length,
+      place: placeLabel(s.posts),
+      firstSeen: s.firstSeen,
+      lastSeen: s.lastSeen,
+    })),
+  };
+}
+
 /** Regions under a node that have their own map (Middle East, Eastern Europe…). */
 export function regionsOf(h, root) {
   const under = new Set([root, ...h.descendants(root)]);
@@ -247,8 +314,10 @@ export function makeLive({ client, hierarchy: h, voices, node = 'geopolitics', l
     /** region: a region node id, or "world" for one bubble per region. */
     view({ now = new Date(), windowHours = 1, region = 'world' } = {}) {
       const args = { posts, hierarchy: h, now, windowHours, lookbackHours };
-      const v = region === 'world' || !h.nodes.has(region) ? worldView({ ...args, node }) : liveView({ ...args, node: region });
-      return { ...v, ...meta };
+      const world = region === 'world' || !h.nodes.has(region);
+      const v = world ? worldView({ ...args, node }) : liveView({ ...args, node: region });
+      const summary = world ? null : regionSummary({ posts, hierarchy: h, node: region, now, lookbackHours });
+      return { ...v, summary, ...meta };
     },
   };
 }

@@ -108,6 +108,14 @@
   .cartouche small { display: block; color: var(--muted); font-size: 13px; }
 
   /* Backgrounders: the broad story of each region, for newcomers. */
+  .sum { margin-top: 22px; padding: 22px 26px; }
+  .sumlead { margin: 10px 0 0; display: flex; flex-direction: column; gap: 6px; }
+  .sumlead a { font: 700 21px/1.3 var(--display); color: var(--ink); text-decoration: none; max-width: 70ch; }
+  .sumlead a:hover { text-decoration: underline; }
+  .sumstats { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; margin: 16px 0 4px; }
+  .sumstats div { background: var(--bg); border-radius: 10px; padding: 9px 11px; font-size: 13px; color: var(--muted); }
+  .sumstats strong { display: block; font: 800 24px/1.1 var(--display); color: var(--ink); }
+  .sum h3 { margin: 16px 0 4px; font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
   .mapcol .bg { margin-top: 22px; padding: 22px 26px; }
   .mapcol .bg p, .mapcol .bg dl, .mapcol .bg ol.tl { max-width: 78ch; }
   .bg { border-color: color-mix(in srgb, var(--loop) 30%, var(--line)); }
@@ -194,7 +202,7 @@
 </head>
 <body>
 <div id="app"><p class="loading">Loading the live map…</p></div>
-<script>window.itlLive = (demo) => import('./src/static.js?v=296db795d6').then((m) => m.initLive({ demo }));</script>
+<script>window.itlLive = (demo) => import('./src/static.js?v=02becfea99').then((m) => m.initLive({ demo }));</script>
 <script>
 (() => {
   const params = new URLSearchParams(location.search);
@@ -435,6 +443,38 @@
     </section>`;
   }
 
+  // "Last 24 hours": built from the posts and articles already on the page,
+  // so it changes as new ones arrive. An AI-written paragraph can go above the
+  // stats later (it needs the server); this stays as the sourced backbone.
+  function summaryPanel(d) {
+    const s = d.summary;
+    if (!s) return '';
+    const head = `<p class="eyebrow">Last ${s.hours} hours · updates live</p><h2 id="sumh">What happened in ${d.node.id === 'middle-east' ? 'the ' : ''}${esc(d.node.label)}</h2>`;
+    if (!s.posts) return `<section class="panel sum" aria-labelledby="sumh">${head}<p class="muted">Nothing from tracked voices or outlets in the last ${s.hours} hours.</p></section>`;
+    const by = (x) => {
+      const n = x.sources.length;
+      // The chip already says the status; this says who.
+      if (n === 1 && x.sources[0]) return `by ${x.sources[0]}`;
+      return `${x.status === 'corroborated' ? 'by ' : ''}${plural(n, 'source')}`;
+    };
+    const story = (x) => `<div class="row"><span class="chip c-${esc(x.status)}">${esc(STATUS[x.status] || x.status)}</span><span>${esc(by(x))}</span>${x.place ? `<span class="area-tag">${esc(x.place.label)}</span>` : ''}<span>latest ${esc(ago(x.lastSeen))}</span></div>`;
+    const [top, ...more] = s.top;
+    const paceTile = s.pace == null
+      ? '<strong>–</strong>no earlier posts to compare'
+      : `<strong>${s.pace}×</strong>the pace earlier in the day, over the last ${s.recentHours}h`;
+    return `<section class="panel sum" aria-labelledby="sumh">${head}
+      <div class="sumlead"><span class="muted" style="font-size:14px">Busiest story</span><a href="${safeUrl(top.url)}" target="_blank" rel="noopener">${esc(top.headline)}</a>${story(top)}</div>
+      <div class="sumstats">
+        <div><strong>${s.stories}</strong>${s.stories === 1 ? 'story' : 'stories'}: ${s.confirmed} confirmed by 2+ sources${s.disputed ? `, ${s.disputed} disputed` : ''}</div>
+        <div><strong>${s.newStories}</strong>new in the last ${s.recentHours}h</div>
+        <div>${paceTile}</div>
+        <div><strong>${esc(s.busiestPlace?.label || '–')}</strong>busiest place${s.busiestPlace ? `, ${plural(s.busiestPlace.count, 'item')}` : ''}</div>
+      </div>
+      <p class="muted" style="margin:6px 0 0;font-size:14px">From ${plural(s.posts - s.articles, 'post')} and ${plural(s.articles, 'article')} by ${plural(s.sources, 'source')}.</p>
+      ${more.length ? `<h3>Also big today</h3><ul class="plain">${more.map((x) => `<li><a class="txt" href="${safeUrl(x.url)}" target="_blank" rel="noopener">${esc(x.headline)}</a>${story(x)}</li>`).join('')}</ul>` : ''}
+    </section>`;
+  }
+
   function regionList() {
     if (!state.bg) return '';
     const items = regions().filter((r) => state.bg.regions[r.id]).map((r) => `<li><button data-view="${esc(r.id)}"><strong>${esc(r.label)}</strong><span>${esc(state.bg.regions[r.id].teaser)}</span></button></li>`).join('');
@@ -520,7 +560,7 @@
               <span><i class="sw c-quiet" style="background:none;border:2px dashed var(--muted)"></i>Quiet</span>
               <span>Pulsing ring: at least 1.5× its usual pace</span>
             </div>
-            ${world ? '' : background()}
+            ${world ? '' : summaryPanel(d) + background()}
             ${world ? `<p class="footnote">One bubble per tracked region: ${esc(regions().map((r) => r.label).join(', '))}. Click a bubble to zoom in. More regions come with more voices and keywords.</p>` : ''}
             ${d.errors?.length ? `<details class="footnote"><summary>${plural(d.errors.length, 'warning')}</summary><ul>${d.errors.map((e) => `<li>${esc(e)}</li>`).join('')}</ul></details>` : ''}
           </div>

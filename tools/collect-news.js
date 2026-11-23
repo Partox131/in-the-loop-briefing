@@ -15,8 +15,8 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { makeHierarchy } from '../src/hierarchy.js?v=296db795d6';
-import { makeOutlets, mergeArticles, parseFeed, parseGdelt } from '../src/news.js?v=296db795d6';
+import { makeHierarchy } from '../src/hierarchy.js?v=02becfea99';
+import { makeOutlets, mergeArticles, parseFeed, parseGdelt } from '../src/news.js?v=02becfea99';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const UA = 'InTheLoopNewsCollector/0.1 (+https://partox131.github.io/in-the-loop-briefing/)';
