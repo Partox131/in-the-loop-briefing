@@ -8,7 +8,7 @@
 //      the AppView. Search is sometimes refused or rate-limited on the public
 //      mirror, so the CLI uses (2) when BSKY_HANDLE/BSKY_APP_PASSWORD are set.
 
-import { fromPostView } from './normalize.js?v=eac1f09f7f';
+import { fromPostView } from './normalize.js?v=eec7a70b5d';
 
 const PUBLIC_APPVIEW = 'https://public.api.bsky.app';
 const ENTRYWAY = 'https://bsky.social';
