@@ -1,0 +1,248 @@
+{
+  "reviewed": "2026-11-23",
+  "about": "Broad, sourced backgrounders shown when you zoom into a region on the live map. Written and updated by hand (no AI on the site). Every figure names who counted it, the date, and a link. Keep the tone neutral; when sources disagree, say whose number it is. Update 'reviewed' when you check the figures again.",
+  "regions": {
+    "middle-east": {
+      "title": "Why we're watching the Middle East",
+      "kicker": "War with Iran · Gaza · Lebanon",
+      "teaser": "A US–Israeli war with Iran since February 2026, which has choked the Strait of Hormuz, on top of the Gaza war and fighting in Lebanon.",
+      "lede": "Several linked wars run through this map. The biggest is the war between the US and Israel on one side and Iran on the other, which began in February 2026 and has nearly shut one of the world's main oil routes. It sits on top of the Gaza war, which began in October 2023, and a new war in Lebanon. Iraq, Syria and Yemen are on the map because armed groups there are part of the same fight.",
+      "focus": ["Iran", "Israel", "Palestine", "Lebanon"],
+      "watch": ["Iraq", "Syria", "Yemen", "Bahrain", "Kuwait", "Qatar", "United Arab Emirates", "Saudi Arabia", "Jordan", "Oman"],
+      "labels": [
+        { "text": "Iran", "lon": 57.5, "lat": 30.2, "size": 20 },
+        { "text": "Iraq", "lon": 42.2, "lat": 31.2 },
+        { "text": "Saudi Arabia", "lon": 45, "lat": 23.5, "size": 17 },
+        { "text": "Egypt", "lon": 29.5, "lat": 26.5 },
+        { "text": "Turkey", "lon": 34, "lat": 39.2 }
+      ],
+      "conflicts": [
+        {
+          "id": "iran-war",
+          "title": "The war with Iran",
+          "since": "2026-02-28",
+          "started": [
+            "On 28 February 2026 the United States and Israel launched air strikes on Iran while talks over Iran's nuclear programme were still going on. The first strikes killed Iran's Supreme Leader, Ali Khamenei, and other senior officials. They followed Iran's violent crackdown on protests in January 2026 and the largest US military build-up in the region since 2003.",
+            "Iran hit back within hours with missiles and drones on Israel, US bases and Gulf states that host them, and attacked shipping in the Strait of Hormuz, the narrow sea lane that carries much of the world's oil. Iran-backed groups in Lebanon, Iraq and Yemen joined in."
+          ],
+          "goals": [
+            { "side": "United States", "text": "President Trump described the aim as regime change in Iran. Washington also says it wants to stop Iran ever getting a nuclear weapon and to reopen Hormuz." },
+            { "side": "Israel", "text": "Remove what it calls existential threats: Iran's nuclear programme and its ballistic missiles." },
+            { "side": "Iran", "text": "Survive and make the war costly for the US and its allies. It now claims sovereignty over the Strait of Hormuz and says it will reopen it only if its conditions are met." }
+          ],
+          "figures": [
+            { "value": "3,636", "label": "killed in Iran in the first five weeks, 1,701 of them civilians", "source": "HRANA (rights group), via The Boston Report", "asOf": "2026-04-07", "url": "https://thebostonreport.com/warfare/iran-war-tracker/" },
+            { "value": "23", "label": "US service members killed, 866 wounded", "source": "Pentagon, via The Boston Report", "asOf": "2026-11-04", "url": "https://thebostonreport.com/warfare/iran-war-tracker/" },
+            { "value": "71", "label": "killed in Israel (31 civilians, 40 soldiers)", "source": "Israeli figures, via Wikipedia", "asOf": "2026-09", "url": "https://en.wikipedia.org/wiki/2026_Iran_war" },
+            { "value": "2.3 a day", "label": "ships through Hormuz (68 a day before the war)", "source": "IMF PortWatch, via The Boston Report", "asOf": "2026-11-15", "url": "https://thebostonreport.com/warfare/iran-war-tracker/" },
+            { "value": "$92.94", "label": "Brent oil per barrel ($71.32 the day before the war; above $138 in early April)", "source": "US EIA, via The Boston Report", "asOf": "2026-11-17", "url": "https://thebostonreport.com/warfare/iran-war-tracker/" }
+          ],
+          "timeline": [
+            { "date": "2026-02-28", "text": "US and Israeli strikes begin; Ali Khamenei is killed. Iran fires back across the region." },
+            { "date": "2026-03-08", "text": "Mojtaba Khamenei, his son, is named Supreme Leader." },
+            { "date": "2026-04-08", "text": "A two-week ceasefire starts. Talks in Islamabad fail days later and the US blockades Iranian ports." },
+            { "date": "2026-06-17", "text": "The Islamabad Memorandum lifts both sides' blockades." },
+            { "date": "2026-07-07", "text": "After attacks on ships in Hormuz, Trump says the truce is over. The US blockade returns on 14 July." },
+            { "date": "2026-11-17", "text": "US jets strike an Iranian missile site on Qeshm Island; Iranian drones keep hitting Bahrain and Kuwait." }
+          ],
+          "now": "There is no ceasefire. Fighting is at a lower level than in the spring, but ships in and around Hormuz are still being hit (about 31 attacks in October, the most of the war, per UKMTO) and only a trickle of tankers gets through, which keeps oil prices high. Qatari mediators visited Tehran on 20 November.",
+          "places": ["iran-war", "hormuz", "iraq", "red-sea"]
+        },
+        {
+          "id": "gaza",
+          "title": "The Gaza war",
+          "since": "2023-10-07",
+          "started": [
+            "On 7 October 2023 Hamas, the armed group that ran Gaza, led an attack on southern Israel that killed about 1,200 people and took around 250 hostages. Israel responded with a bombing campaign and a ground invasion of Gaza that destroyed much of the territory.",
+            "A ceasefire brokered by the US began on 10 October 2025. The living hostages were freed in its first days, but Israeli troops still hold part of Gaza behind a boundary called the Yellow Line, and the next steps (disarming Hamas, who governs Gaza, an international force) are stuck."
+          ],
+          "goals": [
+            { "side": "Israel", "text": "Make sure Hamas can never attack again. Defence Minister Israel Katz says Israel will not withdraw until Hamas is dismantled." },
+            { "side": "Hamas", "text": "Survive as a force, end the war and get Israel to withdraw fully. It has resisted giving up its weapons." },
+            { "side": "Palestinians in Gaza", "text": "Most of the 2 million people need shelter, food and medical care; many live in tents through winter storms." }
+          ],
+          "figures": [
+            { "value": "74,695", "label": "Palestinians killed in Gaza since 7 Oct 2023", "source": "Gaza Health Ministry, via Next Century Foundation", "asOf": "2026-11-14", "url": "https://www.nextcenturyfoundation.org/gaza-information-index-20-november-2026/" },
+            { "value": "1,643", "label": "of them killed since the October 2025 ceasefire", "source": "Gaza Health Ministry, via Next Century Foundation", "asOf": "2026-11-14", "url": "https://www.nextcenturyfoundation.org/gaza-information-index-20-november-2026/" },
+            { "value": "1,806", "label": "Israelis killed since 7 Oct 2023", "source": "Israeli figures, via Next Century Foundation", "asOf": "2026-11-12", "url": "https://www.nextcenturyfoundation.org/gaza-information-index-20-november-2026/" }
+          ],
+          "timeline": [
+            { "date": "2023-10-07", "text": "Hamas-led attack on Israel; Israel declares war." },
+            { "date": "2023-10-27", "text": "Israel's ground invasion of Gaza begins." },
+            { "date": "2025-10-10", "text": "US-brokered ceasefire takes effect." },
+            { "date": "2026-11-18", "text": "Israel's first ground operation beyond the Yellow Line since the ceasefire; Hamas calls it a flagrant violation." }
+          ],
+          "now": "The ceasefire is fragile. People are still killed most weeks, aid is limited (about 1,000 trucks a week in mid-November), and Israel's 18 November raid beyond the Yellow Line raised fears the deal could collapse.",
+          "places": ["gaza", "west-bank"]
+        },
+        {
+          "id": "lebanon",
+          "title": "Israel and Hezbollah in Lebanon",
+          "since": "2026-03-02",
+          "started": [
+            "Two days into the Iran war, Hezbollah, the Iran-backed armed group and political party in Lebanon, fired on northern Israel for the first time since a 2024 ceasefire. Israel struck Beirut and the south, and sent ground troops into southern Lebanon from mid-March."
+          ],
+          "goals": [
+            { "side": "Israel", "text": "Push Hezbollah away from the border and hold a security zone up to the Litani River until it is no longer a threat." },
+            { "side": "Hezbollah", "text": "Force Israel to stop its attacks and leave Lebanese land. It rejected a US framework calling for its full disarmament." },
+            { "side": "Lebanon's government", "text": "Get Israeli troops out and bring the south under the Lebanese army." }
+          ],
+          "figures": [
+            { "value": "4,390", "label": "killed in Lebanon (civilians and fighters not separated)", "source": "Lebanese Health Ministry, via The Boston Report", "asOf": "2026-11-05", "url": "https://thebostonreport.com/warfare/iran-war-tracker/" },
+            { "value": "1 million+", "label": "people displaced in Lebanon", "source": "Wikipedia", "asOf": "2026-10", "url": "https://en.wikipedia.org/wiki/2026_Lebanon_war" }
+          ],
+          "timeline": [
+            { "date": "2026-03-02", "text": "Hezbollah fires on Israel; Israel strikes Beirut." },
+            { "date": "2026-03-16", "text": "Israeli ground operations in southern Lebanon begin." },
+            { "date": "2026-04-16", "text": "A 10-day Israel–Lebanon ceasefire starts and is later extended." },
+            { "date": "2026-07-20", "text": "Israel hands parts of its buffer zone to the Lebanese army." }
+          ],
+          "now": "A temporary ceasefire holds on paper, but Israeli air strikes continue and Israeli troops still hold parts of the south. The UN peacekeeping force's mandate ends on 31 December 2026.",
+          "places": ["lebanon", "syria"]
+        }
+      ]
+    },
+    "eastern-europe": {
+      "title": "Why we're watching Eastern Europe",
+      "kicker": "Russia's war on Ukraine · NATO's eastern flank",
+      "teaser": "Russia's full-scale invasion of Ukraine, now in its fifth year, and the drones, sabotage and airspace breaches testing NATO's border states.",
+      "lede": "Europe's largest war since 1945 is in its fifth year. Russia invaded Ukraine in February 2022, eight years after it seized Crimea. The fighting has spilled into neighbouring NATO countries, which face stray drones and missiles, sabotage and cyberattacks, and are re-arming fast.",
+      "focus": ["Ukraine", "Russia"],
+      "watch": ["Poland", "Lithuania", "Latvia", "Estonia", "Finland", "Belarus", "Romania", "Moldova"],
+      "labels": [
+        { "text": "Russia", "lon": 42, "lat": 57.5, "size": 22 },
+        { "text": "Ukraine", "lon": 27.6, "lat": 49.2, "size": 18 },
+        { "text": "Belarus", "lon": 28, "lat": 53.4 },
+        { "text": "Finland", "lon": 27, "lat": 62.5 },
+        { "text": "Romania", "lon": 25, "lat": 45.4 }
+      ],
+      "conflicts": [
+        {
+          "id": "ukraine-war",
+          "title": "Russia's war on Ukraine",
+          "since": "2022-02-24",
+          "started": [
+            "In 2014, after protests in Kyiv toppled a pro-Russian president, Russia seized and annexed Crimea and backed armed separatists in eastern Ukraine's Donbas region. Fighting there simmered for eight years.",
+            "On 24 February 2022 Russia launched a full-scale invasion from the north, east and south, including towards Kyiv. Ukraine pushed Russian forces back from the capital and later from parts of the north-east and south, and the war settled into a long, grinding fight along a front line in the east and south, with drone and missile strikes on cities far from it. In September 2022 Russia claimed to annex four Ukrainian regions it did not fully control."
+          ],
+          "goals": [
+            { "side": "Russia", "text": "At the start it called for Ukraine's 'demilitarisation' and 'denazification' without saying clearly what they meant. It now wants all occupied land, plus the parts of the four regions it claims but doesn't hold, recognised as Russian, a guarantee Ukraine never joins NATO, limits on Ukraine's army and sanctions lifted." },
+            { "side": "Ukraine", "text": "Russian forces out and its borders restored, security guarantees so it can't be invaded again, and prisoners and deported children returned. Since March 2025 it has offered an unconditional ceasefire, which Russia has refused." },
+            { "side": "US and Europe", "text": "Since 2025 the US has pushed for a negotiated deal; plans so far have been rejected by both sides. European countries back Ukraine and favour a ceasefire guarded by a 'coalition of the willing'." }
+          ],
+          "figures": [
+            { "value": "~18,000", "label": "civilians killed in Ukraine since Feb 2022, and almost 58,000 injured (verified minimum)", "source": "UN Human Rights Monitoring Mission", "asOf": "2026-11-17", "url": "https://news.un.org/en/story/2026/11/1168828" },
+            { "value": "2,957", "label": "civilians killed Jan–Oct 2026, more than in all of 2025", "source": "UN OHCHR", "asOf": "2026-11-16", "url": "https://ukraine.ohchr.org/en/Protection-of-Civilians-in-Armed-Conflict-October-2026" },
+            { "value": "~1.5 million", "label": "Russian soldiers killed or wounded, about 500,000 of them killed (estimate)", "source": "UK government, via Wikipedia", "asOf": "2026-09-11", "url": "https://en.wikipedia.org/wiki/Casualties_of_the_Russo-Ukrainian_war" },
+            { "value": "96,821", "label": "Ukrainian soldiers confirmed killed by name, plus 97,938 missing; the true toll is higher", "source": "UALosses project, via Wikipedia", "asOf": "2026-06-21", "url": "https://en.wikipedia.org/wiki/Casualties_of_the_Russo-Ukrainian_war" }
+          ],
+          "timeline": [
+            { "date": "2014-03", "text": "Russia annexes Crimea; war begins in Donbas weeks later." },
+            { "date": "2022-02-24", "text": "Full-scale invasion." },
+            { "date": "2022-03-29", "text": "Peace talks in Istanbul; they break down within weeks." },
+            { "date": "2022-09-30", "text": "Russia claims to annex Donetsk, Luhansk, Zaporizhzhia and Kherson." },
+            { "date": "2025", "text": "Renewed US-led negotiations; no deal." },
+            { "date": "2026-11-02", "text": "A strike on a school in Komyshuvakha kills 72, per Ukrainian authorities, one of the deadliest attacks on civilians of the war." }
+          ],
+          "now": "There is no ceasefire. The UN says civilian deaths in 2026 already exceed all of 2025, and Russia stepped up strikes on Ukraine's power grid in October as winter approaches.",
+          "places": ["ukraine-front", "ukraine-cities", "black-sea", "russia-strikes"]
+        },
+        {
+          "id": "nato-east",
+          "title": "NATO's eastern flank",
+          "sinceText": "Tensions rising since 2022",
+          "started": [
+            "Russia's invasion of Ukraine alarmed the countries along Russia's and Belarus's borders. Finland and Sweden, neutral for decades, joined NATO in 2023 and 2024. Poland and the Baltic states, which were under Moscow's control in the Soviet era, see themselves as next in line.",
+            "Since then the region has seen what officials call 'grey zone' attacks: damaged undersea cables and pipelines in the Baltic Sea, drones and missiles straying or sent into NATO airspace, sabotage on railways, spy arrests and cyberattacks. Each is below the level of open war but tests how NATO responds."
+          ],
+          "goals": [
+            { "side": "NATO's frontline states", "text": "Deter Russia by showing NATO will defend every member, and re-arm fast. Poland spent about 4.3% of its GDP on defence in 2025, more than double NATO's old 2% benchmark." },
+            { "side": "NATO", "text": "At The Hague in June 2025, allies agreed to spend 5% of GDP on defence and security by 2035, at least 3.5% on core defence." },
+            { "side": "Russia", "text": "Has long opposed NATO expanding towards its borders and calls the alliance a threat." }
+          ],
+          "figures": [
+            { "value": "18", "label": "Russian incursions into NATO airspace in the region in 2025", "source": "Atlantic Council", "asOf": "2026-10-07", "url": "https://www.atlanticcouncil.org/content-series/russia-tomorrow/the-deterrence-gap-how-can-nato-protect-its-front-line-from-russia/" },
+            { "value": "5%", "label": "of GDP: NATO allies' defence and security spending pledge for 2035", "source": "NATO, The Hague Summit Declaration", "asOf": "2025-06-25", "url": "https://www.nato.int/en/about-us/official-texts-and-resources/official-texts/2025/06/25/the-hague-summit-declaration" }
+          ],
+          "timeline": [
+            { "date": "2023-04-04", "text": "Finland joins NATO." },
+            { "date": "2024-03-07", "text": "Sweden joins NATO." },
+            { "date": "2024-12", "text": "The Estlink 2 power cable between Finland and Estonia is damaged; NATO starts Baltic Sentry patrols in January." },
+            { "date": "2025-09-10", "text": "Russian drones enter Polish airspace and are shot down; NATO launches Eastern Sentry." },
+            { "date": "2025-11", "text": "Sabotage on the Warsaw–Lublin railway, linked to Russian intelligence." },
+            { "date": "2026-09", "text": "NATO jets shoot down a drone over Lithuania." }
+          ],
+          "now": "Incidents keep coming. In 2026 alone a cruise missile crossed into Polish airspace (July), a drone strayed into Latvia (August) and another was shot down over Lithuania (September), and NATO is building up air defences along the whole border.",
+          "places": ["poland", "baltic", "nordics"]
+        }
+      ]
+    },
+    "east-asia": {
+      "title": "Why we're watching East Asia",
+      "kicker": "China and Taiwan · South China Sea",
+      "teaser": "No shooting war, but the world's most watched flashpoint: China's pressure on Taiwan, clashes at sea with the Philippines, and US–China rivalry.",
+      "lede": "There is no war here, and we follow it because of the risk of one. China claims Taiwan, a self-governing democracy, and holds ever larger military drills around it. In the South China Sea, Chinese and Philippine ships clash over reefs. Both disputes are bound up with the rivalry between China and the United States.",
+      "focus": ["China", "Taiwan"],
+      "watch": ["Philippines", "Japan", "Vietnam", "South Korea"],
+      "labels": [
+        { "text": "China", "lon": 108.5, "lat": 33.5, "size": 22 },
+        { "text": "Philippines", "lon": 124.6, "lat": 10.5 },
+        { "text": "Japan", "lon": 132.2, "lat": 33.6 },
+        { "text": "Vietnam", "lon": 106.8, "lat": 15.6 }
+      ],
+      "conflicts": [
+        {
+          "id": "taiwan",
+          "title": "China and Taiwan",
+          "sinceText": "Unresolved since 1949",
+          "started": [
+            "In 1949, at the end of China's civil war, the Communists proclaimed the People's Republic in Beijing and the defeated Republic of China government retreated to Taiwan. No peace treaty was ever signed. Taiwan has since become a democracy with its own government, army and elections; Beijing has never ruled it but says it is part of China.",
+            "The United States switched recognition to Beijing in 1979 but, under the Taiwan Relations Act, still supplies Taiwan with weapons to defend itself. Since Nancy Pelosi, then US House Speaker, visited Taipei in August 2022, China has staged a series of large drills around the island."
+          ],
+          "goals": [
+            { "side": "China", "text": "Unification. It prefers to achieve it peacefully under 'one country, two systems', but its 2005 Anti-Secession Law allows military force if Taiwan moves towards formal independence." },
+            { "side": "Taiwan", "text": "Keep its own government and way of life. President Lai Ching-te, in office since May 2024, rejects Beijing's claim and in 2025 called China a 'foreign hostile force'." },
+            { "side": "United States", "text": "Prevent a forced change to the status quo. It arms Taiwan but deliberately does not say whether it would fight for it ('strategic ambiguity')." }
+          ],
+          "figures": [
+            { "value": "0", "label": "deaths: this is a stand-off, not a shooting war", "source": "In the Loop", "asOf": "2026-11-23", "url": "https://en.wikipedia.org/wiki/Cross-Strait_relations" },
+            { "value": "1,727", "label": "Chinese military aircraft sorties into Taiwan's air defence zone in 2022, up from 972 in 2021", "source": "Taiwan defence ministry, via Wikipedia", "asOf": "2022-12-31", "url": "https://en.wikipedia.org/wiki/Air_Defense_Identification_Zone_(Taiwan)" },
+            { "value": "130", "label": "Chinese military aircraft around Taiwan in 24 hours during the 'Justice Mission 2025' drills", "source": "Taiwan defence ministry, via Wikipedia", "asOf": "2025-12-30", "url": "https://en.wikipedia.org/wiki/Chinese_military_exercises_around_Taiwan" }
+          ],
+          "timeline": [
+            { "date": "1949-10-01", "text": "People's Republic proclaimed; the Republic of China government moves to Taiwan." },
+            { "date": "1979", "text": "US recognises Beijing; Congress passes the Taiwan Relations Act." },
+            { "date": "2005-03", "text": "China's Anti-Secession Law authorises force against formal independence." },
+            { "date": "2022-08", "text": "Large drills around Taiwan after Pelosi's visit." },
+            { "date": "2025-04-01", "text": "'Strait Thunder-2025A' drills." },
+            { "date": "2025-12-29", "text": "'Justice Mission 2025' drills disrupt hundreds of flights." }
+          ],
+          "now": "In November 2026 Taiwan reported large, unannounced Chinese naval drills in the western Pacific, east of the island, which analysts read as practice for blocking ships from reaching Taiwan.",
+          "places": ["taiwan", "us-china"]
+        },
+        {
+          "id": "south-china-sea",
+          "title": "The South China Sea",
+          "sinceText": "Disputed for decades",
+          "started": [
+            "China claims most of the South China Sea, a major shipping route with rich fishing grounds, inside a line on its maps. The Philippines, Vietnam, Malaysia, Brunei and Taiwan claim parts of the same waters. China has built artificial islands with military bases on reefs it controls.",
+            "On 12 July 2016 an international tribunal ruled, in a case brought by the Philippines, that China's historic claims had no legal basis. China rejects the ruling."
+          ],
+          "goals": [
+            { "side": "China", "text": "Control the waters and reefs it claims, using its coast guard and maritime militia more than its navy." },
+            { "side": "Philippines", "text": "Uphold the 2016 ruling, keep supplying its outposts such as the grounded ship at Second Thomas Shoal, and protect its fishermen. It is a US treaty ally." }
+          ],
+          "figures": [],
+          "timeline": [
+            { "date": "2012-04", "text": "Stand-off at Scarborough Shoal; China takes control of it." },
+            { "date": "2016-07-12", "text": "Tribunal rules against China's claims." },
+            { "date": "2024-06", "text": "A Chinese coast guard ship rams a Philippine navy boat at Second Thomas Shoal; a sailor loses a finger." },
+            { "date": "2025-08", "text": "Two Chinese ships chasing a Philippine boat near Scarborough Shoal collide with each other." }
+          ],
+          "now": "Clashes between Chinese and Philippine vessels keep happening, with water cannon and ramming, and any one of them could draw in the United States.",
+          "places": ["south-china-sea"]
+        }
+      ]
+    }
+  }
+}

@@ -17,6 +17,7 @@
     --display: 'Bricolage Grotesque', 'Figtree', system-ui, sans-serif;
     --body: 'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
     --sea: #EAEEF7; --land: #FFFFFF; --border: #CDD3E6;
+    --sea-deep: #CBD3EA; --land-dim: #FFFFFF; --focus-land: #D6DDFF;
   }
   @media (prefers-color-scheme: dark) {
     :root {
@@ -26,6 +27,7 @@
       --confirmed: #7FD6C2; --disputed: #F0A8D6; --new: #9DB0FF;
       --warn: #F0C27A; --banner-bg: #3A2E14;
       --sea: #161935; --land: #23274A; --border: #343A6A;
+      --sea-deep: #0A0B1C; --land-dim: #23274A; --focus-land: #353E85;
     }
   }
   * { box-sizing: border-box; }
@@ -51,7 +53,7 @@
   .bar { display: flex; flex-wrap: wrap; gap: 16px 32px; align-items: flex-end; justify-content: space-between; padding: 8px 0 16px; }
   h1 { margin: 0; font: 800 clamp(30px, 4vw, 46px)/1.05 var(--display); letter-spacing: -0.02em; }
   .sub { margin: 8px 0 0; color: var(--muted); font-size: 16px; max-width: 70ch; }
-  .controls { display: flex; flex-wrap: wrap; gap: 12px; }
+  .controls { display: flex; flex-wrap: wrap; gap: 12px; min-width: 0; max-width: 100%; }
   .seg { display: flex; gap: 2px; background: var(--raise); border: 1px solid var(--line); border-radius: 999px; padding: 3px; max-width: 100%; overflow-x: auto; scrollbar-width: none; }
   .seg button { border: 0; background: none; color: var(--muted); padding: 8px 14px; min-height: 40px; border-radius: 999px; font-size: 15px; white-space: nowrap; flex: none; }
   .seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); font-weight: 600; }
@@ -76,7 +78,75 @@
   @keyframes flash { from { transform: scale(.6); opacity: 1; } to { transform: scale(1.8); opacity: 0; } }
   .leader { stroke: var(--muted); stroke-width: 1.2; stroke-dasharray: 3 3; }
   .anchor { fill: var(--ink); }
-  @media (prefers-reduced-motion: reduce) { .ring, .flash, .status.on .pulse-dot { animation: none; } }
+  /* Zoom between views: bubbles fade, the camera flies, the new view pops in. */
+  .map { transition: height .95s cubic-bezier(.65, 0, .35, 1), border-color .6s, background-color .6s; }
+  .map.leaving .bubble, .map.leaving .leader, .map.leaving .anchor, .map.leaving .clabel, .map.leaving .cartouche { opacity: 0; transition: opacity .2s; }
+  .map.flying svg { height: 100%; }
+  .map.flying .country { vector-effect: non-scaling-stroke; transition: fill .9s; }
+  .map.arrive .country, .map.arrive .grat, .map.arrive .clabel { animation: fadein .5s ease-out both; }
+  .map.arrive .bubble { animation: pop .55s cubic-bezier(.2, 1.4, .4, 1) both; animation-delay: calc(var(--i, 0) * 50ms + 80ms); transform-box: fill-box; transform-origin: center; }
+  .map.arrive .cartouche { animation: slidein .5s .15s ease-out both; }
+  @keyframes pop { from { opacity: 0; transform: scale(.2); } to { opacity: 1; transform: none; } }
+  @keyframes fadein { from { opacity: 0; } }
+  @keyframes slidein { from { opacity: 0; transform: translateY(-10px); } }
+  .bubble { transition: opacity .2s; }
+  .frame { fill: color-mix(in srgb, var(--loop) 6%, transparent); stroke: var(--loop); stroke-width: 1.5; stroke-dasharray: 5 4; opacity: 0; transition: opacity .25s; pointer-events: none; }
+  .frame.on { opacity: 1; }
+
+  /* The zoomed-in region view: an atlas look, with the countries at the heart of it lit up. */
+  .map.zoomed { background: radial-gradient(ellipse at 50% 42%, var(--sea) 52%, var(--sea-deep) 100%); border-color: color-mix(in srgb, var(--loop) 35%, var(--line)); }
+  .zoomed .country { fill: var(--land-dim); }
+  .zoomed .country.focus { fill: var(--focus-land); stroke: color-mix(in srgb, var(--loop) 55%, var(--border)); stroke-width: 1.1; }
+  .zoomed .country.watch { fill: color-mix(in srgb, var(--focus-land) 40%, var(--land-dim)); }
+  .grat { fill: none; stroke: var(--border); stroke-width: .7; stroke-dasharray: 2 5; opacity: .8; }
+  .clabel { font-family: var(--body); font-weight: 700; letter-spacing: .24em; fill: var(--muted); opacity: .5; pointer-events: none; }
+  .zoomed .bubble text { stroke: var(--focus-land); }
+  .cartouche { position: absolute; top: 14px; left: 14px; display: flex; align-items: center; gap: 12px; max-width: calc(100% - 28px); background: color-mix(in srgb, var(--raise) 88%, transparent); backdrop-filter: blur(6px); border: 1px solid var(--line); border-radius: 14px; padding: 8px 14px 8px 8px; box-shadow: 0 6px 24px -12px rgba(20, 24, 60, .35); }
+  .cartouche .back { border: 0; background: var(--ink); color: var(--bg); border-radius: 999px; min-height: 40px; padding: 0 14px; font-weight: 600; font-size: 14px; white-space: nowrap; }
+  .cartouche .kick { display: block; font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--loop); }
+  .cartouche strong { display: block; font: 800 20px/1.1 var(--display); }
+  .cartouche small { display: block; color: var(--muted); font-size: 13px; }
+
+  /* Backgrounders: the broad story of each region, for newcomers. */
+  .bg { border-color: color-mix(in srgb, var(--loop) 30%, var(--line)); }
+  .eyebrow { margin: 0 0 4px; font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--loop); }
+  .lede { margin: 10px 0 4px; font-size: 16px; }
+  details.conflict { border-top: 1px solid var(--line); margin-top: 12px; padding-top: 4px; }
+  details.conflict summary { list-style: none; cursor: pointer; display: flex; flex-direction: column; gap: 2px; padding: 8px 28px 8px 0; position: relative; }
+  details.conflict summary::-webkit-details-marker { display: none; }
+  details.conflict summary::after { content: '+'; position: absolute; right: 4px; top: 8px; font: 700 20px/1 var(--display); color: var(--loop); }
+  details.conflict[open] summary::after { content: '−'; }
+  .ctitle { font: 700 18px/1.25 var(--display); }
+  .since { font-size: 13px; color: var(--muted); }
+  details.conflict h3 { margin: 14px 0 4px; font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  details.conflict p { margin: 0 0 6px; font-size: 15px; line-height: 1.5; }
+  dl.sides { margin: 0; font-size: 15px; }
+  dl.sides dt { font-weight: 700; margin-top: 8px; }
+  dl.sides dt:first-child { margin-top: 0; }
+  dl.sides dd { margin: 2px 0 0; line-height: 1.5; }
+  .figs { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+  .fig { background: var(--bg); border-radius: 10px; padding: 9px 11px; font-size: 13px; color: var(--muted); display: flex; flex-direction: column; gap: 3px; }
+  .fig strong { font: 800 22px/1.1 var(--display); color: var(--ink); }
+  .fig span { color: var(--ink); }
+  .fig a { color: var(--muted); font-size: 12px; }
+  ol.tl { list-style: none; margin: 0; padding: 0 0 0 14px; border-left: 2px solid var(--track); display: flex; flex-direction: column; gap: 8px; font-size: 14px; }
+  ol.tl li { position: relative; }
+  ol.tl li::before { content: ''; position: absolute; left: -20px; top: 6px; width: 10px; height: 10px; border-radius: 50%; background: var(--raise); border: 2px solid var(--loop); }
+  ol.tl time { display: block; font-weight: 700; font-size: 13px; color: var(--loop); }
+  .now { background: color-mix(in srgb, var(--loop) 8%, transparent); border-radius: 10px; padding: 10px 12px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .chips button { border: 1px solid var(--line); background: var(--bg); border-radius: 999px; padding: 6px 12px; min-height: 36px; font-size: 14px; }
+  .chips button:hover { border-color: var(--loop); color: var(--loop); }
+  .fine { font-size: 13px; color: var(--muted); margin: 14px 0 0; }
+  .regionlist { list-style: none; margin: 10px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+  .regionlist button { width: 100%; text-align: left; border: 1px solid var(--line); background: var(--bg); border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; gap: 3px; }
+  .regionlist button:hover { border-color: var(--loop); }
+  .regionlist strong { font: 700 17px/1.2 var(--display); }
+  .regionlist span { font-size: 14px; color: var(--muted); }
+  @media (prefers-reduced-motion: reduce) {
+    .ring, .flash, .status.on .pulse-dot, .map.arrive .bubble, .map.arrive .country, .map.arrive .grat, .map.arrive .clabel, .map.arrive .cartouche { animation: none; }
+    .map, .frame, .bubble { transition: none; }
+  }
 
   .legend { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 12px 2px 0; font-size: 14px; color: var(--muted); }
   .legend span { display: inline-flex; align-items: center; gap: 7px; }
@@ -114,6 +184,9 @@
     .wrap { padding: 0 16px; }
     .banner { padding: 10px 16px; }
     .status { margin-left: 0; }
+    .cartouche { top: 8px; left: 8px; padding: 4px 10px 4px 4px; gap: 8px; }
+    .cartouche small, .cartouche .kick { display: none; }
+    .cartouche strong { font-size: 16px; }
   }
 </style>
 </head>
@@ -133,7 +206,11 @@
     flashes: new Set(), // area ids to flash on the next render
     api: null,
     data: null,
+    bg: null,        // backgrounders.json: the broad story of each region
+    flying: false,   // a zoom animation is running; renders wait for it
+    arrive: true,    // pop the bubbles in on the next render
   };
+  const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const HOURS = { '1h': 1, '6h': 6, '24h': 24 };
 
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -153,14 +230,15 @@
   // Needs history to compare with: the 24h window has none, so nothing pulses there.
   const isHot = (a) => a.count >= 3 && a.pace != null && a.pace >= 1.5;
 
-  function syncUrl() {
+  function urlFor(view) {
     const q = new URLSearchParams();
-    if (state.view !== 'world') q.set('view', state.view);
+    if (view !== 'world') q.set('view', view);
     if (state.window !== '6h') q.set('window', state.window);
     if (state.area) q.set('area', state.area);
     if (state.demo) q.set('demo', '1');
-    history.replaceState(null, '', `${location.pathname}${q.size ? `?${q}` : ''}`);
+    return `${location.pathname}${q.size ? `?${q}` : ''}`;
   }
+  const syncUrl = () => history.replaceState(null, '', urlFor(state.view));
 
   const regions = () => state.api.live.regions();
   const mapOf = (view) => (view === 'world' ? 'world' : regions().find((r) => r.id === view)?.map || 'world');
@@ -206,11 +284,20 @@
     const nodes = layout(d.areas, mapId);
     // Keep labels readable when the map is drawn small (phones).
     const k = Math.min(2.6, Math.max(1, 720 / (document.querySelector('.map')?.clientWidth || window.innerWidth)));
-    const countries = m.countries.map((c) => `<path class="country" d="${c.d}"><title>${esc(c.name)}</title></path>`).join('');
+    const bg = state.bg?.regions?.[state.view];
+    const cls = (name) => (bg?.focus?.includes(name) ? 'country focus' : bg?.watch?.includes(name) ? 'country watch' : 'country');
+    const countries = m.countries.map((c) => `<path class="${cls(c.name)}" d="${c.d}"><title>${esc(c.name)}</title></path>`).join('');
+    const frames = mapId === 'world'
+      ? regions().map((r) => { const b = boxOf(r.id); return `<rect class="frame" data-frame="${esc(r.id)}" x="${b.x.toFixed(1)}" y="${b.y.toFixed(1)}" width="${b.w.toFixed(1)}" height="${b.h.toFixed(1)}" rx="6"/>`; }).join('')
+      : '';
+    const extras = mapId === 'world' ? frames : graticule(m) + (bg?.labels || []).map((l) => {
+      const [x, y] = state.api.project(m, l.lon, l.lat);
+      return `<text class="clabel" x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="middle" style="font-size:${(l.size || 15) * Math.min(k, 1.6)}px">${esc(l.text.toUpperCase())}</text>`;
+    }).join('');
     const leaders = nodes.filter((n) => Math.hypot(n.x - n.x0, n.y - n.y0) > n.r * 0.6)
       .map((n) => `<line class="leader" x1="${n.x0.toFixed(1)}" y1="${n.y0.toFixed(1)}" x2="${n.x.toFixed(1)}" y2="${n.y.toFixed(1)}"/><circle class="anchor" cx="${n.x0.toFixed(1)}" cy="${n.y0.toFixed(1)}" r="3"/>`).join('');
     const order = [...nodes].sort((p, q) => q.r - p.r); // big ones underneath
-    const bubbles = order.map((n) => {
+    const bubbles = order.map((n, i) => {
       const a = n.a;
       const st = a.count ? a.status : 'quiet';
       const c = COLOR[st] || COLOR.reported;
@@ -220,13 +307,136 @@
       const flash = state.flashes.has(a.id) ? `<circle class="flash" cx="${x}" cy="${y}" r="${n.r.toFixed(1)}"/>` : '';
       const ly = n.y + n.r + 16 * k;
       const meta = a.count ? `<text class="meta" style="font-size:${13 * k}px" x="${x}" y="${(ly + 15 * k).toFixed(1)}" text-anchor="middle">${plural(a.count, 'item')}${a.pace == null ? '' : ` · ${esc(paceText(a))}`}</text>` : '';
-      return `<g class="bubble${a.count ? '' : ' quiet'}${state.area === a.id ? ' sel' : ''}" data-area="${esc(a.id)}" tabindex="0" role="button" aria-label="${esc(label)}">
+      return `<g class="bubble${a.count ? '' : ' quiet'}${state.area === a.id ? ' sel' : ''}" data-area="${esc(a.id)}" style="--i:${order.length - 1 - i}" tabindex="0" role="button" aria-label="${esc(label)}">
         ${ring}<circle class="disc" cx="${x}" cy="${y}" r="${n.r.toFixed(1)}" style="fill:color-mix(in srgb, ${c} ${a.count ? 30 : 12}%, transparent);stroke:${c}${a.count ? '' : ';stroke-dasharray:3 3'}"/>${flash}
         <text class="name" style="font-size:${(a.count ? 15 : 13) * k}px" x="${x}" y="${ly.toFixed(1)}" text-anchor="middle">${esc(a.label)}</text>${meta}
       </g>`;
     }).join('');
     state.flashes.clear();
-    return `<svg viewBox="0 0 ${m.width} ${m.height}" role="group" aria-label="Map of ${esc(m.label)} with one bubble per place">${countries}${leaders}${bubbles}</svg>`;
+    return `<svg viewBox="0 0 ${m.width} ${m.height}" role="group" aria-label="Map of ${esc(m.label)} with one bubble per place">${countries}${extras}${leaders}${bubbles}</svg>`;
+  }
+
+  // Dashed lines every 5 degrees, the atlas feel of a zoomed-in view.
+  function graticule(m) {
+    const P = (lon, lat) => state.api.project(m, lon, lat);
+    let d = '';
+    for (let lon = Math.ceil(m.west / 5) * 5; lon <= m.east; lon += 5) { const [x0, y0] = P(lon, m.north), [, y1] = P(lon, m.south); d += `M${x0.toFixed(1)} ${y0.toFixed(1)}V${y1.toFixed(1)}`; }
+    for (let lat = Math.ceil(m.south / 5) * 5; lat <= m.north; lat += 5) { const [x0, y] = P(m.west, lat), [x1] = P(m.east, lat); d += `M${x0.toFixed(1)} ${y.toFixed(1)}H${x1.toFixed(1)}`; }
+    return `<path class="grat" d="${d}"/>`;
+  }
+
+  /** A view's area in world-map pixels: the whole world, or a region's lon/lat box. */
+  function boxOf(view) {
+    const W = state.api.maps.world;
+    if (view === 'world') return { x: 0, y: 0, w: W.width, h: W.height };
+    const v = state.api.maps[mapOf(view)];
+    const [x0, y0] = state.api.project(W, v.west, v.north);
+    const [x1, y1] = state.api.project(W, v.east, v.south);
+    return { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
+  }
+  /** Grow a box around its centre to a width/height ratio, so it fills the frame. */
+  function fit(b, aspect) {
+    const cx = b.x + b.w / 2, cy = b.y + b.h / 2;
+    const w = b.w / b.h < aspect ? b.h * aspect : b.w;
+    const h = w / aspect;
+    return { x: cx - w / 2, y: cy - h / 2, w, h };
+  }
+  const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
+
+  // The camera flies over the world map from one view's box to the other's,
+  // while the frame changes shape to the new map's proportions.
+  function fly(from, to) {
+    const el = document.querySelector('.map');
+    if (!el || reduceMotion()) return Promise.resolve();
+    state.flying = true;
+    el.classList.add('leaving');
+    return new Promise((done) => setTimeout(() => {
+      const W = state.api.maps.world;
+      const target = state.api.maps[mapOf(to)];
+      const width = el.clientWidth, h0 = el.clientHeight;
+      const h1 = (width * target.height) / target.width;
+      const A = fit(boxOf(from), width / h0), B = fit(boxOf(to), width / h1);
+      const bg = to === 'world' ? null : state.bg?.regions?.[to];
+      const cls = (name) => (bg?.focus?.includes(name) ? 'country focus' : bg?.watch?.includes(name) ? 'country watch' : 'country');
+      el.style.height = `${h0}px`;
+      el.className = 'map flying';
+      el.innerHTML = `<svg viewBox="${A.x} ${A.y} ${A.w} ${A.h}" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${W.countries.map((c) => `<path class="${cls(c.name)}" d="${c.d}"/>`).join('')}</svg>`;
+      const svg = el.firstElementChild;
+      el.getBoundingClientRect();
+      el.style.height = `${h1}px`;
+      if (to !== 'world') el.classList.add('zoomed'); // tints the countries in as we fly
+      const t0 = performance.now(), D = 950;
+      const step = (now) => {
+        const t = Math.min(1, (now - t0) / D), e = ease(t);
+        const w = A.w * (B.w / A.w) ** e, h = A.h * (B.h / A.h) ** e; // zoom at an even pace
+        const cx = A.x + A.w / 2 + (B.x + B.w / 2 - A.x - A.w / 2) * e;
+        const cy = A.y + A.h / 2 + (B.y + B.h / 2 - A.y - A.h / 2) * e;
+        svg.setAttribute('viewBox', `${cx - w / 2} ${cy - h / 2} ${w} ${h}`);
+        if (t < 1) requestAnimationFrame(step); else { state.flying = false; done(); }
+      };
+      requestAnimationFrame(step);
+    }, 200));
+  }
+
+  async function go(to, { push = true } = {}) {
+    if (!to || to === state.view || state.flying) return;
+    if (push) history.pushState({ view: to }, '', urlFor(to));
+    const from = state.view;
+    state.area = null;
+    await fly(from, to);
+    state.view = to;
+    state.arrive = true;
+    refresh();
+    document.querySelector('.map')?.focus({ preventScroll: true });
+  }
+
+  function cartouche() {
+    if (state.view === 'world') return '';
+    const r = regions().find((x) => x.id === state.view);
+    const bg = state.bg?.regions?.[state.view];
+    return `<div class="cartouche"><button class="back" data-view="world" aria-label="Zoom out to the world map">← World</button><div><span class="kick">Zoomed in</span><strong>${esc(r?.label || '')}</strong>${bg?.kicker ? `<small>${esc(bg.kicker)}</small>` : ''}</div></div>`;
+  }
+
+  const dateText = (iso) => {
+    const [y, mo, d] = String(iso).split('-').map(Number);
+    const month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][(mo || 1) - 1];
+    return d ? `${d} ${month} ${y}` : mo ? `${month} ${y}` : String(y);
+  };
+  // "4 years, 9 months": how long it has been going, worked out on the day you look.
+  function howLong(iso) {
+    const s = new Date(`${iso}T00:00:00Z`), n = new Date();
+    let months = (n.getUTCFullYear() - s.getUTCFullYear()) * 12 + n.getUTCMonth() - s.getUTCMonth() - (n.getUTCDate() < s.getUTCDate() ? 1 : 0);
+    if (months < 1) return `${Math.max(1, Math.round((n - s) / 86_400_000))} days`;
+    const y = Math.floor(months / 12); months %= 12;
+    return [y && plural(y, 'year'), months && plural(months, 'month')].filter(Boolean).join(', ');
+  }
+
+  function background() {
+    const bg = state.bg?.regions?.[state.view];
+    if (!bg) return '';
+    const label = (id) => state.data.areas.find((a) => a.id === id)?.label;
+    const conflicts = bg.conflicts.map((c, i) => `<details class="conflict"${i === 0 ? ' open' : ''}>
+        <summary><span class="ctitle">${esc(c.title)}</span><span class="since">${c.since ? `Since ${esc(dateText(c.since))} · ${esc(howLong(c.since))}` : esc(c.sinceText || '')}</span></summary>
+        <h3>How it started</h3>${c.started.map((t) => `<p>${esc(t)}</p>`).join('')}
+        <h3>What each side wants</h3><dl class="sides">${c.goals.map((g) => `<dt>${esc(g.side)}</dt><dd>${esc(g.text)}</dd>`).join('')}</dl>
+        ${c.figures.length ? `<h3>By the numbers</h3><div class="figs">${c.figures.map((f) => `<div class="fig"><strong>${esc(f.value)}</strong><span>${esc(f.label)}</span><a href="${safeUrl(f.url)}" target="_blank" rel="noopener">${esc(f.source)}, ${esc(dateText(f.asOf))}</a></div>`).join('')}</div>` : ''}
+        <h3>Key dates</h3><ol class="tl">${c.timeline.map((t) => `<li><time datetime="${esc(t.date)}">${esc(dateText(t.date))}</time>${esc(t.text)}</li>`).join('')}</ol>
+        <h3>Why it's on the map now</h3><p class="now">${esc(c.now)}</p>
+        ${c.places?.some(label) ? `<div class="chips" aria-label="Places on the map">${c.places.filter(label).map((p) => `<button data-pick="${esc(p)}">${esc(label(p))}</button>`).join('')}</div>` : ''}
+      </details>`).join('');
+    return `<section class="panel bg" aria-labelledby="bgh">
+      <p class="eyebrow">Background · start here</p>
+      <h2 id="bgh">${esc(bg.title)}</h2>
+      <p class="lede">${esc(bg.lede)}</p>
+      ${conflicts}
+      <p class="fine">Written by In the Loop on ${esc(dateText(state.bg.reviewed))} from the sources linked, and updated by hand. Figures are the latest we found that day, not live. Death tolls in wars are hard to verify and sources count differently, so we name who counted.</p>
+    </section>`;
+  }
+
+  function regionList() {
+    if (!state.bg) return '';
+    const items = regions().filter((r) => state.bg.regions[r.id]).map((r) => `<li><button data-view="${esc(r.id)}"><strong>${esc(r.label)}</strong><span>${esc(state.bg.regions[r.id].teaser)}</span></button></li>`).join('');
+    return `<section class="panel" aria-labelledby="rh"><p class="eyebrow">New here?</p><h2 id="rh">The regions we follow</h2><ul class="regionlist">${items}</ul><p class="fine">Pick one to zoom in and read how it started, what each side wants and why it's on the map now.</p></section>`;
   }
 
   function detail(d) {
@@ -272,6 +482,7 @@
   }
 
   function render() {
+    if (state.flying) return;
     const d = state.data;
     const app = document.getElementById('app');
     const active = d.areas.filter((a) => a.count);
@@ -299,7 +510,7 @@
         </div>
         <div class="layout">
           <div class="mapcol">
-            <div class="map">${mapSvg(d)}</div>
+            <div class="map${world ? '' : ' zoomed'}${state.arrive && !reduceMotion() ? ' arrive' : ''}" tabindex="-1">${mapSvg(d)}${cartouche()}</div>
             <div class="legend">
               <span><i class="sw c-corroborated"></i>Mostly confirmed</span>
               <span><i class="sw c-reported"></i>Mostly reported once</span>
@@ -311,18 +522,22 @@
             <p class="footnote">Counts are posts from the ${plural(d.voices, 'tracked voice')} on Bluesky${d.articles ? ` plus ${plural(d.articles, 'news article')} from ${plural(d.outlets, 'outlet')}` : ''} that match each place's keywords, compared with their pace over the last 24 hours. New posts arrive live from Bluesky; news articles come from outlets' RSS feeds and GDELT every 15 minutes${d.newsUpdatedAt ? ` (last ${esc(ago(d.newsUpdatedAt))})` : ''}. In the Loop only reads Bluesky and never posts. Map: Natural Earth.</p>
             ${d.errors?.length ? `<details class="footnote"><summary>${plural(d.errors.length, 'warning')}</summary><ul>${d.errors.map((e) => `<li>${esc(e)}</li>`).join('')}</ul></details>` : ''}
           </div>
-          <aside>${state.view === 'world' ? '' : detail(d)}${feed(d)}</aside>
+          <aside>${world ? regionList() : detail(d) + background()}${feed(d)}</aside>
         </div>
       </div>`;
 
-    app.querySelectorAll('[data-view]').forEach((b) => b.addEventListener('click', () => { state.view = b.dataset.view; refresh(); }));
+    state.arrive = false;
+    app.querySelectorAll('[data-view]').forEach((b) => b.addEventListener('click', () => go(b.dataset.view)));
+    app.querySelectorAll('[data-pick]').forEach((b) => b.addEventListener('click', () => { state.area = b.dataset.pick; refresh(); app.querySelector('.map')?.scrollIntoView({ behavior: reduceMotion() ? 'auto' : 'smooth', block: 'center' }); }));
+    const frame = (id, on) => app.querySelector(`.frame[data-frame="${CSS.escape(id)}"]`)?.classList.toggle('on', on);
     app.querySelectorAll('[data-window]').forEach((b) => b.addEventListener('click', () => { state.window = b.dataset.window; refresh(); }));
     app.querySelectorAll('.bubble').forEach((g) => {
       const pick = () => {
-        if (state.view === 'world') { state.view = g.dataset.area; state.area = null; refresh(); return; }
+        if (state.view === 'world') { go(g.dataset.area); return; }
         state.area = state.area === g.dataset.area ? null : g.dataset.area; refresh(); app.querySelector(`.bubble[data-area="${CSS.escape(g.dataset.area)}"]`)?.focus();
       };
       g.addEventListener('click', pick);
+      for (const [ev, on] of [['mouseenter', true], ['mouseleave', false], ['focus', true], ['blur', false]]) g.addEventListener(ev, () => frame(g.dataset.area, on));
       g.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(); } });
     });
     app.querySelector('#close')?.addEventListener('click', () => { state.area = null; refresh(); });
@@ -338,7 +553,9 @@
   async function start() {
     try {
       state.api = await window.itlLive(state.demo);
+      const bgLoad = fetch('backgrounders.json').then((r) => (r.ok ? r.json() : null)).catch(() => null);
       await state.api.live.load();
+      state.bg = await bgLoad;
       if (!regions().some((r) => r.id === state.view)) state.view = 'world';
       refresh();
       const follow = () => state.api.follow({
@@ -353,6 +570,10 @@
         onStatus: (s) => { state.conn = s.type; if (state.data) render(); },
       });
       let sub = follow();
+      window.addEventListener('popstate', () => {
+        const v = new URLSearchParams(location.search).get('view') || 'world';
+        go(regions().some((r) => r.id === v) ? v : 'world', { push: false });
+      });
       setInterval(refresh, 60_000); // keep "x min ago" and the window current
       let rt; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(render, 150); });
       setInterval(async () => { // full reload: engagement counts, missed posts
