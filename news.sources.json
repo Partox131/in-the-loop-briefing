@@ -1,10 +1,10 @@
 {
   "_about": "News sources for In the Loop: outlets (RSS/Atom feeds, and which domains count from GDELT) and the GDELT queries per region. Read by scripts/collect-news.js. Only articles from outlets listed here are shown. stateAffiliated outlets are shown and labelled (Amir, 22 Nov 2026). affiliation matches voices.example.json so an outlet's Bluesky post and its article are one source, not two.",
   "gdelt": {
-    "_about": "GDELT finds articles from listed outlets without a working feed (Reuters and AP have none; some feeds block GitHub's servers). Region-wide keyword queries returned mostly unlisted local sites, so each query is limited to a group of listed domains. GDELT lists articles 1 to 2 hours late, hence 4h.",
+    "_about": "GDELT is switched off (queries moved to disabledQueries) since 23 Nov 2026: every call from GitHub's runners got HTTP 429, it has no Reuters, AP, Haaretz, Times of Israel, CNN or RFE/RL articles, and its index lagged many hours. Move the queries back to 'queries' to try again, e.g. from a server with its own address. See docs/research/news.md.",
     "timespan": "4h",
     "maxrecords": 250,
-    "queries": [
+    "disabledQueries": [
       {
         "id": "wires-middle-east",
         "query": "(iran OR israel OR gaza OR lebanon OR syria OR yemen OR ukraine OR russia OR nato OR taiwan OR china) (domainis:reuters.com OR domainis:apnews.com OR domainis:haaretz.com OR domainis:timesofisrael.com OR domainis:ynetnews.com OR domainis:presstv.ir)"
@@ -17,7 +17,8 @@
         "id": "more",
         "query": "(iran OR israel OR gaza OR lebanon OR syria OR yemen OR ukraine OR russia OR nato OR taiwan OR china) (domainis:axios.com OR domainis:economist.com OR domainis:ft.com OR domainis:independent.co.uk OR domainis:cbc.ca OR domainis:972mag.com)"
       }
-    ]
+    ],
+    "queries": []
   },
   "outlets": [
     {
