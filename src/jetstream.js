@@ -9,7 +9,7 @@
 // reconnect resumes without gaps, and a cursor in the recent past replays
 // the last few minutes/hours (Jetstream keeps a rolling buffer).
 
-import { fromJetstream } from './normalize.js?v=be3e94bf48';
+import { fromJetstream } from './normalize.js?v=296db795d6';
 
 export const JETSTREAM_HOSTS = [
   'jetstream2.us-east.bsky.network',

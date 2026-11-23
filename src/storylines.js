@@ -2,9 +2,13 @@
 // and flag possible disagreements between sources.
 // See docs/design/topic-tracking.md, section 3.
 //
-// Grouping here is the cheap part only: shared article links and
-// quote/reply chains. Text-similarity clustering (embeddings) and LLM claim
-// extraction are the next step and would plug in at `groupKey`/`claimsOf`.
+// Grouping is rule-based, no AI: first shared article links and quote/reply
+// chains, then matching headlines and wording (src/similar.js), so two
+// outlets covering the same event corroborate each other without linking to
+// each other. Embeddings and LLM claim extraction would plug in at
+// `mergeSimilar`/`claimsOf` later.
+
+import { mergeSimilar } from './similar.js?v=296db795d6';
 
 const TRACKING_PARAMS = /^(utm_|fbclid|gclid|ref|smid|cmpid|at_|taid|ito|mc_)/i;
 
@@ -76,9 +80,12 @@ function statusOf(voicesInvolved) {
 
 /**
  * @param {Array} posts   ranked posts (from rankPosts), each optionally with `voice`
+ * @param {object} [opts]
+ * @param {boolean|object} [opts.textMatch=true]  also join storylines by similar
+ *   wording; an object overrides the thresholds in MATCH_DEFAULTS
  * @returns {Array} storylines, best first
  */
-export function buildStorylines(posts) {
+export function buildStorylines(posts, { textMatch = true } = {}) {
   const uf = new UnionFind();
   const byUri = new Map(posts.map((p) => [p.uri, p]));
   const linkOwner = new Map();
@@ -100,8 +107,12 @@ export function buildStorylines(posts) {
     groups.get(root).push(p);
   }
 
+  const merged = textMatch
+    ? mergeSimilar([...groups.values()], textMatch === true ? {} : textMatch)
+    : [...groups.values()].map((g) => ({ posts: g, matched: false }));
+
   const stories = [];
-  for (const group of groups.values()) {
+  for (const { posts: group, matched } of merged) {
     group.sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
     const voicesInvolved = [...new Map(group.filter((p) => p.voice).map((p) => [p.did, p.voice])).values()];
     const times = group.map((p) => Date.parse(p.createdAt)).filter((t) => !Number.isNaN(t));
@@ -116,11 +127,37 @@ export function buildStorylines(posts) {
       score: group.reduce((s, p) => s + (p.score ?? 0), 0),
       status: statusOf(voicesInvolved),
       disagreements: findDisagreements(group),
+      // true when similar wording (not a shared link or quote) joined its posts
+      matchedByText: matched,
     };
     if (story.disagreements.length) story.status = 'disputed';
     stories.push(story);
   }
   return stories.sort((a, b) => b.score - a.score);
+}
+
+// Casualty counts grow as bodies are found; other numbers (missiles, drones) don't.
+const TOLLS = new Set(['killed', 'injured']);
+
+const UPDATE_GAP_MS = 2 * 3_600_000;
+const UPDATE_WORDS = /\b(?:toll|ris(?:e|es|en|ing)|rose|climb\w*|reach\w*|now|at least|up to)\b/i;
+
+/**
+ * True if the numbers only go up over time, like a death toll being updated:
+ * no report is lower than an earlier one, and each higher number either says
+ * it is an update ("toll rises to", "at least") or comes 2+ hours later.
+ * Two outlets giving 12 and 30 an hour apart still disagree.
+ */
+function rising(reports) {
+  const sorted = [...reports].sort((a, b) => a.at - b.at);
+  for (let i = 0; i < sorted.length; i++) {
+    for (let j = i + 1; j < sorted.length; j++) {
+      const [a, b] = [sorted[i], sorted[j]];
+      if (b.value < a.value) return false;
+      if (b.value > a.value && !b.update && b.at - a.at < UPDATE_GAP_MS) return false;
+    }
+  }
+  return true;
 }
 
 /**
@@ -140,6 +177,7 @@ export function findDisagreements(group) {
   }
   const claims = new Map(); // kind -> Map(value -> Set(affiliation))
   const examples = new Map();
+  const reports = new Map(); // kind -> [{ value, at }]
   for (const p of group) {
     if (!p.voice) continue;
     for (const c of claimsOf(p.text)) {
@@ -148,12 +186,16 @@ export function findDisagreements(group) {
       if (!m.has(c.value)) m.set(c.value, new Set());
       m.get(c.value).add(p.voice.affiliation);
       examples.set(`${c.kind}:${c.value}`, p);
+      if (!reports.has(c.kind)) reports.set(c.kind, []);
+      reports.get(c.kind).push({ value: c.value, at: Date.parse(p.createdAt) || 0, update: UPDATE_WORDS.test(p.text || '') });
     }
   }
   for (const [kind, values] of claims) {
     if (values.size < 2) continue;
     // One outlet updating its own number is not a disagreement.
     if (new Set([...values.values()].flatMap((x) => [...x])).size < 2) continue;
+    // Nor is a toll that only goes up over time ("rises to 11", then "15 killed").
+    if (TOLLS.has(kind) && rising(reports.get(kind))) continue;
     const sides = [...values.entries()]
       .sort((a, b) => a[0] - b[0])
       .map(([value, sources]) => ({ value, sources: [...sources], post: examples.get(`${kind}:${value}`) }));

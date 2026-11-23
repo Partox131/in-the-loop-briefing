@@ -11,8 +11,8 @@
 //
 // Browser-safe: no Node imports. No AI: parsing and matching are rules.
 
-import { canonicalUrl } from './storylines.js?v=be3e94bf48';
-import { makeVoice } from './voices.js?v=be3e94bf48';
+import { canonicalUrl } from './storylines.js?v=296db795d6';
+import { makeVoice } from './voices.js?v=296db795d6';
 
 const ENTITIES = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ', hellip: '…', mdash: '—', ndash: '–', rsquo: '’', lsquo: '‘', rdquo: '”', ldquo: '“' };
 

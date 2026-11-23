@@ -13,6 +13,7 @@
  * @property {string} text
  * @property {string[]} tags       hashtags (from facets + record.tags)
  * @property {string[]} links      external links (from facets + link card embed)
+ * @property {string|undefined} linkTitle  headline of the link card, if any
  * @property {string[]} langs
  * @property {string} createdAt
  * @property {boolean} isReply
@@ -39,9 +40,11 @@ function fromRecord(record) {
   const embed = record.embed || {};
   const ext = embed.external || embed.media?.external;
   if (ext?.uri) links.add(ext.uri);
+  const linkTitle = ext?.title ? String(ext.title).trim() : undefined;
   const quoted = embed.record?.uri || embed.record?.record?.uri;
   return {
     text: record.text || '',
+    linkTitle,
     tags: [...tags],
     links: [...links],
     langs: record.langs || [],
