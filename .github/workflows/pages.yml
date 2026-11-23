@@ -7,29 +7,31 @@ name: Deploy to GitHub Pages
 # Every 15 minutes the collector reads outlets' RSS feeds and GDELT
 # (tools/collect-news.js), merges with the news.json already live, and the
 # site is redeployed. Free: public repos get Actions minutes at no cost.
-# GitHub may run scheduled jobs late, and pauses them after 60 days without
-# a push to this repo.
+#
+# GitHub's own schedule proved unreliable (one scheduled run in 14 hours on
+# 22-23 Nov 2026), so each run starts the next one: the "next" job waits
+# about 14 minutes, then dispatches this workflow again, unless another run
+# is already queued or running (so a push never starts a second chain). The
+# hourly schedule only restarts the chain if it ever breaks. To stop the
+# loop, disable this workflow in the repo's Actions tab.
 
 on:
   push:
     branches: [main]
   schedule:
-    - cron: '7,22,37,52 * * * *'
+    - cron: '17 * * * *'
   workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: pages
-  cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    concurrency:
+      group: pages-build
+      cancel-in-progress: false
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -48,9 +50,37 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    concurrency:
+      group: pages-deploy
+      cancel-in-progress: false
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+
+  next:
+    needs: deploy
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      actions: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - name: Wait, then start the next run unless one is already lined up
+        run: |
+          sleep 840
+          others=$(gh api "repos/$GH_REPO/actions/workflows/pages.yml/runs?per_page=20" \
+            --jq "[.workflow_runs[] | select(.id != ${{ github.run_id }}) | select(.status == \"queued\" or .status == \"in_progress\" or .status == \"waiting\" or .status == \"pending\")] | length")
+          if [ "$others" -gt 0 ]; then
+            echo "Another run is queued or running; it will continue the chain."
+          else
+            gh workflow run pages.yml --ref main
+          fi
