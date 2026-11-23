@@ -21,7 +21,9 @@ import { makeOutlets, mergeArticles, parseFeed, parseGdelt } from '../src/news.j
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const UA = 'InTheLoopNewsCollector/0.1 (+https://partox131.github.io/in-the-loop-briefing/)';
 const GDELT = 'https://api.gdeltproject.org/api/v2/doc/doc';
-const GDELT_GAP_MS = 6_000; // GDELT asks for at most one request every 5 seconds
+const GDELT_GAP_MS = 10_000; // GDELT asks for at most one request every 5 seconds
+// GDELT lists articles about 1 to 2 hours after publication, so a query
+// must look back further than that (news.sources.json: timespan 4h).
 
 function args(argv) {
   const o = { sources: join(root, 'news.sources.json'), hierarchy: join(root, 'topics.hierarchy.example.json'), node: 'geopolitics', out: 'news.json', hours: 48, gdelt: true, feeds: true };
@@ -81,7 +83,8 @@ export async function collectNews({ spec, hierarchy, node = 'geopolitics', previ
       const params = new URLSearchParams({ query: q.query, mode: 'artlist', format: 'json', sort: 'datedesc', maxrecords: String(g.maxrecords || 250), timespan: g.timespan || '1h' });
       const url = `${GDELT}?${params}`;
       let entry = { kind: 'gdelt', id: q.id, ok: false, items: 0, listed: 0 };
-      for (let attempt = 0; attempt < 2; attempt++) {
+      // GitHub's runners share addresses, so GDELT sometimes says 429 even when we wait: back off and retry.
+      for (let attempt = 0; attempt < 3; attempt++) {
         try {
           const body = await get(url, { fetchImpl, timeoutMs: 30_000 });
           // GDELT answers rate limits and bad queries with plain text, not JSON.
@@ -92,7 +95,7 @@ export async function collectNews({ spec, hierarchy, node = 'geopolitics', previ
           break;
         } catch (err) {
           entry.error = String(err.message || err).slice(0, 200);
-          if (attempt === 0) await sleep(GDELT_GAP_MS * 2);
+          if (attempt < 2) await sleep(GDELT_GAP_MS * 3 * (attempt + 1));
         }
       }
       report.push(entry);

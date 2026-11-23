@@ -1,20 +1,21 @@
 {
   "_about": "News sources for In the Loop: outlets (RSS/Atom feeds, and which domains count from GDELT) and the GDELT queries per region. Read by scripts/collect-news.js. Only articles from outlets listed here are shown. stateAffiliated outlets are shown and labelled (Amir, 22 Nov 2026). affiliation matches voices.example.json so an outlet's Bluesky post and its article are one source, not two.",
   "gdelt": {
-    "timespan": "1h",
+    "_about": "GDELT finds articles from listed outlets without a working feed (Reuters and AP have none; some feeds block GitHub's servers). Region-wide keyword queries returned mostly unlisted local sites, so each query is limited to a group of listed domains. GDELT lists articles 1 to 2 hours late, hence 4h.",
+    "timespan": "4h",
     "maxrecords": 250,
     "queries": [
       {
-        "id": "middle-east",
-        "query": "(iran OR israel OR gaza OR lebanon OR hezbollah OR syria OR iraq OR yemen OR houthis OR hormuz OR \"west bank\") sourcelang:english"
+        "id": "wires-middle-east",
+        "query": "(iran OR israel OR gaza OR lebanon OR syria OR yemen OR ukraine OR russia OR nato OR taiwan OR china) (domainis:reuters.com OR domainis:apnews.com OR domainis:haaretz.com OR domainis:timesofisrael.com OR domainis:ynetnews.com OR domainis:presstv.ir)"
       },
       {
-        "id": "eastern-europe",
-        "query": "(ukraine OR russia OR kremlin OR kyiv OR nato OR poland OR baltic OR crimea) sourcelang:english"
+        "id": "europe-asia",
+        "query": "(iran OR israel OR gaza OR lebanon OR syria OR yemen OR ukraine OR russia OR nato OR taiwan OR china) (domainis:cnn.com OR domainis:rferl.org OR domainis:kyivpost.com OR domainis:focustaiwan.tw OR domainis:news.cn OR domainis:asia.nikkei.com)"
       },
       {
-        "id": "east-asia",
-        "query": "(taiwan OR china OR beijing OR \"south china sea\") sourcelang:english"
+        "id": "more",
+        "query": "(iran OR israel OR gaza OR lebanon OR syria OR yemen OR ukraine OR russia OR nato OR taiwan OR china) (domainis:axios.com OR domainis:economist.com OR domainis:ft.com OR domainis:independent.co.uk OR domainis:cbc.ca OR domainis:972mag.com)"
       }
     ]
   },
@@ -429,9 +430,7 @@
       "topics": [
         "middle-east"
       ],
-      "feeds": [
-        "https://www.presstv.ir/rss.xml"
-      ]
+      "feeds": []
     },
     {
       "domain": "kyivindependent.com",
@@ -628,9 +627,7 @@
       "topics": [
         "east-asia"
       ],
-      "feeds": [
-        "https://focustaiwan.tw/rss/aall.xml"
-      ]
+      "feeds": []
     },
     {
       "domain": "taipeitimes.com",
