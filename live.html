@@ -36,7 +36,8 @@
   .wrap { max-width: 1440px; margin: 0 auto; padding: 0 40px; }
 
   header.top { display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: center; padding: 18px 0; }
-  .brand { display: flex; align-items: center; gap: 9px; font: 800 22px/1 var(--display); letter-spacing: -0.01em; }
+  .brand { display: flex; align-items: center; gap: 9px; font: 800 22px/1 var(--display); letter-spacing: -0.01em; color: inherit; text-decoration: none; border-radius: 6px; }
+  .brand:hover { color: var(--loop); }
   nav.crumbs { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; color: var(--muted); font-size: 15px; }
   nav.crumbs .here { color: var(--ink); font-weight: 600; }
   .tabs { display: flex; gap: 4px; background: var(--track); border-radius: 999px; padding: 4px; }
@@ -284,7 +285,7 @@
       ${state.demo ? '<div class="banner" role="status">Demo mode: made-up sample posts from fictional accounts, run through the real pipeline.</div>' : ''}
       <div class="wrap">
         <header class="top">
-          <span class="brand"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="10" fill="none" stroke="var(--track)" stroke-width="4"/><path d="M14 4a10 10 0 0 1 9.5 13" fill="none" stroke="var(--loop)" stroke-width="4" stroke-linecap="round"/></svg>in the loop</span>
+          <a class="brand" href="index.html${state.demo ? '?demo=1' : ''}" title="Go to the home page"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="10" fill="none" stroke="var(--track)" stroke-width="4"/><path d="M14 4a10 10 0 0 1 9.5 13" fill="none" stroke="var(--loop)" stroke-width="4" stroke-linecap="round"/></svg>in the loop</a>
           <nav class="crumbs" aria-label="Topic path"><span>Politics</span><span aria-hidden="true">/</span><span>Geopolitics</span><span aria-hidden="true">/</span>${world ? '<span class="here">World</span>' : `<span class="here">${esc(d.node.label)}</span>`}</nav>
           <nav class="tabs" aria-label="View"><a href="index.html?node=${encodeURIComponent(world ? 'geopolitics' : d.node.id)}${state.demo ? '&demo=1' : ''}">Briefing</a><a href="#" aria-current="page">Live map</a></nav>
           <div class="status ${state.conn === 'open' && !state.demo ? 'on' : ''}" role="status"><span class="pulse-dot" aria-hidden="true"></span><span>${statusText(d)}</span></div>

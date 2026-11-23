@@ -35,7 +35,8 @@
   button { font: inherit; color: inherit; cursor: pointer; }
 
   header.top { display: flex; flex-wrap: wrap; gap: 12px 32px; align-items: center; justify-content: space-between; padding: 18px 56px; max-width: 1360px; margin: 0 auto; }
-  .brand { display: flex; align-items: center; gap: 9px; font: 800 22px/1 var(--display); letter-spacing: -0.01em; }
+  .brand { display: flex; align-items: center; gap: 9px; font: 800 22px/1 var(--display); letter-spacing: -0.01em; color: inherit; text-decoration: none; border-radius: 6px; }
+  .brand:hover { color: var(--loop); }
   nav.crumbs { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; color: var(--muted); font-size: 15px; }
   nav.crumbs a { color: var(--muted); text-decoration: none; }
   nav.crumbs a:hover { color: var(--ink); text-decoration: underline; }
@@ -311,7 +312,7 @@
       ${d.demo ? '<div class="banner" role="status">Demo mode: made-up sample posts from fictional accounts, run through the real pipeline. Live Bluesky data runs without demo mode.</div>' : ''}
       <header class="top">
         <div style="display:flex;flex-wrap:wrap;gap:12px 32px;align-items:center">
-          <span class="brand"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="10" fill="none" stroke="var(--track)" stroke-width="4"/><path d="M14 4a10 10 0 0 1 9.5 13" fill="none" stroke="var(--loop)" stroke-width="4" stroke-linecap="round"/></svg>in the loop</span>
+          <a class="brand" href="index.html${state.demo ? '?demo=1' : ''}" title="Go to the home page"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="10" fill="none" stroke="var(--track)" stroke-width="4"/><path d="M14 4a10 10 0 0 1 9.5 13" fill="none" stroke="var(--loop)" stroke-width="4" stroke-linecap="round"/></svg>in the loop</a>
           <nav class="crumbs" aria-label="Topic path">${crumbs}</nav>
           ${window.itlStatic ? `<nav class="tabs" aria-label="View"><a href="#" aria-current="page">Briefing</a><a href="live.html${state.demo ? '?demo=1' : ''}">Live map</a></nav>` : ''}
         </div>
