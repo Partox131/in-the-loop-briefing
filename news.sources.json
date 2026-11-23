@@ -700,7 +700,7 @@
     }
   ],
   "telegram": {
-    "_about": "Public Telegram channels read from their web preview (https://t.me/s/<channel>) by scripts/collect-news.js. Started 23 Nov 2026 with English channels and Ukraine-war channels (Amir); more candidates in docs/research/telegram.md. Only channels with Telegram's verified badge or long-known official ones; no channels of designated armed groups, no anonymous aggregators. affiliation matches the outlet's feed/Bluesky voice so they count as one source. tier: 1 outlet, 4 official, 5 OSINT. Posts are kept as short excerpts with a link; Telegram's terms ban any AI use of its content.",
+    "_about": "Public Telegram channels read from their web preview (https://t.me/s/<channel>) by scripts/collect-news.js. English channels only (Amir, 23 Nov 2026: the Ukrainian ones were removed because non-English posts crowded the pages; they are backlogged in docs/workstreams/sources.md); more candidates in docs/research/telegram.md. Only channels with Telegram's verified badge or long-known official ones; no channels of designated armed groups, no anonymous aggregators. affiliation matches the outlet's feed/Bluesky voice so they count as one source. tier: 1 outlet, 4 official, 5 OSINT. Posts are kept as short excerpts with a link; Telegram's terms ban any AI use of its content.",
     "channels": [
       {
         "channel": "idfofficial",
@@ -797,99 +797,6 @@
         "verified": true,
         "stateAffiliated": true,
         "country": "RU"
-      },
-      {
-        "channel": "V_Zelenskiy_official",
-        "name": "President Zelensky",
-        "affiliation": "Ukrainian Government",
-        "region": "Ukraine",
-        "tier": 4,
-        "language": "Ukrainian",
-        "topics": [
-          "ukraine-war"
-        ],
-        "verified": true,
-        "stateAffiliated": true,
-        "country": "UA"
-      },
-      {
-        "channel": "GeneralStaffZSU",
-        "name": "Ukraine General Staff",
-        "affiliation": "Ukrainian Armed Forces",
-        "region": "Ukraine",
-        "tier": 4,
-        "language": "Ukrainian",
-        "topics": [
-          "ukraine-war"
-        ],
-        "verified": true,
-        "stateAffiliated": true,
-        "country": "UA"
-      },
-      {
-        "channel": "kpszsu",
-        "name": "Ukrainian Air Force",
-        "affiliation": "Ukrainian Armed Forces",
-        "region": "Ukraine",
-        "tier": 4,
-        "language": "Ukrainian",
-        "topics": [
-          "ukraine-war"
-        ],
-        "verified": true,
-        "stateAffiliated": true,
-        "country": "UA"
-      },
-      {
-        "channel": "DeepStateUA",
-        "name": "DeepState",
-        "affiliation": "DeepState",
-        "region": "Ukraine",
-        "tier": 5,
-        "language": "Ukrainian",
-        "topics": [
-          "ukraine-war"
-        ],
-        "verified": true
-      },
-      {
-        "channel": "suspilnenews",
-        "name": "Suspilne News",
-        "affiliation": "Suspilne",
-        "region": "Ukraine",
-        "tier": 1,
-        "language": "Ukrainian",
-        "topics": [
-          "ukraine-war"
-        ],
-        "verified": true,
-        "note": "Public broadcaster"
-      },
-      {
-        "channel": "ukrpravda_news",
-        "name": "Ukrainska Pravda",
-        "affiliation": "Ukrainska Pravda",
-        "region": "Ukraine",
-        "tier": 1,
-        "language": "Ukrainian",
-        "topics": [
-          "ukraine-war"
-        ],
-        "verified": true
-      },
-      {
-        "channel": "ukrinform_news",
-        "name": "Ukrinform",
-        "affiliation": "Ukrinform",
-        "region": "Ukraine",
-        "tier": 1,
-        "language": "Ukrainian",
-        "topics": [
-          "ukraine-war"
-        ],
-        "verified": true,
-        "stateAffiliated": true,
-        "country": "UA"
       }
     ]
   }
