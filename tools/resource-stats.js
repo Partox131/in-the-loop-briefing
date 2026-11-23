@@ -13,6 +13,8 @@
 //              ("Last 24 hours" or "24 to 48 hours ago"), with item counts
 // hourly.csv   items per UTC hour and channel over the last 48 hours
 // outlets.csv  every listed news outlet with its RSS feeds' last result
+// sources.csv  every configured source (RSS outlets, Telegram channels,
+//              Bluesky voices) with link, status and item counts
 
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
@@ -106,6 +108,81 @@ export function resourceStats({ posts, voices, outlets, sources = [], now = new 
   return { items, hourly, outlets: outletRows };
 }
 
+/**
+ * Every configured source, whether or not it supplied anything: RSS outlets,
+ * Telegram channels and Bluesky voices, with a link and a status, so the
+ * source list can be checked and edited.
+ * @param {object} o
+ * @param {Array} o.voices    every voice from voices.example.json (makeVoice)
+ * @param {Array} o.missing   handles Bluesky says don't exist
+ * @param {Array} o.outlets   news.json's outlets (RSS outlets and Telegram channels)
+ * @param {Array} o.sources   news.json's per-feed report
+ * @param {Array} o.items     resourceStats(...).items
+ */
+export function sourceList({ voices, missing = [], outlets, sources = [], items }) {
+  const count = new Map();
+  for (const r of items) {
+    const k = `${r.channel}|${r.account}`;
+    const c = count.get(k) || { d1: 0, d2: 0 };
+    if (r.window === 'Last 24 hours') c.d1 += r.items;
+    c.d2 += r.items;
+    count.set(k, c);
+  }
+  const report = new Map();
+  for (const s of sources) {
+    if (s.kind !== 'rss' && s.kind !== 'telegram') continue;
+    const list = report.get(s.outlet) || [];
+    list.push(s);
+    report.set(s.outlet, list);
+  }
+  const gone = new Set(missing.map((h) => String(h).toLowerCase()));
+  const rows = [];
+  for (const o of outlets) {
+    const tg = Boolean(o.telegram);
+    const channel = tg ? 'Telegram' : 'RSS';
+    const rep = report.get(o.domain) || [];
+    const ok = rep.filter((x) => x.ok).length;
+    const c = count.get(`${channel}|${o.domain}`) || { d1: 0, d2: 0 };
+    const status = !rep.length ? (tg ? 'Not read' : 'No RSS feed') : ok === rep.length ? 'Working' : ok === 0 ? 'Failing' : 'Partly failing';
+    rows.push({
+      type: tg ? 'Telegram channel' : 'RSS outlet',
+      name: o.name,
+      affiliation: o.affiliation || o.name,
+      handle: o.domain,
+      link: tg ? `https://t.me/s/${o.domain.slice('t.me/'.length)}` : `https://${o.domain}`,
+      role: tg ? ROLE[o.tier] || 'Outlet' : 'Outlet',
+      based_in: o.region || '',
+      state_affiliated: o.stateAffiliated ? 'Yes' : 'No',
+      status,
+      items_24h: c.d1,
+      items_48h: c.d2,
+      detail: tg
+        ? [...new Set(rep.map((x) => x.error).filter(Boolean))].join('; ')
+        : rep.length ? rep.map((x) => (x.ok ? x.url : `${x.url} (${x.error || 'failed'})`)).join(' ; ') : 'No RSS feed listed',
+    });
+  }
+  for (const v of voices) {
+    const c = count.get(`Bluesky|${v.handle}`) || { d1: 0, d2: 0 };
+    const status = gone.has(v.handle) ? 'Account not found' : c.d2 ? 'Posting' : 'No matching posts in 48 hours';
+    rows.push({
+      type: 'Bluesky account',
+      name: v.name,
+      affiliation: v.affiliation,
+      handle: v.handle,
+      link: `https://bsky.app/profile/${v.handle}`,
+      role: ROLE[v.tier] || 'Other',
+      based_in: v.region || '',
+      state_affiliated: v.stateAffiliated ? 'Yes' : 'No',
+      status,
+      items_24h: c.d1,
+      items_48h: c.d2,
+      detail: v.handle.endsWith('.brid.gy') ? 'Unofficial bridge of the website' : v.domainVerified ? 'Domain handle' : '',
+    });
+  }
+  const order = { 'RSS outlet': 0, 'Telegram channel': 1, 'Bluesky account': 2 };
+  return rows.sort((a, b) => order[a.type] - order[b.type] || a.name.localeCompare(b.name));
+}
+
 export function toCsv(rows, columns = Object.keys(rows[0] || {})) {
   const cell = (v) => {
     const s = v == null ? '' : String(v);
@@ -117,6 +194,7 @@ export function toCsv(rows, columns = Object.keys(rows[0] || {})) {
 export const COLUMNS = {
   items: ['window', 'channel', 'source', 'account', 'affiliation', 'role', 'state_affiliated', 'coverage', 'based_in', 'items', 'bluesky_likes_reposts'],
   hourly: ['hour', 'channel', 'items'],
+  sources: ['type', 'name', 'affiliation', 'handle', 'link', 'role', 'based_in', 'state_affiliated', 'status', 'items_24h', 'items_48h', 'detail'],
   outlets: ['outlet', 'domain', 'kind', 'state_affiliated', 'based_in', 'feeds', 'feeds_working', 'status', 'articles_in_feed', 'articles_kept_24h', 'problem'],
 };
 export { FEED_STATUS };
@@ -162,7 +240,8 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   });
   const stats = resourceStats({ posts: brief.posts, voices: brief.voices, outlets: newsDoc.outlets || [], sources: newsDoc.sources || [], now });
   mkdirSync(o.out, { recursive: true });
-  for (const name of ['items', 'hourly', 'outlets']) writeFileSync(join(o.out, `${name}.csv`), toCsv(stats[name], COLUMNS[name]));
+  stats.sources = sourceList({ voices, missing: brief.missingVoices || [], outlets: newsDoc.outlets || [], sources: newsDoc.sources || [], items: stats.items });
+  for (const name of ['items', 'hourly', 'outlets', 'sources']) writeFileSync(join(o.out, `${name}.csv`), toCsv(stats[name], COLUMNS[name]));
   const meta = {
     generatedAt: now.toISOString(),
     newsGeneratedAt: newsDoc.generatedAt || null,
