@@ -330,7 +330,6 @@
         <div class="col">
           <div class="listhead"><h2>Storylines</h2><div class="lenses" role="group" aria-label="Lens">${LENSES.map(([k, l]) => `<button data-lens="${k}" aria-pressed="${k === state.lens}">${l}</button>`).join('')}</div></div>
           ${visible.length ? visible.map((s) => story(s, !seen || !seen.status[s.id])).join('') : '<p class="muted" style="padding:28px 0">No storylines for this lens in this window.</p>'}
-          <p class="footnote">Ranked by engagement compared with each account's usual, boosted when other credible voices share or quote it. Confirmed means two independent outlets. News articles come from outlets' RSS feeds and GDELT, collected every 15 minutes${d.newsUpdatedAt ? ` (last ${esc(ago(d.newsUpdatedAt))})` : ''}; a Bluesky post that links to an article joins its storyline. In the Loop only reads Bluesky and never posts.</p>
           ${d.missingVoices.length ? `<p class="notes">Voices not found on Bluesky: ${esc(d.missingVoices.join(', '))}</p>` : ''}
           ${d.errors.length ? `<details class="notes"><summary>${plural(d.errors.length, 'warning')}</summary><ul>${d.errors.map((e) => `<li>${esc(e)}</li>`).join('')}</ul></details>` : ''}
         </div>

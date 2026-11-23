@@ -108,6 +108,8 @@
   .cartouche small { display: block; color: var(--muted); font-size: 13px; }
 
   /* Backgrounders: the broad story of each region, for newcomers. */
+  .mapcol .bg { margin-top: 22px; padding: 22px 26px; }
+  .mapcol .bg p, .mapcol .bg dl, .mapcol .bg ol.tl { max-width: 78ch; }
   .bg { border-color: color-mix(in srgb, var(--loop) 30%, var(--line)); }
   .eyebrow { margin: 0 0 4px; font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--loop); }
   .lede { margin: 10px 0 4px; font-size: 16px; }
@@ -518,11 +520,11 @@
               <span><i class="sw c-quiet" style="background:none;border:2px dashed var(--muted)"></i>Quiet</span>
               <span>Pulsing ring: at least 1.5× its usual pace</span>
             </div>
+            ${world ? '' : background()}
             ${world ? `<p class="footnote">One bubble per tracked region: ${esc(regions().map((r) => r.label).join(', '))}. Click a bubble to zoom in. More regions come with more voices and keywords.</p>` : ''}
-            <p class="footnote">Counts are posts from the ${plural(d.voices, 'tracked voice')} on Bluesky${d.articles ? ` plus ${plural(d.articles, 'news article')} from ${plural(d.outlets, 'outlet')}` : ''} that match each place's keywords, compared with their pace over the last 24 hours. New posts arrive live from Bluesky; news articles come from outlets' RSS feeds and GDELT every 15 minutes${d.newsUpdatedAt ? ` (last ${esc(ago(d.newsUpdatedAt))})` : ''}. In the Loop only reads Bluesky and never posts. Map: Natural Earth.</p>
             ${d.errors?.length ? `<details class="footnote"><summary>${plural(d.errors.length, 'warning')}</summary><ul>${d.errors.map((e) => `<li>${esc(e)}</li>`).join('')}</ul></details>` : ''}
           </div>
-          <aside>${world ? regionList() : detail(d) + background()}${feed(d)}</aside>
+          <aside>${world ? regionList() : detail(d)}${feed(d)}</aside>
         </div>
       </div>`;
 
