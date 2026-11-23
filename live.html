@@ -148,8 +148,10 @@
   .chips button { border: 1px solid var(--line); background: var(--bg); border-radius: 999px; padding: 6px 12px; min-height: 36px; font-size: 14px; }
   .chips button:hover { border-color: var(--loop); color: var(--loop); }
   .fine { font-size: 13px; color: var(--muted); margin: 14px 0 0; }
+  .mapcol .regions { margin-top: 22px; padding: 22px 26px; }
+  .mapcol .regionlist { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
   .regionlist { list-style: none; margin: 10px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
-  .regionlist button { width: 100%; text-align: left; border: 1px solid var(--line); background: var(--bg); border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; gap: 3px; }
+  .regionlist button { width: 100%; height: 100%; justify-content: flex-start; text-align: left; border: 1px solid var(--line); background: var(--bg); border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; gap: 3px; }
   .regionlist button:hover { border-color: var(--loop); }
   .regionlist strong { font: 700 17px/1.2 var(--display); }
   .regionlist span { font-size: 14px; color: var(--muted); }
@@ -478,7 +480,7 @@
   function regionList() {
     if (!state.bg) return '';
     const items = regions().filter((r) => state.bg.regions[r.id]).map((r) => `<li><button data-view="${esc(r.id)}"><strong>${esc(r.label)}</strong><span>${esc(state.bg.regions[r.id].teaser)}</span></button></li>`).join('');
-    return `<section class="panel" aria-labelledby="rh"><p class="eyebrow">New here?</p><h2 id="rh">The regions we follow</h2><ul class="regionlist">${items}</ul><p class="fine">Pick one to zoom in and read how it started, what each side wants and why it's on the map now.</p></section>`;
+    return `<section class="panel regions" aria-labelledby="rh"><h2 id="rh">The regions we follow</h2><ul class="regionlist">${items}</ul><p class="fine">Pick one to zoom in and read how it started, what each side wants and why it's on the map now.</p></section>`;
   }
 
   function detail(d) {
@@ -544,7 +546,7 @@
           <div class="status ${state.conn === 'open' && !state.demo ? 'on' : ''}" role="status"><span class="pulse-dot" aria-hidden="true"></span><span>${statusText(d)}</span></div>
         </header>
         <div class="bar">
-          <div><h1>${world ? "What's moving around the world" : `What's moving in ${d.node.id === 'middle-east' ? 'the ' : ''}${esc(d.node.label)}`}</h1><p class="sub">${sub} Bubble size is posts and articles; colour is where the main stories stand.</p></div>
+          <div><h1>${world ? "What's moving around the world" : `What's moving in ${d.node.id === 'middle-east' ? 'the ' : ''}${esc(d.node.label)}`}</h1><p class="sub">${world ? `One bubble per tracked region: ${esc(regions().map((r) => r.label).join(', '))}. Click a bubble to zoom in. More regions come with more voices and keywords.` : `${sub} Bubble size is posts and articles; colour is where the main stories stand.`}</p></div>
           <div class="controls">
             <div class="seg" role="group" aria-label="Map">${[['world', 'World'], ...regions().map((r) => [r.id, r.label])].map(([k, l]) => `<button data-view="${k}" aria-pressed="${k === state.view}">${l}</button>`).join('')}</div>
             <div class="seg" role="group" aria-label="Time window">${Object.keys(HOURS).map((w) => `<button data-window="${w}" aria-pressed="${w === state.window}">Last ${w}</button>`).join('')}</div>
@@ -560,11 +562,10 @@
               <span><i class="sw c-quiet" style="background:none;border:2px dashed var(--muted)"></i>Quiet</span>
               <span>Pulsing ring: at least 1.5× its usual pace</span>
             </div>
-            ${world ? '' : summaryPanel(d) + background()}
-            ${world ? `<p class="footnote">One bubble per tracked region: ${esc(regions().map((r) => r.label).join(', '))}. Click a bubble to zoom in. More regions come with more voices and keywords.</p>` : ''}
+            ${world ? regionList() : summaryPanel(d) + background()}
             ${d.errors?.length ? `<details class="footnote"><summary>${plural(d.errors.length, 'warning')}</summary><ul>${d.errors.map((e) => `<li>${esc(e)}</li>`).join('')}</ul></details>` : ''}
           </div>
-          <aside>${world ? regionList() : detail(d)}${feed(d)}</aside>
+          <aside>${world ? '' : detail(d)}${feed(d)}</aside>
         </div>
       </div>`;
 
