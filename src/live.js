@@ -6,10 +6,10 @@
 // up through Jetstream: a WebSocket of new posts filtered to the voices'
 // accounts, which works straight from the browser. Read-only, no login.
 
-import { buildBrief } from './brief.js?v=72b3fdad1a';
-import { rankPosts } from './rank.js?v=72b3fdad1a';
-import { buildStorylines } from './storylines.js?v=72b3fdad1a';
-import { byDid } from './voices.js?v=72b3fdad1a';
+import { buildBrief } from './brief.js?v=8d51f892d0';
+import { rankPosts } from './rank.js?v=8d51f892d0';
+import { buildStorylines } from './storylines.js?v=8d51f892d0';
+import { byDid } from './voices.js?v=8d51f892d0';
 
 const HOUR = 3_600_000;
 
@@ -148,6 +148,7 @@ export function liveView({ posts, hierarchy: h, node, now, windowHours = 1, look
       place: n.place,
       // a broad topic: clicking zooms in to its stories
       topic: isTopic(h, id),
+      breaking: 0, // set by makeLive.view from breakingNews
       stories: mapChildren(h, id).length,
       count: recent.length,
       perHour: Math.round(perHour * 10) / 10,
@@ -258,6 +259,60 @@ export function regionSummary({ posts, hierarchy: h, node, now, recentHours = 6,
       lastSeen: s.lastSeen,
     })),
   };
+}
+
+// Breaking news (Amir, 24 Nov 2026): an update (one event, joined across
+// outlets) first seen under 3 hours ago that at least 3 independent outlets
+// reported within 90 minutes of the first report. State media from the same
+// country count as one outlet. Disputed updates are never breaking.
+export const BREAKING = { maxAgeHours: 3, withinMinutes: 90, outlets: 3 };
+
+/** Independent outlets: one per affiliation, one per country for state media. */
+export function outletKey(p) {
+  const v = p.voice;
+  if (!v) return p.did || p.handle || null;
+  return v.stateAffiliated && v.country ? `state:${v.country}` : v.affiliation || p.did;
+}
+
+/** Is this storyline breaking now? Returns how many outlets have it, or 0. */
+export function breakingCount(s, now, rules = BREAKING) {
+  if (s.status === 'disputed') return 0;
+  const first = Date.parse(s.firstSeen);
+  if (!(now.getTime() - first < rules.maxAgeHours * HOUR)) return 0;
+  const early = new Set(s.posts.filter((p) => Date.parse(p.createdAt) - first <= rules.withinMinutes * 60_000).map(outletKey).filter(Boolean));
+  return early.size >= rules.outlets ? new Set(s.posts.map(outletKey).filter(Boolean)).size : 0;
+}
+
+/**
+ * Breaking updates under a node, most outlets first. Each names the node its
+ * posts are mostly about (a story, else a topic or region) so the map can
+ * point at it.
+ */
+export function breakingNews({ posts, hierarchy: h, node, now, rules = BREAKING }) {
+  const scope = new Set([node, ...h.descendants(node)]);
+  const t = now.getTime();
+  // An update can start up to 3h ago and its posts come after that.
+  const recent = posts.filter((p) => scope.has(p.topicId) && t - Date.parse(p.createdAt) < rules.maxAgeHours * HOUR && Date.parse(p.createdAt) <= t + 5 * 60_000);
+  return buildStorylines(recent)
+    .map((s) => ({ s, outlets: breakingCount(s, now, rules) }))
+    .filter((x) => x.outlets)
+    .sort((a, b) => b.outlets - a.outlets || Date.parse(b.s.firstSeen) - Date.parse(a.s.firstSeen))
+    .map(({ s, outlets }) => {
+      const counts = new Map();
+      for (const p of s.posts) counts.set(p.topicId, (counts.get(p.topicId) || 0) + 1);
+      const topicId = [...counts].sort((a, b) => b[1] - a[1])[0][0];
+      return {
+        id: s.lead.uri,
+        headline: headlineOf(s.lead),
+        url: s.lead.url,
+        outlets,
+        status: s.status,
+        firstSeen: s.firstSeen,
+        topicId,
+        topicLabel: h.get(topicId).label,
+        trail: trail(h, topicId).map((x) => x.id),
+      };
+    });
 }
 
 /** Regions under a node that have their own map (Middle East, Eastern Europe…). */
@@ -390,7 +445,10 @@ export function makeLive({ client, hierarchy: h, voices, node = 'geopolitics', l
       const world = region === 'world' || !h.nodes.has(region) || !(h.get(region).map || isTopic(h, region));
       const v = world ? worldView({ ...args, node }) : liveView({ ...args, node: region });
       const summary = world ? null : regionSummary({ posts, hierarchy: h, node: region, now, lookbackHours });
-      return { ...v, summary, ...meta };
+      // Breaking news anywhere we follow (the strip), and which bubbles it sits under.
+      const breaking = breakingNews({ posts, hierarchy: h, node, now });
+      for (const a of v.areas) a.breaking = breaking.filter((b) => b.trail.includes(a.id)).length;
+      return { ...v, summary, breaking, ...meta };
     },
   };
 }

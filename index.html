@@ -13,7 +13,7 @@
     --bg: #F5F6F8; --raise: #FFFFFF; --ink: #1D2147; --muted: #5B6080; --line: #E2E5EF; --track: #E2E5EF;
     --loop: #3047D6; --on-loop: #FFFFFF; --bars: #B9C1E6;
     --reported: #8A5608; --reported-dot: #C27A10;
-    --confirmed: #0F6B5C; --disputed: #9B2C74; --new: #3047D6;
+    --confirmed: #0F6B5C; --disputed: #9B2C74; --new: #3047D6; --breaking: #C8102E;
     --warn: #8A5608; --banner-bg: #FBEFD8;
     --display: 'Bricolage Grotesque', 'Figtree', system-ui, sans-serif;
     --body: 'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -25,7 +25,7 @@
       --bg: #12142B; --raise: #1B1E3B; --ink: #E7E9F5; --muted: #A3A8C8; --line: #2C3056; --track: #2A2E52;
       --loop: #7C8FFF; --on-loop: #12142B; --bars: #4A5390;
       --reported: #F0C27A; --reported-dot: #E0A040;
-      --confirmed: #7FD6C2; --disputed: #F0A8D6; --new: #9DB0FF;
+      --confirmed: #7FD6C2; --disputed: #F0A8D6; --new: #9DB0FF; --breaking: #FF6B6B;
       --warn: #F0C27A; --banner-bg: #3A2E14;
       --sea: #161935; --land: #23274A; --border: #343A6A;
       --sea-deep: #0A0B1C; --land-dim: #23274A; --focus-land: #353E85;
@@ -111,6 +111,14 @@
   .spot .tie { stroke-width: calc(1px * var(--s, 1)); stroke-dasharray: calc(2px * var(--s, 1)) calc(3px * var(--s, 1)); opacity: .55; }
   .spot text { font-family: var(--body); font-weight: 600; fill: var(--ink); paint-order: stroke; stroke: var(--focus-land); stroke-width: calc(3px * var(--s, 1)); stroke-linejoin: round; }
   .map.leaving .spot { opacity: 0; transition: opacity .2s; }
+  .bring { fill: none; stroke: var(--breaking); stroke-width: calc(3px * var(--s, 1)); transform-box: fill-box; transform-origin: center; animation: ring 1.4s ease-out infinite; }
+  .bubble .btag { font-size: 11px; font-weight: 800; letter-spacing: .1em; fill: var(--breaking); }
+  .breaking { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin: 0 0 12px; padding: 10px 14px; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--breaking) 45%, var(--line)); background: color-mix(in srgb, var(--breaking) 8%, var(--raise)); }
+  .breaking .tag { background: var(--breaking); color: #fff; border-radius: 999px; padding: 2px 10px; font-size: 13px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+  .breaking .hl { border: 0; background: none; padding: 0; text-align: left; font-weight: 700; color: var(--ink); text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--breaking) 50%, transparent); text-underline-offset: 3px; }
+  .breaking .meta { color: var(--muted); font-size: 14px; }
+  .breaking details { flex-basis: 100%; font-size: 14px; }
+  .breaking ul { margin: 6px 0 0; padding-left: 18px; }
   .bubble .more { font-size: 12px; fill: var(--loop); font-weight: 700; }
   .crumbs button { border: 0; background: none; padding: 0; color: inherit; font: inherit; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--line); }
   .crumbs button:hover { color: var(--ink); }
@@ -170,7 +178,7 @@
   .regionlist strong { font: 700 17px/1.2 var(--display); }
   .regionlist span { font-size: 14px; color: var(--muted); }
   @media (prefers-reduced-motion: reduce) {
-    .ring, .flash, .status.on .pulse-dot, .map.arrive .bubble, .map.arrive .country, .map.arrive .grat, .map.arrive .clabel, .map.arrive .cartouche { animation: none; }
+    .ring, .bring, .flash, .status.on .pulse-dot, .map.arrive .bubble, .map.arrive .country, .map.arrive .grat, .map.arrive .clabel, .map.arrive .cartouche { animation: none; }
     .map, .frame, .bubble { transition: none; }
   }
 
@@ -222,7 +230,7 @@
 </head>
 <body>
 <div id="app"><p class="loading">Loading the live map…</p></div>
-<script>window.itlSearch = location.search; window.itlLive = (demo) => import('./src/static.js?v=72b3fdad1a').then((m) => m.initLive({ demo, search: window.itlSearch }));</script>
+<script>window.itlSearch = location.search; window.itlLive = (demo) => import('./src/static.js?v=8d51f892d0').then((m) => m.initLive({ demo, search: window.itlSearch }));</script>
 <script>
 (() => {
   const params = new URLSearchParams(location.search);
@@ -375,8 +383,9 @@
       const st = a.count ? a.status : 'quiet';
       const c = COLOR[st] || COLOR.reported;
       const x = n.x.toFixed(1), y = n.y.toFixed(1);
-      const label = `${a.region || a.topic ? 'Zoom into ' : ''}${a.label}: ${plural(a.count, 'item')} in the last ${state.window}${a.pace == null ? '' : `, ${paceText(a)}`}, ${STATUS[st]}${a.topic ? `, ${plural(a.stories, 'story')}` : ''}`;
-      const ring = isHot(a) ? `<circle class="ring" cx="${x}" cy="${y}" r="${n.r.toFixed(1)}" style="stroke:${c}"/>` : '';
+      const label = `${a.region || a.topic ? 'Zoom into ' : ''}${a.label}: ${plural(a.count, 'item')} in the last ${state.window}${a.pace == null ? '' : `, ${paceText(a)}`}, ${STATUS[st]}${a.topic ? `, ${plural(a.stories, 'story')}` : ''}${a.breaking ? ', breaking news' : ''}`;
+      const ring = a.breaking ? `<circle class="bring" cx="${x}" cy="${y}" r="${n.r.toFixed(1)}"/>` : isHot(a) ? `<circle class="ring" cx="${x}" cy="${y}" r="${n.r.toFixed(1)}" style="stroke:${c}"/>` : '';
+      const btag = a.breaking ? `<text class="btag" style="font-size:${11 * k}px" x="${x}" y="${(n.y - n.r - 6 * k).toFixed(1)}" text-anchor="middle">BREAKING</text>` : '';
       const flash = state.flashes.has(a.id) ? `<circle class="flash" cx="${x}" cy="${y}" r="${n.r.toFixed(1)}"/>` : '';
       const ly = n.y + n.r + 16 * k;
       const meta = a.count ? `<text class="meta" style="font-size:${13 * k}px" x="${x}" y="${(ly + 15 * k).toFixed(1)}" text-anchor="middle">${plural(a.count, 'item')}${a.pace == null ? '' : ` · ${esc(paceText(a))}`}</text>` : '';
@@ -384,7 +393,7 @@
       const more = a.topic ? `<text class="more" style="font-size:${12 * k}px" x="${x}" y="${(ly + (a.count ? 30 : 15) * k).toFixed(1)}" text-anchor="middle">${plural(a.stories, 'story')} ›</text>` : '';
       return `<g class="bubble${a.count ? '' : ' quiet'}${state.area === a.id ? ' sel' : ''}" data-area="${esc(a.id)}" style="--i:${order.length - 1 - i}" tabindex="0" role="button" aria-label="${esc(label)}">
         ${ring}<circle class="disc" cx="${x}" cy="${y}" r="${n.r.toFixed(1)}" style="fill:color-mix(in srgb, ${c} ${a.count ? 30 : 12}%, transparent);stroke:${c}${a.count ? '' : ';stroke-dasharray:3 3'}"/>${flash}
-        <text class="name" style="font-size:${(a.count ? 15 : 13) * k}px" x="${x}" y="${ly.toFixed(1)}" text-anchor="middle">${esc(a.label)}</text>${meta}${more}
+        <text class="name" style="font-size:${(a.count ? 15 : 13) * k}px" x="${x}" y="${ly.toFixed(1)}" text-anchor="middle">${esc(a.label)}</text>${meta}${more}${btag}
       </g>`;
     }).join('');
     state.flashes.clear();
@@ -630,6 +639,16 @@
     </section>`;
   }
 
+  // Breaking news anywhere we follow: 3+ independent outlets within 90
+  // minutes, first reported under 3 hours ago (src/live.js breakingNews).
+  function breakingStrip(d) {
+    const list = d.breaking || [];
+    if (!list.length) return '';
+    const item = (b) => `<button class="hl" data-pick="${esc(b.topicId)}">${esc(b.headline)}</button><span class="meta">${plural(b.outlets, 'outlet')} · first reported ${esc(ago(b.firstSeen))} · ${esc(b.topicLabel)}</span>`;
+    const [top, ...more] = list;
+    return `<div class="breaking" role="status" aria-label="Breaking news"><span class="tag">Breaking</span>${item(top)}${more.length ? `<details><summary>${plural(more.length, 'more breaking update')}</summary><ul>${more.map((b) => `<li>${item(b)}</li>`).join('')}</ul></details>` : ''}</div>`;
+  }
+
   function statusText(d) {
     if (state.demo) return 'Demo · no live feed';
     if (state.conn === 'open') return `<strong style="color:var(--ink)">Live</strong> · following ${plural(d.voices, 'voice')}`;
@@ -686,6 +705,7 @@
         </div>
         <div class="layout">
           <div class="mapcol">
+            ${breakingStrip(d)}
             <div class="map${world ? '' : ' zoomed'}${state.arrive && !reduceMotion() ? ' arrive' : ''}" tabindex="-1">${mapSvg(d)}${cartouche()}</div>
             <div class="legend">
               <span><i class="sw c-corroborated"></i>Mostly confirmed</span>
@@ -693,6 +713,7 @@
               <span><i class="sw c-disputed"></i>Sources disagree</span>
               <span><i class="sw c-quiet" style="background:none;border:2px dashed var(--muted)"></i>Quiet</span>
               <span>Pulsing ring: at least 1.5× its usual pace</span>
+              <span><i class="sw" style="background:none;border:2px solid var(--breaking)"></i>Breaking: 3+ outlets within 90 min</span>
             </div>
             ${world ? regionList() : summaryPanel(d) + background()}
             ${d.errors?.length ? `<details class="footnote"><summary>${plural(d.errors.length, 'warning')}</summary><ul>${d.errors.map((e) => `<li>${esc(e)}</li>`).join('')}</ul></details>` : ''}
@@ -730,9 +751,11 @@
   // Show a node from anywhere (backgrounder chips, lists): a topic zooms in;
   // a story is picked on its topic's map (zooming there first if needed).
   function pickNode(id) {
-    if (topicOf(id)) { go(id); return; }
-    const t = topics().find((x) => x.stories.includes(id));
-    const home = t ? t.id : regionOf(state.view)?.id;
+    if (topicOf(id) || regions().some((r) => r.id === id)) { go(id); return; }
+    // The map a story is drawn on: its topic, or its region for a lone story.
+    const path = state.api.live.trail(id);
+    const home = path.length >= 2 ? path.at(-2).id : null;
+    if (!home) return;
     if (home && home !== state.view) { state.pending = id; go(home).then(() => { state.pending = null; }); return; }
     state.area = id; refresh();
     document.querySelector('.map')?.scrollIntoView({ behavior: reduceMotion() ? 'auto' : 'smooth', block: 'center' });
