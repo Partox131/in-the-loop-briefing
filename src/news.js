@@ -11,8 +11,8 @@
 //
 // Browser-safe: no Node imports. No AI: parsing and matching are rules.
 
-import { canonicalUrl } from './storylines.js?v=58061ac813';
-import { makeVoice } from './voices.js?v=58061ac813';
+import { canonicalUrl } from './storylines.js?v=be58a7d5f0';
+import { makeVoice } from './voices.js?v=be58a7d5f0';
 
 const ENTITIES = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ', hellip: '…', mdash: '—', ndash: '–', rsquo: '’', lsquo: '‘', rdquo: '”', ldquo: '“' };
 
@@ -179,6 +179,7 @@ export function outletVoice(o) {
       region: o.region,
       stateAffiliated: o.stateAffiliated,
       country: o.country,
+      lean: o.lean,
       topics: o.topics || ['geopolitics'],
     }),
     news: true,

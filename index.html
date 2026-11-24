@@ -225,15 +225,33 @@
     .cartouche strong { font-size: 16px; }
   }
   .statetag { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+  /* US politics: arenas as a board of cards (the arena map comes next). */
+  .segswitch { display: inline-flex; }
+  .segswitch a { text-decoration: none; border: 0; color: var(--muted); padding: 8px 14px; min-height: 40px; border-radius: 999px; font-size: 15px; white-space: nowrap; display: inline-flex; align-items: center; }
+  .segswitch a[aria-current="page"] { background: var(--ink); color: var(--bg); font-weight: 600; }
+  .board { list-style: none; margin: 0; padding: 14px; display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; background: var(--sea); border: 1px solid var(--line); border-radius: 16px; }
+  .board .card { width: 100%; height: 100%; text-align: left; font: inherit; color: var(--ink); background: var(--raise); border: 1px solid var(--line); border-left: 6px solid var(--st); border-radius: 12px; padding: 14px 16px; cursor: pointer; display: flex; flex-direction: column; gap: 6px; }
+  .board .card:hover, .board .card:focus-visible { border-color: var(--loop); border-left-color: var(--st); }
+  .board .card[aria-pressed="true"] { outline: 3px solid var(--loop); outline-offset: 1px; }
+  .board .card.hot { box-shadow: 0 0 0 3px color-mix(in srgb, var(--st) 35%, transparent); }
+  .board .card .name { font: 800 20px/1.15 var(--display); }
+  .board .card .num { font: 800 30px/1 var(--display); }
+  .board .card .num small { font: 500 13px/1.2 var(--body, inherit); color: var(--muted); margin-left: 6px; }
+  .board .card .meta, .board .card .busy { font-size: 13px; color: var(--muted); }
+  .board .card .more { margin-top: auto; font-size: 13px; font-weight: 600; color: var(--loop); }
+  .leantag { font-size: 12px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 0 7px; white-space: nowrap; }
   .flag { width: 16px; height: 12px; border-radius: 2px; box-shadow: 0 0 0 1px color-mix(in srgb, currentColor 20%, transparent); object-fit: cover; flex: none; }
 </style>
 </head>
 <body>
 <div id="app"><p class="loading">Loading the live map…</p></div>
-<script>window.itlSearch = location.search; window.itlLive = (demo) => import('./src/static.js?v=58061ac813').then((m) => m.initLive({ demo, search: window.itlSearch }));</script>
+<script>window.itlSearch = location.search; window.itlLive = (demo, node) => import('./src/static.js?v=be58a7d5f0').then((m) => m.initLive({ demo, node, search: window.itlSearch }));</script>
 <script>
 (() => {
   const params = new URLSearchParams(location.search);
+  // Main segment: Geopolitics (the world map) or US politics (?segment=us).
+  const US = params.get('segment') === 'us';
+  const SEG_NODE = US ? 'us-politics' : 'geopolitics';
   const state = {
     view: params.get('view') || 'world', // "world" or a region id; checked once regions load
     window: ['1h', '6h', '24h'].includes(params.get('window')) ? params.get('window') : '6h',
@@ -278,6 +296,7 @@
 
   function urlFor(view) {
     const q = new URLSearchParams();
+    if (US) q.set('segment', 'us');
     if (view !== 'world') q.set('view', view);
     if (state.window !== '6h') q.set('window', state.window);
     if (state.area) q.set('area', state.area);
@@ -496,13 +515,38 @@
     if (push) history.pushState({ view: to }, '', urlFor(to));
     const from = state.view;
     state.area = null;
-    await fly(from, to);
+    if (!US) await fly(from, to);
     state.view = to;
     state.arrive = true;
     if (state.pending) { state.area = state.pending; state.pending = null; }
     refresh();
-    document.querySelector('.map')?.focus({ preventScroll: true });
+    document.querySelector(US ? '.board' : '.map')?.focus({ preventScroll: true });
   }
+
+  // US politics, for now: one card per arena (or per topic, or per story)
+  // instead of a map. Same data and clicks as the bubbles; the drawn arena
+  // map is the next step (Amir chose it on 24 Nov 2026).
+  function board(d) {
+    const world = state.view === 'world';
+    const cards = d.areas.map((a) => {
+      const st = a.count ? a.status : 'quiet';
+      const what = world ? 'Arena' : a.topic ? `Topic · ${plural(a.stories, 'story')}` : 'Story';
+      const busy = world && a.busiest?.length ? `<span class="busy">Busiest: ${esc(a.busiest.join(', '))}</span>` : a.about ? `<span class="busy">${esc(a.about)}</span>` : '';
+      const next = world || a.topic ? 'See inside ›' : state.area === a.id ? 'Picked: details on the right' : 'Preview ›';
+      return `<li><button class="card bubble${isHot(a) ? ' hot' : ''}" data-area="${esc(a.id)}" aria-pressed="${state.area === a.id}" style="--st:${COLOR[st] || COLOR.quiet}">
+        <span class="meta">${esc(what)}</span>
+        <span class="name">${esc(a.label)}</span>
+        <span class="num">${a.count}<small>${a.count === 1 ? 'item' : 'items'} in ${esc(state.window)}</small></span>
+        <span class="meta"><span class="chip c-${esc(st)}">${esc(STATUS[st])}</span>${a.pace != null ? ` · ${esc(paceText(a))}` : ''}</span>
+        ${busy}
+        <span class="more">${next}</span>
+      </button></li>`;
+    }).join('');
+    const label = world ? 'US politics arenas' : `${topicOf(state.view)?.label || regionOf(state.view)?.label || ''}`;
+    return `<ul class="board" tabindex="-1" aria-label="${esc(label)}">${cards}</ul>`;
+  }
+
+  const leanTag = (l) => (l ? ` <span class="leantag" title="Where this source sits, left to right: our own first call">${esc(l)}</span>` : '');
 
   function cartouche() {
     if (state.view === 'world') return '';
@@ -588,7 +632,7 @@
   }
 
   function regionList() {
-    if (!state.bg) return '';
+    if (!state.bg || US) return '';
     const items = regions().filter((r) => state.bg.regions[r.id]).map((r) => `<li><button data-view="${esc(r.id)}"><strong>${esc(r.label)}</strong><span>${esc(state.bg.regions[r.id].teaser)}</span></button></li>`).join('');
     return `<section class="panel regions" aria-labelledby="rh"><h2 id="rh">The regions we follow</h2><ul class="regionlist">${items}</ul><p class="fine">Pick one to zoom in and read how it started, what each side wants and why it's on the map now.</p></section>`;
   }
@@ -613,7 +657,7 @@
       </div>
       <div class="row" style="margin-bottom:8px"><span class="chip c-${st}">${esc(STATUS[st])}</span><span>overall, by share of posts</span></div>
       ${stories}
-      ${a.topic ? `<button class="btn" data-view="${esc(a.id)}">See its ${plural(a.stories, 'story')} on the map</button>` : `<a class="btn" href="briefing.html?node=${encodeURIComponent(a.id)}&since=24h${state.demo ? '&demo=1' : ''}">Open the story</a>`}
+      ${a.topic ? `<button class="btn" data-view="${esc(a.id)}">See its ${plural(a.stories, 'story')}${US ? '' : ' on the map'}</button>` : `<a class="btn" href="briefing.html?node=${encodeURIComponent(a.id)}&since=24h${state.demo ? '&demo=1' : ''}">Open the story</a>`}
     </section>`;
   }
 
@@ -622,7 +666,7 @@
     const t = topicOf(state.view);
     const items = d.areas.map((a) => `<li><button data-${a.topic ? 'view' : 'pick'}="${esc(a.id)}"><strong>${esc(a.label)}${a.topic ? ` · ${plural(a.stories, 'story')} ›` : ''}</strong>${a.about ? `<span>${esc(a.about)}</span>` : ''}<span>${a.count ? `${plural(a.count, 'item')} in ${esc(state.window)}` : `Quiet in the last ${esc(state.window)}`}</span></button></li>`).join('');
     return `<section class="panel" aria-labelledby="th">
-      <h2 id="th">${t ? 'Stories in this topic' : 'Topics in this region'}</h2>
+      <h2 id="th">${t ? 'Stories in this topic' : US ? 'Topics in this arena' : 'Topics in this region'}</h2>
       <ul class="topiclist">${items}</ul>
       ${t && d.other ? `<p class="muted" style="margin:8px 0 0;font-size:14px">Plus ${plural(d.other, 'item')} in ${esc(state.window)} about ${esc(t.label)} in general.</p>` : ''}
     </section>`;
@@ -633,7 +677,7 @@
     return `<section class="panel" aria-labelledby="fh">
       <div class="phead"><h2 id="fh">Just in</h2><span class="muted" style="font-size:13px">newest first</span></div>
       ${items.length ? `<ul class="plain feedlist" id="feedlist" tabindex="0" aria-label="Newest posts and articles" style="margin-top:8px">${items.map((p) => `<li class="${state.fresh.has(p.uri) ? 'fresh' : ''}">
-        <div class="row"><strong style="color:var(--ink)">${esc(ago(p.at))}</strong><span class="area-tag">${esc(p.topicLabel)}</span><span>${esc(p.who)}${p.stateAffiliated ? stateTag(p.country) : ''}</span>${p.telegram ? '<span class="area-tag news-tag">Telegram</span>' : p.news ? '<span class="area-tag news-tag">Article</span>' : ''}${state.fresh.has(p.uri) ? '<strong style="color:var(--loop)">Live</strong>' : ''}</div>
+        <div class="row"><strong style="color:var(--ink)">${esc(ago(p.at))}</strong><span class="area-tag">${esc(p.topicLabel)}</span><span>${esc(p.who)}${p.stateAffiliated ? stateTag(p.country) : ''}${US ? leanTag(p.lean) : ''}</span>${p.telegram ? '<span class="area-tag news-tag">Telegram</span>' : p.news ? '<span class="area-tag news-tag">Article</span>' : ''}${state.fresh.has(p.uri) ? '<strong style="color:var(--loop)">Live</strong>' : ''}</div>
         <a class="txt" href="${safeUrl(p.url)}" target="_blank" rel="noopener">${esc(oneLine(p.text))}</a>
       </li>`).join('')}</ul>` : '<p class="muted" style="margin:8px 0 0">Nothing from tracked voices in the last day.</p>'}
     </section>`;
@@ -684,7 +728,7 @@
       ? `${plural(active.reduce((s, a) => s + a.count, 0), 'item')} from tracked voices and outlets in the last ${state.window} across ${plural(active.length, world ? 'region' : topic ? 'story' : 'topic')}.${hot.length ? ` Busier than usual: ${esc(hot.join(', '))}.` : ''}`
       : `No posts or articles from tracked voices in the last ${state.window}.`;
     const how = topic ? 'Click a story to preview it, then open its page.' : 'Click a topic to see its stories.';
-    const crumbs = [['world', 'World'], ...(region ? [[region.id, region.label]] : []), ...(topic ? [[topic.id, topic.label]] : [])];
+    const crumbs = [['world', US ? 'All arenas' : 'World'], ...(region ? [[region.id, region.label]] : []), ...(topic ? [[topic.id, topic.label]] : [])];
     const focused = document.activeElement?.dataset?.area;
     const feedTop = document.getElementById('feedlist')?.scrollTop || 0;
     app.innerHTML = `
@@ -692,28 +736,29 @@
       <div class="wrap">
         <header class="top">
           <a class="brand" href="index.html${state.demo ? '?demo=1' : ''}" title="Go to the home page"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="10" fill="none" stroke="var(--track)" stroke-width="4"/><path d="M14 4a10 10 0 0 1 9.5 13" fill="none" stroke="var(--loop)" stroke-width="4" stroke-linecap="round"/></svg>in the loop</a>
-          <nav class="crumbs" aria-label="Topic path"><span>Politics</span><span aria-hidden="true">/</span><span>Geopolitics</span>${crumbs.map(([id, l], i) => `<span aria-hidden="true">/</span>${i === crumbs.length - 1 ? `<span class="here">${esc(l)}</span>` : `<button data-view="${esc(id)}">${esc(l)}</button>`}`).join('')}</nav>
-          <a class="brieflink" href="briefing.html?node=${encodeURIComponent(world ? 'geopolitics' : d.node.id)}&since=24h${state.demo ? '&demo=1' : ''}" title="The topic briefing is still being worked on">${world ? 'Geopolitics' : esc(d.node.label)} briefing <span class="beta">In progress</span></a>
+          <nav class="crumbs" aria-label="Topic path"><span>Politics</span><span aria-hidden="true">/</span><span>${US ? 'US politics' : 'Geopolitics'}</span>${crumbs.map(([id, l], i) => `<span aria-hidden="true">/</span>${i === crumbs.length - 1 ? `<span class="here">${esc(l)}</span>` : `<button data-view="${esc(id)}">${esc(l)}</button>`}`).join('')}</nav>
+          <a class="brieflink" href="briefing.html?node=${encodeURIComponent(world ? SEG_NODE : d.node.id)}&since=24h${state.demo ? '&demo=1' : ''}" title="The topic briefing is still being worked on">${world ? (US ? 'US politics' : 'Geopolitics') : esc(d.node.label)} briefing <span class="beta">In progress</span></a>
           <div class="status ${state.conn === 'open' && !state.demo ? 'on' : ''}" role="status"><span class="pulse-dot" aria-hidden="true"></span><span>${statusText(d)}</span></div>
         </header>
         <div class="bar">
-          <div><h1>${world ? "What's moving around the world" : topic ? esc(topic.label) : `What's moving in ${d.node.id === 'middle-east' ? 'the ' : ''}${esc(d.node.label)}`}</h1><p class="sub">${world ? `One bubble per tracked region: ${esc(regions().map((r) => r.label).join(', '))}. Click a bubble to zoom in. More regions come with more voices and keywords.` : `${sub} Bubble size is posts and articles; colour is where the main stories stand. ${how}`}</p></div>
+          <div><h1>${world ? (US ? "What's moving in US politics" : "What's moving around the world") : topic ? esc(topic.label) : `What's moving in ${d.node.id === 'middle-east' ? 'the ' : ''}${esc(d.node.label)}`}</h1><p class="sub">${US ? (world ? `One card per arena: ${esc(regions().map((r) => r.label).join(', '))}. Each card counts posts and articles from tracked voices and outlets across the spectrum; the colour is where its main stories stand. Pick an arena to see its topics. The drawn arena map is coming next.` : `${sub} Colour is where the main stories stand. ${how}`) : world ? `One bubble per tracked region: ${esc(regions().map((r) => r.label).join(', '))}. Click a bubble to zoom in. More regions come with more voices and keywords.` : `${sub} Bubble size is posts and articles; colour is where the main stories stand. ${how}`}</p></div>
           <div class="controls">
-            <div class="seg" role="group" aria-label="Map">${[['world', 'World'], ...regions().map((r) => [r.id, r.label])].map(([k, l]) => `<button data-view="${k}" aria-pressed="${k === (region?.id || 'world')}">${l}</button>`).join('')}</div>
+            <nav class="seg segswitch" aria-label="Segment"><a href="index.html${state.demo ? '?demo=1' : ''}"${US ? '' : ' aria-current="page"'}>Geopolitics</a><a href="index.html?segment=us${state.demo ? '&demo=1' : ''}"${US ? ' aria-current="page"' : ''}>US politics</a></nav>
+            <div class="seg" role="group" aria-label="${US ? 'Arena' : 'Map'}">${[['world', US ? 'All' : 'World'], ...regions().map((r) => [r.id, r.label])].map(([k, l]) => `<button data-view="${k}" aria-pressed="${k === (region?.id || 'world')}">${l}</button>`).join('')}</div>
             <div class="seg" role="group" aria-label="Time window">${Object.keys(HOURS).map((w) => `<button data-window="${w}" aria-pressed="${w === state.window}">Last ${w}</button>`).join('')}</div>
           </div>
         </div>
         <div class="layout">
           <div class="mapcol">
             ${breakingStrip(d)}
-            <div class="map${world ? '' : ' zoomed'}${state.arrive && !reduceMotion() ? ' arrive' : ''}" tabindex="-1">${mapSvg(d)}${cartouche()}</div>
+            ${US ? board(d) : `<div class="map${world ? '' : ' zoomed'}${state.arrive && !reduceMotion() ? ' arrive' : ''}" tabindex="-1">${mapSvg(d)}${cartouche()}</div>`}
             <div class="legend">
               <span><i class="sw c-corroborated"></i>Mostly confirmed</span>
               <span><i class="sw c-reported"></i>Mostly reported once</span>
               <span><i class="sw c-disputed"></i>Sources disagree</span>
               <span><i class="sw c-quiet" style="background:none;border:2px dashed var(--muted)"></i>Quiet</span>
-              <span>Pulsing ring: at least 1.5× its usual pace</span>
-              <span><i class="sw" style="background:none;border:2px solid var(--breaking)"></i>Breaking: 3+ outlets within 90 min</span>
+              <span>${US ? 'Glow' : 'Pulsing ring'}: at least 1.5× its usual pace</span>
+              ${US ? "" : `<span><i class="sw" style="background:none;border:2px solid var(--breaking)"></i>Breaking: 3+ outlets within 90 min</span>`}
             </div>
             ${world ? regionList() : summaryPanel(d) + background()}
             ${d.errors?.length ? `<details class="footnote"><summary>${plural(d.errors.length, 'warning')}</summary><ul>${d.errors.map((e) => `<li>${esc(e)}</li>`).join('')}</ul></details>` : ''}
@@ -758,7 +803,7 @@
     if (!home) return;
     if (home && home !== state.view) { state.pending = id; go(home).then(() => { state.pending = null; }); return; }
     state.area = id; refresh();
-    document.querySelector('.map')?.scrollIntoView({ behavior: reduceMotion() ? 'auto' : 'smooth', block: 'center' });
+    document.querySelector(US ? '.board' : '.map')?.scrollIntoView({ behavior: reduceMotion() ? 'auto' : 'smooth', block: 'center' });
   }
 
   function refresh() {
@@ -769,7 +814,7 @@
 
   async function start() {
     try {
-      state.api = await window.itlLive(state.demo);
+      state.api = await window.itlLive(state.demo, SEG_NODE);
       const bgLoad = fetch('backgrounders.json').then((r) => (r.ok ? r.json() : null)).catch(() => null);
       await state.api.live.load();
       state.bg = await bgLoad;

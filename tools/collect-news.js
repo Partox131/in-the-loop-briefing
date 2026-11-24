@@ -5,7 +5,7 @@
 // GitHub Actions workflow (deploy/pages.yml), free and with no AI.
 //
 //   node scripts/collect-news.js [--sources news.sources.json]
-//     [--hierarchy topics.hierarchy.example.json] [--node geopolitics]
+//     [--hierarchy topics.hierarchy.example.json] [--node politics]
 //     [--previous <url or file of the last news.json>] [--out news.json]
 //     [--hours 48] [--no-gdelt] [--no-feeds] [--no-telegram]
 //
@@ -16,8 +16,8 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { makeHierarchy } from '../src/hierarchy.js?v=58061ac813';
-import { makeOutlets, mergeArticles, parseFeed, parseGdelt, parseTelegram, telegramOutlets } from '../src/news.js?v=58061ac813';
+import { makeHierarchy } from '../src/hierarchy.js?v=be58a7d5f0';
+import { makeOutlets, mergeArticles, parseFeed, parseGdelt, parseTelegram, telegramOutlets } from '../src/news.js?v=be58a7d5f0';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const UA = 'InTheLoopNewsCollector/0.1 (+https://partox131.github.io/in-the-loop-briefing/)';
@@ -28,7 +28,7 @@ const GDELT_GAP_MS = 10_000; // GDELT asks for at most one request every 5 secon
 // must look back further than that (news.sources.json: timespan 4h).
 
 function args(argv) {
-  const o = { sources: join(root, 'news.sources.json'), hierarchy: join(root, 'topics.hierarchy.example.json'), node: 'geopolitics', out: 'news.json', hours: 48, gdelt: true, feeds: true, telegram: true };
+  const o = { sources: join(root, 'news.sources.json'), hierarchy: join(root, 'topics.hierarchy.example.json'), node: 'politics', out: 'news.json', hours: 48, gdelt: true, feeds: true, telegram: true };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--no-gdelt') o.gdelt = false;
@@ -61,7 +61,7 @@ async function pool(items, n, fn) {
   return out;
 }
 
-export async function collectNews({ spec, hierarchy, node = 'geopolitics', previous = null, now = new Date(), hours = 48, fetchImpl = fetch, sleep = (ms) => new Promise((r) => setTimeout(r, ms)), gdelt = true, feeds = true, telegram = true }) {
+export async function collectNews({ spec, hierarchy, node = 'politics', previous = null, now = new Date(), hours = 48, fetchImpl = fetch, sleep = (ms) => new Promise((r) => setTimeout(r, ms)), gdelt = true, feeds = true, telegram = true }) {
   const channels = spec.telegram?.channels || [];
   const tgOutlets = telegramOutlets(channels);
   const outlets = makeOutlets([...spec.outlets, ...tgOutlets]);

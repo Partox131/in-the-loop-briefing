@@ -5,7 +5,7 @@
 // The data goes through the real pipeline (classify, rank, storylines), so
 // the demo also shows what the code does with it.
 
-import { makeVoice } from './voices.js?v=58061ac813';
+import { makeVoice } from './voices.js?v=be58a7d5f0';
 
 const MIN = 60_000;
 
@@ -18,6 +18,11 @@ export const DEMO_VOICES = [
   { handle: 'iran-state.example.com', name: 'Iranian state media', tier: 4, affiliation: 'Iran state media', region: 'Iran', stateAffiliated: true, topics: ['iran-war'] },
   { handle: 'defence-analyst.example.com', name: 'Defence analyst', tier: 3, affiliation: 'Think tank', region: 'US and Europe', topics: ['middle-east'] },
   { handle: 'ship-tracker.example.com', name: 'Ship-tracking analyst', tier: 5, affiliation: 'Ship tracker', region: 'US and Europe', topics: ['oil', 'hormuz'] },
+  // US politics, one per lean so the segment shows a spread.
+  { handle: 'us-wire.example.com', name: 'US wire service', tier: 1, affiliation: 'US Wire', region: 'US', lean: 'centre', topics: ['us-politics'] },
+  { handle: 'left-mag.example.com', name: 'Left-leaning magazine', tier: 1, affiliation: 'Left Mag', region: 'US', lean: 'left', topics: ['us-politics'] },
+  { handle: 'right-paper.example.com', name: 'Right-leaning paper', tier: 1, affiliation: 'Right Paper', region: 'US', lean: 'right', topics: ['us-politics'] },
+  { handle: 'court-reporter.example.com', name: 'Courts reporter', tier: 2, affiliation: 'Legal newsletter', region: 'US', lean: 'centre-left', topics: ['courts'] },
 ].map(makeVoice);
 
 const did = (handle) => `did:plc:demo-${handle.split('.')[0]}`;
@@ -43,7 +48,25 @@ function demoFeeds(now) {
   const isfahan = 'https://wire-a.example.com/world/isfahan-strikes';
   // Three outlets within the hour: shows as breaking news in the demo.
   const tanker = 'https://wire-a.example.com/world/hormuz-tanker';
+  const shutdown = 'https://us-wire.example.com/politics/stopgap-vote';
   return {
+    'us-wire.example.com': [
+      pv('us-wire.example.com', 'u1', 95, 'Senate passes stopgap spending bill, sending it to the House two days before a government shutdown deadline.', { ...o, likes: 1300, reposts: 420, link: shutdown }),
+      pv('us-wire.example.com', 'u2', 260, 'Federal judge blocks the administration\'s new deportation policy nationwide, citing due process.', { ...o, likes: 900, reposts: 300 }),
+      pv('us-wire.example.com', 'u3', 700, 'Governor sues over National Guard deployment to the state capital.', { ...o, likes: 400, reposts: 90 }),
+    ],
+    'left-mag.example.com': [
+      pv('left-mag.example.com', 'l1', 80, 'House Democrats say they will not back the stopgap spending bill without health care money; shutdown deadline is Friday.', { ...o, likes: 800, reposts: 210 }),
+      pv('left-mag.example.com', 'l2', 330, 'New poll: three Democrats lead early 2028 presidential primary field, none above 20%.', { ...o, likes: 500, reposts: 120 }),
+    ],
+    'right-paper.example.com': [
+      pv('right-paper.example.com', 'r1', 70, 'Speaker Johnson says the House will vote on the Senate stopgap spending bill Thursday to avoid a shutdown.', { ...o, likes: 700, reposts: 180, link: shutdown }),
+      pv('right-paper.example.com', 'r2', 400, 'White House signs executive order on federal hiring, the third this week.', { ...o, likes: 350, reposts: 60 }),
+    ],
+    'court-reporter.example.com': [
+      pv('court-reporter.example.com', 'c1', 240, 'Supreme Court agrees to hear the tariffs case on an expedited schedule; oral arguments set for January.', { ...o, likes: 1100, reposts: 380 }),
+      pv('court-reporter.example.com', 'c2', 200, 'The judge who blocked the deportation policy wrote that the government gave no notice. Appeals court filing expected today.', { ...o, likes: 600, reposts: 150 }),
+    ],
     'wire-a.example.com': [
       pv('wire-a.example.com', 'a1', 175, 'Strikes hit a military site near Isfahan, Iran, two officials say. Developing.', { ...o, likes: 2400, reposts: 900, link: `${isfahan}?utm_source=bsky` }),
       pv('wire-a.example.com', 'a2', 120, 'Update: 12 killed in the Isfahan strikes, provincial officials say.', { ...o, likes: 1500, reposts: 600, link: isfahan }),

@@ -6,11 +6,11 @@
 // up through Jetstream: a WebSocket of new posts filtered to the voices'
 // accounts, which works straight from the browser. Read-only, no login.
 
-import { buildBrief } from './brief.js?v=58061ac813';
-import { KEEP_PER_VOICE } from './snapshot.js?v=58061ac813';
-import { rankPosts } from './rank.js?v=58061ac813';
-import { buildStorylines } from './storylines.js?v=58061ac813';
-import { byDid } from './voices.js?v=58061ac813';
+import { buildBrief } from './brief.js?v=be58a7d5f0';
+import { KEEP_PER_VOICE } from './snapshot.js?v=be58a7d5f0';
+import { rankPosts } from './rank.js?v=be58a7d5f0';
+import { buildStorylines } from './storylines.js?v=be58a7d5f0';
+import { byDid } from './voices.js?v=be58a7d5f0';
 
 const HOUR = 3_600_000;
 
@@ -68,6 +68,20 @@ export function isTopic(h, id) {
   return n.parents.some((p) => h.get(p).map) && mapChildren(h, id).length > 0;
 }
 
+/**
+ * The site's main segments: each is a node with its own home view
+ * (Geopolitics on the world map, US politics on its arenas).
+ * The key is what the page URL carries (?segment=us).
+ */
+export const SEGMENTS = { geo: 'geopolitics', us: 'us-politics' };
+
+/** Which segment a node belongs to ("geo" or "us"), or null. */
+export function segmentOf(h, id) {
+  if (!h.nodes.has(id)) return null;
+  const up = new Set([id, ...h.ancestors(id)]);
+  return Object.keys(SEGMENTS).find((k) => up.has(SEGMENTS[k])) || null;
+}
+
 /** Where a node sits: its region and, for a story, its broad topic. */
 export function trail(h, id) {
   if (!h.nodes.has(id)) return [];
@@ -99,6 +113,7 @@ function postLine(p, h) {
     tier: p.voice?.tier,
     stateAffiliated: Boolean(p.voice?.stateAffiliated),
     country: p.voice?.country,
+    lean: p.voice?.lean || null,
     topicId: p.topicId,
     topicLabel: h.get(p.topicId).label,
     live: p.source === 'live',

@@ -139,7 +139,7 @@
 </head>
 <body>
 <div id="app"><p class="loading">Loading the latest…</p></div>
-<script>window.itlSearch = location.search; window.itlStatic = import('./src/static.js?v=58061ac813').then((m) => m.init({ search: window.itlSearch }));</script>
+<script>window.itlSearch = location.search; window.itlStatic = import('./src/static.js?v=be58a7d5f0').then((m) => m.init({ search: window.itlSearch }));</script>
 <script>
 (() => {
   const params = new URLSearchParams(location.search);
@@ -309,7 +309,11 @@
   // Back to the live map, on the view this page came from (story picked).
   function mapHref(d) {
     const q = new URLSearchParams();
-    if (d.map) { q.set('view', d.map.view); if (d.map.area) q.set('area', d.map.area); }
+    if (d.map) {
+      if (d.map.segment === 'us') q.set('segment', 'us');
+      if (d.map.view !== 'world') q.set('view', d.map.view);
+      if (d.map.area) q.set('area', d.map.area);
+    }
     if (state.demo) q.set('demo', '1');
     return `index.html${q.size ? `?${q}` : ''}`;
   }

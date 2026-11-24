@@ -258,6 +258,175 @@
     "exclude": [],
     "place": {"lon": 114, "lat": 13}
   },
+  "us-politics": {
+    "label": "US politics",
+    "about": "What Washington and the states are doing: the White House, Congress, the courts, federal agencies, elections and governors.",
+    "parent": "politics",
+    "segment": true,
+    "gate": ["congress", "congressional", "congressman", "congresswoman", "senate", "senator", "senators", "house speaker", "speaker johnson", "house republicans", "house democrats", "republican", "republicans", "democrat", "democrats", "democratic party", "gop", "maga", "white house", "trump administration", "oval office", "executive order", "executive orders", "supreme court", "scotus", "federal judge", "district judge", "appeals court", "justice department", "department of justice", "doj", "fbi", "attorney general", "federal reserve", "fed chair", "governor", "governors", "state legislature", "midterm", "midterms", "2028", "primary", "redistricting", "gerrymander*", "impeach*", "filibuster", "capitol hill", "war powers", "house votes", "house vote", "house passes", "senate votes", "senate vote", "senate passes", "shutdown", "appropriations", "tariff", "tariffs", "immigration", "deportation", "deportations", "ice agents", "national guard", "#uspol", "#uspolitics"]
+  },
+  "congress": {
+    "label": "Congress",
+    "about": "The House and Senate: spending fights, bills, hearings and votes.",
+    "parent": "us-politics",
+    "include": ["congress", "congressional", "senate", "senator", "senators", "house republicans", "house democrats", "house speaker", "speaker johnson", "lawmakers", "capitol hill", "filibuster", "#Congress"],
+    "map": "us-arenas",
+    "place": { "x": 20, "y": 45 }
+  },
+  "funding": {
+    "label": "Government funding",
+    "about": "Spending bills, shutdown deadlines, the debt limit and budget deals.",
+    "parent": "congress",
+    "include": ["government shutdown", "shutdown", "appropriations", "spending bill", "spending bills", "continuing resolution", "stopgap", "debt ceiling", "debt limit", "budget reconciliation", "reconciliation bill", "funding deadline"],
+    "place": { "x": 10, "y": 38 }
+  },
+  "bills": {
+    "label": "Bills and votes",
+    "about": "Legislation moving through the House and Senate, and how the votes go.",
+    "parent": "congress",
+    "include": ["passed the house", "passed the senate", "house passes", "senate passes", "house votes", "senate votes", "house vote", "senate vote", "floor vote", "cloture", "signed into law", "the bill"],
+    "place": { "x": 20, "y": 55 }
+  },
+  "oversight": {
+    "label": "Hearings and investigations",
+    "about": "Committee hearings, subpoenas, contempt votes and impeachment.",
+    "parent": "congress",
+    "include": ["subpoena", "subpoenas", "subpoenaed", "oversight committee", "judiciary committee", "congressional hearing", "senate hearing", "house hearing", "testify", "testified", "testimony", "impeach*", "contempt of congress"],
+    "place": { "x": 30, "y": 38 }
+  },
+  "war-powers": {
+    "label": "War powers",
+    "about": "Votes and fights in Congress over the president's power to use force abroad.",
+    "parent": "congress",
+    "include": ["war powers", "war powers resolution", "authorization for use of military force", "aumf"],
+    "place": { "x": 10, "y": 52 }
+  },
+  "courts": {
+    "label": "Courts",
+    "about": "The Supreme Court and the lower courts ruling on the administration and on the law.",
+    "parent": "us-politics",
+    "include": ["supreme court", "scotus", "federal judge", "district judge", "appeals court", "circuit court", "court ruling", "ruled", "injunction", "lawsuit", "#SCOTUS"],
+    "exclude": ["israel's supreme court", "israeli supreme court", "high court of justice", "india's supreme court", "indian supreme court", "uk supreme court", "brazil's supreme court", "brazilian supreme court", "pakistan's supreme court"],
+    "map": "us-arenas",
+    "place": { "x": 80, "y": 45 }
+  },
+  "supreme-court": {
+    "label": "Supreme Court",
+    "about": "Cases, arguments, emergency orders and rulings at the Supreme Court.",
+    "parent": "courts",
+    "include": ["supreme court", "scotus", "chief justice", "justice roberts", "justice thomas", "justice alito", "justice sotomayor", "justice kagan", "justice gorsuch", "justice kavanaugh", "justice barrett", "justice jackson", "oral argument", "oral arguments", "emergency docket", "shadow docket", "#SCOTUS"],
+    "exclude": ["israel's supreme court", "israeli supreme court", "high court of justice", "india's supreme court", "indian supreme court", "uk supreme court", "brazil's supreme court", "brazilian supreme court", "pakistan's supreme court"],
+    "place": { "x": 80, "y": 35 }
+  },
+  "lower-courts": {
+    "label": "Rulings on the administration",
+    "about": "Federal judges and appeals courts blocking or allowing what the administration does.",
+    "parent": "courts",
+    "include": ["federal judge", "district judge", "appeals court", "circuit court", "injunction", "restraining order", "judge blocks", "judge blocked", "judge rules", "judge ruled", "court blocks", "court blocked"],
+    "place": { "x": 85, "y": 55 }
+  },
+  "white-house": {
+    "label": "White House",
+    "about": "The president and his administration: orders, appointments, trade and immigration.",
+    "parent": "us-politics",
+    "include": ["white house", "oval office", "trump administration", "the administration", "press secretary", "president trump", "vice president vance", "#WhiteHouse"],
+    "map": "us-arenas",
+    "place": { "x": 50, "y": 20 }
+  },
+  "executive-orders": {
+    "label": "Executive orders",
+    "about": "Orders, proclamations and memos the president signs, and what they change.",
+    "parent": "white-house",
+    "include": ["executive order", "executive orders", "executive action", "presidential memorandum", "proclamation", "signs order", "signed an order", "signs an order"],
+    "place": { "x": 35, "y": 12 }
+  },
+  "appointments": {
+    "label": "Appointments and firings",
+    "about": "Who the president nominates, who the Senate confirms, and who is pushed out.",
+    "parent": "white-house",
+    "include": ["nominee", "nominees", "nomination", "nominated", "confirmation hearing", "confirmation vote", "cabinet", "trump fired", "trump fires", "firing of", "ousted", "resigns", "resigned", "acting director"],
+    "place": { "x": 50, "y": 8 }
+  },
+  "tariffs": {
+    "label": "Tariffs and trade",
+    "about": "Tariffs the administration sets or threatens, trade deals, and the fights over them in court and Congress.",
+    "parents": ["white-house", "economy"],
+    "include": ["tariff", "tariffs", "trade deal", "trade war", "import duties", "import taxes", "section 232", "#tariffs"],
+    "place": { "x": 65, "y": 12 }
+  },
+  "immigration": {
+    "label": "Immigration enforcement",
+    "about": "Raids, deportations, the border and asylum, and the court cases over them.",
+    "parent": "white-house",
+    "include": ["immigration", "immigrants", "ice raid", "ice raids", "ice agents", "ice detention", "deportation", "deportations", "deported", "border patrol", "asylum", "migrants", "daca", "birthright citizenship"],
+    "place": { "x": 50, "y": 30 }
+  },
+  "agencies": {
+    "label": "Agencies",
+    "about": "Federal departments and agencies, from the Justice Department and FBI to the Fed.",
+    "parent": "us-politics",
+    "include": ["federal agency", "federal agencies", "federal workers", "federal employees", "civil servants", "inspector general"],
+    "map": "us-arenas",
+    "place": { "x": 50, "y": 60 }
+  },
+  "doj-fbi": {
+    "label": "Justice Department and FBI",
+    "about": "Prosecutions, investigations and fights over the independence of the Justice Department and FBI.",
+    "parent": "agencies",
+    "include": ["justice department", "department of justice", "doj", "fbi", "attorney general", "u.s. attorney", "us attorney", "indictment", "indicted", "special counsel"],
+    "place": { "x": 42, "y": 66 }
+  },
+  "fed": {
+    "label": "The Fed",
+    "about": "The Federal Reserve: interest rates, its chair and the pressure on it.",
+    "parents": ["agencies", "economy"],
+    "include": ["federal reserve", "the fed", "fed chair", "fomc", "interest rate", "interest rates", "rate cut", "rate cuts", "rate hike"],
+    "place": { "x": 58, "y": 66 }
+  },
+  "elections": {
+    "label": "Elections",
+    "about": "Results, races, candidates and the rules for voting.",
+    "parent": "us-politics",
+    "include": ["election", "elections", "voters", "ballot", "ballots", "campaign", "polls", "poll"],
+    "map": "us-arenas",
+    "place": { "x": 30, "y": 82 }
+  },
+  "race-2028": {
+    "label": "The 2028 race",
+    "about": "Who is running for president in 2028, the primaries and the polls.",
+    "parent": "elections",
+    "include": ["2028", "presidential race", "presidential campaign", "presidential primary", "presidential bid", "running for president", "iowa caucus", "new hampshire primary"],
+    "place": { "x": 22, "y": 78 }
+  },
+  "midterms": {
+    "label": "Midterm results",
+    "about": "Counting, recounts and what the midterm results mean for the House and Senate.",
+    "parent": "elections",
+    "include": ["midterm", "midterms", "recount", "runoff", "special election", "house majority", "senate majority", "conceded", "concedes"],
+    "place": { "x": 38, "y": 78 }
+  },
+  "redistricting": {
+    "label": "Redistricting and voting rules",
+    "about": "Fights over congressional maps, gerrymandering and voting rights.",
+    "parent": "elections",
+    "include": ["redistricting", "gerrymander*", "congressional map", "congressional maps", "district lines", "voting rights act", "voting rights"],
+    "place": { "x": 30, "y": 90 }
+  },
+  "states": {
+    "label": "States",
+    "about": "Governors, state laws and states pushing back against Washington.",
+    "parent": "us-politics",
+    "include": ["governor", "governors", "state legislature", "statehouse", "state attorney general", "state attorneys general", "state law", "ballot measure", "ballot initiative"],
+    "map": "us-arenas",
+    "place": { "x": 70, "y": 82 }
+  },
+  "national-guard": {
+    "label": "National Guard deployments",
+    "about": "Troops sent into US cities and states, and the legal fights over it.",
+    "parent": "states",
+    "include": ["national guard", "guard troops", "guardsmen"],
+    "place": { "x": 70, "y": 90 }
+  },
   "economy": { "label": "Economy" },
   "energy": { "label": "Energy", "parent": "economy" },
   "oil": {

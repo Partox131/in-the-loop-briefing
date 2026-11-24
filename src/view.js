@@ -1,8 +1,8 @@
 // Turn a brief (see brief.js) into the JSON the briefing web page renders.
 // Kept separate from the server so it's easy to test and to reuse.
 
-import { breakingCount, isTopic, trail } from './live.js?v=58061ac813';
-import { TIER_NAME } from './voices.js?v=58061ac813';
+import { breakingCount, isTopic, segmentOf, trail } from './live.js?v=be58a7d5f0';
+import { TIER_NAME } from './voices.js?v=be58a7d5f0';
 
 const HOUR = 3_600_000;
 
@@ -112,6 +112,7 @@ export function briefView(brief, h, { now = new Date() } = {}) {
   stories.sort((a, b) => Number(b.breaking > 0) - Number(a.breaking > 0));
   // Where the node sits on the live map: region > broad topic > story.
   const onMap = trail(h, id);
+  const seg = segmentOf(h, id);
   const kind = !onMap.length ? null : onMap.length === 1 ? 'region' : isTopic(h, id) ? 'topic' : 'story';
   const confirmed = stories.filter((s) => s.status === 'corroborated' || s.status === 'official').length;
   return {
@@ -119,7 +120,9 @@ export function briefView(brief, h, { now = new Date() } = {}) {
     since: brief.since,
     node: { id, label: brief.node.label, path: brief.path, about: h.get(id).about || '', kind },
     // The live map view to go back to, and the bubble to pick there.
-    map: !kind ? null : kind === 'story' ? { view: onMap.at(-2).id, area: id } : { view: id, area: null },
+    map: !kind
+      ? (seg === 'us' ? { view: 'world', area: null, segment: seg } : null)
+      : { ...(kind === 'story' ? { view: onMap.at(-2).id, area: id } : { view: id, area: null }), segment: seg },
     // "What changed", built from the data (no AI).
     recap: {
       updates: stories.length,

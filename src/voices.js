@@ -5,11 +5,13 @@
 // A voice file lists accounts by handle (easier to curate); at runtime we
 // resolve handles to DIDs, which is what we key on (handles can change).
 
-import { stateCountry } from './flags.js?v=58061ac813';
+import { stateCountry } from './flags.js?v=be58a7d5f0';
 
 /** Base weight per tier. Officials and OSINT are useful but never promoted alone. */
 export const TIER_WEIGHT = { 1: 1.0, 2: 0.9, 3: 0.7, 4: 0.6, 5: 0.5 };
 export const TIER_NAME = { 1: 'outlet', 2: 'reporter', 3: 'analyst', 4: 'official', 5: 'OSINT' };
+/** Political lean of US politics sources, left to right. */
+export const LEANS = ['left', 'centre-left', 'centre', 'centre-right', 'right'];
 
 /**
  * @typedef {Object} Voice
@@ -42,6 +44,8 @@ export function makeVoice(v) {
     affiliation: v.affiliation || v.name || handle,
     region: v.region || 'unknown',
     stateAffiliated: Boolean(v.stateAffiliated),
+    // US politics: where a source sits, left to right (our call, see voices.example.json).
+    ...(LEANS.includes(v.lean) ? { lean: v.lean } : {}),
     country: stateCountry(v),
     topics: v.topics || [],
     domainVerified,

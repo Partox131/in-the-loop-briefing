@@ -27,9 +27,11 @@
       "affiliation": "Reuters",
       "region": "international",
       "topics": [
-        "geopolitics"
+        "geopolitics",
+        "us-politics"
       ],
-      "feeds": []
+      "feeds": [],
+      "lean": "centre"
     },
     {
       "domain": "apnews.com",
@@ -37,9 +39,11 @@
       "affiliation": "Associated Press",
       "region": "US",
       "topics": [
-        "geopolitics"
+        "geopolitics",
+        "us-politics"
       ],
-      "feeds": []
+      "feeds": [],
+      "lean": "centre"
     },
     {
       "domain": "bbc.co.uk",
@@ -65,14 +69,17 @@
       "affiliation": "New York Times",
       "region": "US",
       "topics": [
-        "geopolitics"
+        "geopolitics",
+        "us-politics"
       ],
       "feeds": [
         "https://rss.nytimes.com/services/xml/rss/nyt/World.xml",
         "https://rss.nytimes.com/services/xml/rss/nyt/MiddleEast.xml",
         "https://rss.nytimes.com/services/xml/rss/nyt/Europe.xml",
-        "https://rss.nytimes.com/services/xml/rss/nyt/AsiaPacific.xml"
-      ]
+        "https://rss.nytimes.com/services/xml/rss/nyt/AsiaPacific.xml",
+        "https://rss.nytimes.com/services/xml/rss/nyt/Politics.xml"
+      ],
+      "lean": "centre-left"
     },
     {
       "domain": "washingtonpost.com",
@@ -80,11 +87,14 @@
       "affiliation": "Washington Post",
       "region": "US",
       "topics": [
-        "geopolitics"
+        "geopolitics",
+        "us-politics"
       ],
       "feeds": [
-        "https://feeds.washingtonpost.com/rss/world"
-      ]
+        "https://feeds.washingtonpost.com/rss/world",
+        "https://feeds.washingtonpost.com/rss/politics"
+      ],
+      "lean": "centre-left"
     },
     {
       "domain": "npr.org",
@@ -92,11 +102,14 @@
       "affiliation": "NPR",
       "region": "US",
       "topics": [
-        "geopolitics"
+        "geopolitics",
+        "us-politics"
       ],
       "feeds": [
-        "https://feeds.npr.org/1004/rss.xml"
-      ]
+        "https://feeds.npr.org/1004/rss.xml",
+        "https://feeds.npr.org/1014/rss.xml"
+      ],
+      "lean": "centre-left"
     },
     {
       "domain": "axios.com",
@@ -104,9 +117,11 @@
       "affiliation": "Axios",
       "region": "US",
       "topics": [
-        "geopolitics"
+        "geopolitics",
+        "us-politics"
       ],
-      "feeds": []
+      "feeds": [],
+      "lean": "centre"
     },
     {
       "domain": "cnn.com",
@@ -114,9 +129,11 @@
       "affiliation": "CNN",
       "region": "US",
       "topics": [
-        "geopolitics"
+        "geopolitics",
+        "us-politics"
       ],
-      "feeds": []
+      "feeds": [],
+      "lean": "centre-left"
     },
     {
       "domain": "theguardian.com",
@@ -124,13 +141,15 @@
       "affiliation": "Guardian",
       "region": "UK",
       "topics": [
-        "geopolitics"
+        "geopolitics",
+        "us-politics"
       ],
       "feeds": [
         "https://www.theguardian.com/world/rss",
         "https://www.theguardian.com/world/middleeast/rss",
         "https://www.theguardian.com/world/ukraine/rss"
-      ]
+      ],
+      "lean": "centre-left"
     },
     {
       "domain": "ft.com",
@@ -697,6 +716,318 @@
         "east-asia"
       ],
       "feeds": []
+    },
+    {
+      "domain": "politico.com",
+      "name": "Politico",
+      "affiliation": "Politico",
+      "region": "US",
+      "lean": "centre-left",
+      "topics": [
+        "us-politics"
+      ],
+      "feeds": [
+        "https://rss.politico.com/politics-news.xml"
+      ]
+    },
+    {
+      "domain": "thehill.com",
+      "name": "The Hill",
+      "affiliation": "The Hill",
+      "region": "US",
+      "lean": "centre",
+      "topics": [
+        "us-politics"
+      ],
+      "feeds": [
+        "https://thehill.com/homenews/feed/"
+      ]
+    },
+    {
+      "domain": "rollcall.com",
+      "name": "Roll Call",
+      "affiliation": "Roll Call",
+      "region": "US",
+      "lean": "centre",
+      "topics": [
+        "us-politics"
+      ],
+      "feeds": [
+        "https://rollcall.com/feed/"
+      ]
+    },
+    {
+      "domain": "pbs.org",
+      "name": "PBS NewsHour",
+      "affiliation": "PBS",
+      "region": "US",
+      "lean": "centre",
+      "topics": [
+        "us-politics"
+      ],
+      "feeds": [
+        "https://www.pbs.org/newshour/feeds/rss/politics"
+      ]
+    },
+    {
+      "domain": "cbsnews.com",
+      "name": "CBS News",
+      "affiliation": "CBS News",
+      "region": "US",
+      "lean": "centre-left",
+      "topics": [
+        "us-politics"
+      ],
+      "feeds": [
+        "https://www.cbsnews.com/latest/rss/politics"
+      ]
+    },
+    {
+      "domain": "nbcnews.com",
+      "name": "NBC News",
+      "affiliation": "NBC News",
+      "region": "US",
+      "lean": "centre-left",
+      "topics": [
+        "us-politics"
+      ],
+      "feeds": [
+        "https://feeds.nbcnews.com/nbcnews/public/politics"
+      ]
+    },
+    {
+      "domain": "abcnews.go.com",
+      "name": "ABC News",
+      "affiliation": "ABC News",
+      "region": "US",
+      "lean": "centre-left",
+      "topics": [
+        "us-politics"
+      ],
+      "feeds": [
+        "https://abcnews.go.com/abcnews/politicsheadlines"
+      ]
+    },
+    {
+      "domain": "theatlantic.com",
+      "name": "The Atlantic",
+      "affiliation": "The Atlantic",
+      "region": "US",
+      "lean": "centre-left",
+      "topics": [
+        "us-politics"
+      ],
+      "feeds": [
+        "https://www.theatlantic.com/feed/channel/politics/"
+      ]
+    },
+    {
+      "domain": "propublica.org",
+      "name": "ProPublica",
+      "affiliation": "ProPublica",
+      "region": "US",
+      "lean": "centre-left",
+      "topics": [
+        "us-politics"
+      ],
+      "feeds": [
+        "https://feeds.propublica.org/propublica/main"
+      ]
+    },
+    {
+      "domain": "motherjones.com",
+      "name": "Mother Jones",
+      "affiliation": "Mother Jones",
+      "region": "US",
+      "lean": "left",
+      "topics": [
+        "us-politics"
+      ],
+      "feeds": [
+        "https://www.motherjones.com/politics/feed/"
+      ]
+    },
+    {
+      "domain": "talkingpointsmemo.com",
+      "name": "Talking Points Memo",
+      "affiliation": "Talking Points Memo",
+      "region": "US",
+      "lean": "left",
+      "topics": [
+        "us-politics"
+      ],
+      "feeds": [
+        "https://talkingpointsmemo.com/feed"
+      ]
+    },
+    {
+      "domain": "thenation.com",
+      "name": "The Nation",
+      "affiliation": "The Nation",
+      "region": "US",
+      "lean": "left",
+      "topics": [
+        "us-politics"
+      ],
+      "feeds": [
+        "https://www.thenation.com/feed/"
+      ]
+    },
+    {
+      "domain": "wsj.com",
+      "name": "The Wall Street Journal",
+      "affiliation": "Wall Street Journal",
+      "region": "US",
+      "lean": "centre-right",
+      "topics": [
+        "us-politics"
+      ],
+      "feeds": [
+        "https://feeds.content.dowjones.io/public/rss/socialpoliticsfeed"
+      ]
+    },
+    {
+      "domain": "thedispatch.com",
+      "name": "The Dispatch",
+      "affiliation": "The Dispatch",
+      "region": "US",
+      "lean": "centre-right",
+      "topics": [
+        "us-politics"
+      ],
+      "feeds": [
+        "https://thedispatch.com/feed/"
+      ]
+    },
+    {
+      "domain": "reason.com",
+      "name": "Reason",
+      "affiliation": "Reason",
+      "region": "US",
+      "lean": "centre-right",
+      "topics": [
+        "us-politics"
+      ],
+      "feeds": [
+        "https://reason.com/feed/"
+      ]
+    },
+    {
+      "domain": "thefp.com",
+      "name": "The Free Press",
+      "affiliation": "The Free Press",
+      "region": "US",
+      "lean": "centre-right",
+      "topics": [
+        "us-politics"
+      ],
+      "feeds": [
+        "https://www.thefp.com/feed"
+      ]
+    },
+    {
+      "domain": "thebulwark.com",
+      "name": "The Bulwark",
+      "affiliation": "The Bulwark",
+      "region": "US",
+      "lean": "centre-right",
+      "topics": [
+        "us-politics"
+      ],
+      "feeds": [
+        "https://www.thebulwark.com/feed"
+      ]
+    },
+    {
+      "domain": "foxnews.com",
+      "name": "Fox News",
+      "affiliation": "Fox News",
+      "region": "US",
+      "lean": "right",
+      "topics": [
+        "us-politics"
+      ],
+      "feeds": [
+        "https://moxie.foxnews.com/google-publisher/politics.xml"
+      ]
+    },
+    {
+      "domain": "nypost.com",
+      "name": "New York Post",
+      "affiliation": "New York Post",
+      "region": "US",
+      "lean": "right",
+      "topics": [
+        "us-politics"
+      ],
+      "feeds": [
+        "https://nypost.com/politics/feed/"
+      ]
+    },
+    {
+      "domain": "nationalreview.com",
+      "name": "National Review",
+      "affiliation": "National Review",
+      "region": "US",
+      "lean": "right",
+      "topics": [
+        "us-politics"
+      ],
+      "feeds": [
+        "https://www.nationalreview.com/feed/"
+      ]
+    },
+    {
+      "domain": "washingtonexaminer.com",
+      "name": "Washington Examiner",
+      "affiliation": "Washington Examiner",
+      "region": "US",
+      "lean": "right",
+      "topics": [
+        "us-politics"
+      ],
+      "feeds": [
+        "https://www.washingtonexaminer.com/feed/"
+      ]
+    },
+    {
+      "domain": "freebeacon.com",
+      "name": "Washington Free Beacon",
+      "affiliation": "Washington Free Beacon",
+      "region": "US",
+      "lean": "right",
+      "topics": [
+        "us-politics"
+      ],
+      "feeds": [
+        "https://freebeacon.com/feed/"
+      ]
+    },
+    {
+      "domain": "washingtontimes.com",
+      "name": "The Washington Times",
+      "affiliation": "Washington Times",
+      "region": "US",
+      "lean": "right",
+      "topics": [
+        "us-politics"
+      ],
+      "feeds": [
+        "https://www.washingtontimes.com/rss/headlines/news/politics/"
+      ]
+    },
+    {
+      "domain": "scotusblog.com",
+      "name": "SCOTUSblog",
+      "affiliation": "SCOTUSblog",
+      "region": "US",
+      "lean": "centre",
+      "topics": [
+        "us-politics"
+      ],
+      "feeds": [
+        "https://www.scotusblog.com/feed/"
+      ]
     }
   ],
   "telegram": {
