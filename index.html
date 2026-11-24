@@ -63,21 +63,21 @@
   .mapcol { flex: 999 1 620px; min-width: 0; align-self: flex-start; }
   .map { position: relative; background: var(--sea); border-radius: 16px; overflow: hidden; border: 1px solid var(--line); }
   .map svg { display: block; width: 100%; height: auto; }
-  .country { fill: var(--land); stroke: var(--border); stroke-width: .8; }
+  .country { fill: var(--land); stroke: var(--border); stroke-width: calc(.8px * var(--s, 1)); }
   .bubble { cursor: pointer; }
-  .bubble .disc { stroke-width: 2.5; transition: r .6s ease; }
-  .bubble:hover .disc, .bubble.sel .disc { stroke-width: 4; }
+  .bubble .disc { stroke-width: calc(2.5px * var(--s, 1)); transition: r .6s ease; }
+  .bubble:hover .disc, .bubble.sel .disc { stroke-width: calc(4px * var(--s, 1)); }
   .bubble:focus { outline: none; }
-  .bubble:focus-visible .disc { stroke: var(--loop); stroke-width: 5; }
-  .bubble text { font-family: var(--body); fill: var(--ink); paint-order: stroke; stroke: var(--sea); stroke-width: 4px; stroke-linejoin: round; pointer-events: none; }
+  .bubble:focus-visible .disc { stroke: var(--loop); stroke-width: calc(5px * var(--s, 1)); }
+  .bubble text { font-family: var(--body); fill: var(--ink); paint-order: stroke; stroke: var(--sea); stroke-width: calc(4px * var(--s, 1)); stroke-linejoin: round; pointer-events: none; }
   .bubble .name { font-weight: 700; font-size: 15px; }
   .bubble .meta { font-size: 13px; fill: var(--muted); }
   .bubble.quiet .name { font-weight: 600; fill: var(--muted); font-size: 13px; }
-  .ring { fill: none; stroke-width: 3; transform-box: fill-box; transform-origin: center; animation: ring 2s ease-out infinite; }
+  .ring { fill: none; stroke-width: calc(3px * var(--s, 1)); transform-box: fill-box; transform-origin: center; animation: ring 2s ease-out infinite; }
   @keyframes ring { from { transform: scale(1); opacity: .7; } to { transform: scale(1.5); opacity: 0; } }
-  .flash { transform-box: fill-box; transform-origin: center; animation: flash 1.8s ease-out 1 forwards; fill: none; stroke: var(--loop); stroke-width: 4; }
+  .flash { transform-box: fill-box; transform-origin: center; animation: flash 1.8s ease-out 1 forwards; fill: none; stroke: var(--loop); stroke-width: calc(4px * var(--s, 1)); }
   @keyframes flash { from { transform: scale(.6); opacity: 1; } to { transform: scale(1.8); opacity: 0; } }
-  .leader { stroke: var(--muted); stroke-width: 1.2; stroke-dasharray: 3 3; }
+  .leader { stroke: var(--muted); stroke-width: calc(1.2px * var(--s, 1)); stroke-dasharray: calc(3px * var(--s, 1)); }
   .anchor { fill: var(--ink); }
   /* Zoom between views: bubbles fade, the camera flies, the new view pops in. */
   .map { transition: height .95s cubic-bezier(.65, 0, .35, 1), border-color .6s, background-color .6s; }
@@ -97,16 +97,29 @@
   /* The zoomed-in region view: an atlas look, with the countries at the heart of it lit up. */
   .map.zoomed { background: radial-gradient(ellipse at 50% 42%, var(--sea) 52%, var(--sea-deep) 100%); border-color: color-mix(in srgb, var(--loop) 35%, var(--line)); }
   .zoomed .country { fill: var(--land-dim); }
-  .zoomed .country.focus { fill: var(--focus-land); stroke: color-mix(in srgb, var(--loop) 55%, var(--border)); stroke-width: 1.1; }
+  .zoomed .country.focus { fill: var(--focus-land); stroke: color-mix(in srgb, var(--loop) 55%, var(--border)); stroke-width: calc(1.1px * var(--s, 1)); }
   .zoomed .country.watch { fill: color-mix(in srgb, var(--focus-land) 40%, var(--land-dim)); }
-  .grat { fill: none; stroke: var(--border); stroke-width: .7; stroke-dasharray: 2 5; opacity: .8; }
+  .grat { fill: none; stroke: var(--border); stroke-width: calc(.7px * var(--s, 1)); stroke-dasharray: calc(2px * var(--s, 1)) calc(5px * var(--s, 1)); opacity: .8; }
   .clabel { font-family: var(--body); font-weight: 700; letter-spacing: .24em; fill: var(--muted); opacity: .5; pointer-events: none; }
   .zoomed .bubble text { stroke: var(--focus-land); }
   .cartouche { position: absolute; top: 14px; left: 14px; display: flex; align-items: center; gap: 12px; max-width: calc(100% - 28px); background: color-mix(in srgb, var(--raise) 88%, transparent); backdrop-filter: blur(6px); border: 1px solid var(--line); border-radius: 14px; padding: 8px 14px 8px 8px; box-shadow: 0 6px 24px -12px rgba(20, 24, 60, .35); }
   .cartouche .back { border: 0; background: var(--ink); color: var(--bg); border-radius: 999px; min-height: 40px; padding: 0 14px; font-weight: 600; font-size: 14px; white-space: nowrap; }
   .cartouche .kick { display: block; font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--loop); }
   .cartouche strong { display: block; font: 800 20px/1.1 var(--display); }
-  .cartouche small { display: block; color: var(--muted); font-size: 13px; }
+  .cartouche small { display: block; color: var(--muted); font-size: 13px; max-width: 46ch; }
+  .spot circle { fill-opacity: .55; stroke-width: calc(1.2px * var(--s, 1)); }
+  .spot .tie { stroke-width: calc(1px * var(--s, 1)); stroke-dasharray: calc(2px * var(--s, 1)) calc(3px * var(--s, 1)); opacity: .55; }
+  .spot text { font-family: var(--body); font-weight: 600; fill: var(--ink); paint-order: stroke; stroke: var(--focus-land); stroke-width: calc(3px * var(--s, 1)); stroke-linejoin: round; }
+  .map.leaving .spot { opacity: 0; transition: opacity .2s; }
+  .bubble .more { font-size: 12px; fill: var(--loop); font-weight: 700; }
+  .crumbs button { border: 0; background: none; padding: 0; color: inherit; font: inherit; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--line); }
+  .crumbs button:hover { color: var(--ink); }
+  .about { margin: 0 0 10px; color: var(--muted); font-size: 15px; }
+  .topiclist { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 8px; }
+  .topiclist button { width: 100%; text-align: left; border: 1px solid var(--line); background: var(--raise); color: var(--ink); border-radius: 12px; padding: 10px 12px; cursor: pointer; font: inherit; display: grid; gap: 2px; }
+  .topiclist button:hover { border-color: var(--loop); }
+  .topiclist strong { font-size: 15px; }
+  .topiclist span { color: var(--muted); font-size: 14px; }
 
   /* Backgrounders: the broad story of each region, for newcomers. */
   .sum { margin-top: 22px; padding: 22px 26px; }
@@ -209,7 +222,7 @@
 </head>
 <body>
 <div id="app"><p class="loading">Loading the live map…</p></div>
-<script>window.itlSearch = location.search; window.itlLive = (demo) => import('./src/static.js?v=eec7a70b5d').then((m) => m.initLive({ demo, search: window.itlSearch }));</script>
+<script>window.itlSearch = location.search; window.itlLive = (demo) => import('./src/static.js?v=72b3fdad1a').then((m) => m.initLive({ demo, search: window.itlSearch }));</script>
 <script>
 (() => {
   const params = new URLSearchParams(location.search);
@@ -248,7 +261,7 @@
     if (m < 1440) return `${Math.round(m / 60)}h ago`;
     return `${Math.round(m / 1440)}d ago`;
   };
-  const plural = (n, w) => `${n} ${w}${n === 1 ? '' : 's'}`;
+  const plural = (n, w) => `${n} ${n === 1 ? w : w.endsWith('y') ? `${w.slice(0, -1)}ies` : `${w}s`}`;
   const STATUS = { corroborated: 'Confirmed', official: 'Official', reported: 'Reported once', disputed: 'Sources disagree', quiet: 'Quiet' };
   const COLOR = { corroborated: 'var(--confirmed)', reported: 'var(--reported-dot)', disputed: 'var(--disputed)', quiet: 'var(--muted)' };
   const paceText = (a) => (a.pace == null ? '' : `${a.pace}× usual`);
@@ -266,18 +279,43 @@
   const syncUrl = () => history.replaceState(null, '', urlFor(state.view));
 
   const regions = () => state.api.live.regions();
-  const mapOf = (view) => (view === 'world' ? 'world' : regions().find((r) => r.id === view)?.map || 'world');
+  const topics = () => state.api.live.topics();
+  const topicOf = (view) => topics().find((t) => t.id === view);
+  // The region a view belongs to: itself, or a broad topic's region.
+  const regionOf = (view) => regions().find((r) => r.id === view) || regions().find((r) => r.id === topicOf(view)?.region);
+  const validView = (v) => v === 'world' || Boolean(regionOf(v));
+  const mapOf = (view) => (view === 'world' ? 'world' : regionOf(view)?.map || 'world');
+
+  // What part of its map a view shows, in that map's pixels. A region shows
+  // all of it; a broad topic crops to its stories (same aspect, so the frame
+  // keeps its height as the camera moves in).
+  function cropOf(view) {
+    const m = state.api.maps[mapOf(view)];
+    const full = { x: 0, y: 0, w: m.width, h: m.height };
+    const t = topicOf(view);
+    if (!t) return full;
+    const pts = [t.id, ...t.stories].map((id) => state.api.live.placeOf(id)).filter(Boolean).map((p) => state.api.project(m, p.lon, p.lat));
+    const xs = pts.map((p) => p[0]), ys = pts.map((p) => p[1]);
+    const pad = 150; // room for bubbles and labels round the edge
+    let b = { x: Math.min(...xs) - pad, y: Math.min(...ys) - pad, w: Math.max(...xs) - Math.min(...xs) + 2 * pad, h: Math.max(...ys) - Math.min(...ys) + 2 * pad + 40 };
+    if (b.w < m.width * 0.42) { b.x -= (m.width * 0.42 - b.w) / 2; b.w = m.width * 0.42; }
+    b = fit(b, m.width / m.height);
+    if (b.w >= m.width) return full;
+    b.x = Math.min(m.width - b.w, Math.max(0, b.x));
+    b.y = Math.min(m.height - b.h, Math.max(0, b.y));
+    return b;
+  }
 
   // Push overlapping bubbles apart; each keeps a dashed line to its real spot.
-  function layout(areas, view) {
+  function layout(areas, view, box, s) {
     const m = state.api.maps[view];
     const max = Math.max(1, ...areas.map((a) => a.count));
     const top = view === 'world' ? 44 : 70;
     const nodes = areas.map((a) => {
       const [x0, y0] = state.api.project(m, a.place.lon, a.place.lat);
-      const r = a.count ? 12 + (top - 12) * Math.sqrt(a.count / max) : 7;
+      const r = (a.count ? 12 + (top - 12) * Math.sqrt(a.count / max) : 7) * s;
       // R: room for the bubble and its two-line label underneath
-      return { a, x0, y0, x: x0, y: y0, r, R: view === 'world' ? Math.max(r + 30, 44) : Math.max(r + 16, 44) };
+      return { a, x0, y0, x: x0, y: y0, r, R: view === 'world' ? Math.max(r + 30, 44) : Math.max(r + 16 * s, 44 * s) };
     });
     for (let it = 0; it < 240; it++) {
       for (let i = 0; i < nodes.length; i++) {
@@ -296,8 +334,8 @@
       }
       for (const n of nodes) {
         n.x += (n.x0 - n.x) * 0.03; n.y += (n.y0 - n.y) * 0.03;
-        n.x = Math.min(m.width - n.r - 2, Math.max(n.r + 2, n.x));
-        n.y = Math.min(m.height - n.r - 30, Math.max(n.r + 2, n.y));
+        n.x = Math.min(box.x + box.w - n.r - 2 * s, Math.max(box.x + n.r + 2 * s, n.x));
+        n.y = Math.min(box.y + box.h - n.r - 30 * s, Math.max(box.y + n.r + 2 * s, n.y));
       }
     }
     return nodes;
@@ -306,10 +344,12 @@
   function mapSvg(d) {
     const mapId = mapOf(state.view);
     const m = state.api.maps[mapId];
-    const nodes = layout(d.areas, mapId);
+    const box = cropOf(state.view);
+    const s = box.w / m.width; // under 1 when a topic view crops the map
+    const nodes = layout(d.areas, mapId, box, s);
     // Keep labels readable when the map is drawn small (phones).
-    const k = Math.min(2.6, Math.max(1, 720 / (document.querySelector('.map')?.clientWidth || window.innerWidth)));
-    const bg = state.bg?.regions?.[state.view];
+    const k = s * Math.min(2.6, Math.max(1, 720 / (document.querySelector('.map')?.clientWidth || window.innerWidth)));
+    const bg = state.bg?.regions?.[regionOf(state.view)?.id];
     const cls = (name) => (bg?.focus?.includes(name) ? 'country focus' : bg?.watch?.includes(name) ? 'country watch' : 'country');
     const countries = m.countries.map((c) => `<path class="${cls(c.name)}" d="${c.d}"><title>${esc(c.name)}</title></path>`).join('');
     const frames = mapId === 'world'
@@ -317,28 +357,39 @@
       : '';
     const extras = mapId === 'world' ? frames : graticule(m) + (bg?.labels || []).map((l) => {
       const [x, y] = state.api.project(m, l.lon, l.lat);
-      return `<text class="clabel" x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="middle" style="font-size:${(l.size || 15) * Math.min(k, 1.6)}px">${esc(l.text.toUpperCase())}</text>`;
+      return `<text class="clabel" x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="middle" style="font-size:${(l.size || 15) * Math.min(k, 1.6 * s)}px">${esc(l.text.toUpperCase())}</text>`;
     }).join('');
     const leaders = nodes.filter((n) => Math.hypot(n.x - n.x0, n.y - n.y0) > n.r * 0.6)
       .map((n) => `<line class="leader" x1="${n.x0.toFixed(1)}" y1="${n.y0.toFixed(1)}" x2="${n.x.toFixed(1)}" y2="${n.y.toFixed(1)}"/><circle class="anchor" cx="${n.x0.toFixed(1)}" cy="${n.y0.toFixed(1)}" r="3"/>`).join('');
+    // A story that spans cities gets a small dot on each city its posts name,
+    // tied to its bubble (topic view only, where there's room).
+    const dots = topicOf(state.view) ? nodes.flatMap((n) => (n.a.spots || []).map((sp) => {
+      const [x, y] = state.api.project(m, sp.place.lon, sp.place.lat);
+      const r = (3.5 + Math.min(6, Math.sqrt(sp.count) * 2)) * s;
+      const c = COLOR[n.a.status] || COLOR.reported;
+      return `<g class="spot" data-area="${esc(n.a.id)}"><line class="tie" x1="${n.x.toFixed(1)}" y1="${n.y.toFixed(1)}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" style="stroke:${c}"/><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r.toFixed(1)}" style="fill:${c};stroke:${c}"><title>${esc(sp.name)}: ${plural(sp.count, 'item')} (${esc(n.a.label)})</title></circle><text x="${(x + r + 3 * s).toFixed(1)}" y="${(y + 4 * s).toFixed(1)}" style="font-size:${11 * k}px">${esc(sp.name)}</text></g>`;
+    })).join('') : '';
     const order = [...nodes].sort((p, q) => q.r - p.r); // big ones underneath
     const bubbles = order.map((n, i) => {
       const a = n.a;
       const st = a.count ? a.status : 'quiet';
       const c = COLOR[st] || COLOR.reported;
       const x = n.x.toFixed(1), y = n.y.toFixed(1);
-      const label = `${a.region ? 'Zoom into ' : ''}${a.label}: ${plural(a.count, 'item')} in the last ${state.window}${a.pace == null ? '' : `, ${paceText(a)}`}, ${STATUS[st]}`;
+      const label = `${a.region || a.topic ? 'Zoom into ' : ''}${a.label}: ${plural(a.count, 'item')} in the last ${state.window}${a.pace == null ? '' : `, ${paceText(a)}`}, ${STATUS[st]}${a.topic ? `, ${plural(a.stories, 'story')}` : ''}`;
       const ring = isHot(a) ? `<circle class="ring" cx="${x}" cy="${y}" r="${n.r.toFixed(1)}" style="stroke:${c}"/>` : '';
       const flash = state.flashes.has(a.id) ? `<circle class="flash" cx="${x}" cy="${y}" r="${n.r.toFixed(1)}"/>` : '';
       const ly = n.y + n.r + 16 * k;
       const meta = a.count ? `<text class="meta" style="font-size:${13 * k}px" x="${x}" y="${(ly + 15 * k).toFixed(1)}" text-anchor="middle">${plural(a.count, 'item')}${a.pace == null ? '' : ` · ${esc(paceText(a))}`}</text>` : '';
+      // A broad topic says it opens up into stories.
+      const more = a.topic ? `<text class="more" style="font-size:${12 * k}px" x="${x}" y="${(ly + (a.count ? 30 : 15) * k).toFixed(1)}" text-anchor="middle">${plural(a.stories, 'story')} ›</text>` : '';
       return `<g class="bubble${a.count ? '' : ' quiet'}${state.area === a.id ? ' sel' : ''}" data-area="${esc(a.id)}" style="--i:${order.length - 1 - i}" tabindex="0" role="button" aria-label="${esc(label)}">
         ${ring}<circle class="disc" cx="${x}" cy="${y}" r="${n.r.toFixed(1)}" style="fill:color-mix(in srgb, ${c} ${a.count ? 30 : 12}%, transparent);stroke:${c}${a.count ? '' : ';stroke-dasharray:3 3'}"/>${flash}
-        <text class="name" style="font-size:${(a.count ? 15 : 13) * k}px" x="${x}" y="${ly.toFixed(1)}" text-anchor="middle">${esc(a.label)}</text>${meta}
+        <text class="name" style="font-size:${(a.count ? 15 : 13) * k}px" x="${x}" y="${ly.toFixed(1)}" text-anchor="middle">${esc(a.label)}</text>${meta}${more}
       </g>`;
     }).join('');
     state.flashes.clear();
-    return `<svg viewBox="0 0 ${m.width} ${m.height}" role="group" aria-label="Map of ${esc(m.label)} with one bubble per place">${countries}${extras}${leaders}${bubbles}</svg>`;
+    const what = mapId === 'world' ? 'region' : topicOf(state.view) ? 'story' : 'topic';
+    return `<svg viewBox="${box.x.toFixed(1)} ${box.y.toFixed(1)} ${box.w.toFixed(1)} ${box.h.toFixed(1)}" style="--s:${s.toFixed(3)}" role="group" aria-label="Map of ${esc(topicOf(state.view)?.label || m.label)} with one bubble per ${what}">${countries}${extras}${dots}${leaders}${bubbles}</svg>`;
   }
 
   // Dashed lines every 5 degrees, the atlas feel of a zoomed-in view.
@@ -355,8 +406,12 @@
     const W = state.api.maps.world;
     if (view === 'world') return { x: 0, y: 0, w: W.width, h: W.height };
     const v = state.api.maps[mapOf(view)];
-    const [x0, y0] = state.api.project(W, v.west, v.north);
-    const [x1, y1] = state.api.project(W, v.east, v.south);
+    const c = cropOf(view);
+    // map pixels back to lon/lat (the projection is linear), then to world pixels
+    const lon = (x) => v.west + (x / v.width) * (v.east - v.west);
+    const lat = (y) => v.north - (y / v.height) * (v.north - v.south);
+    const [x0, y0] = state.api.project(W, lon(c.x), lat(c.y));
+    const [x1, y1] = state.api.project(W, lon(c.x + c.w), lat(c.y + c.h));
     return { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
   }
   /** Grow a box around its centre to a width/height ratio, so it fills the frame. */
@@ -373,6 +428,7 @@
   function fly(from, to) {
     const el = document.querySelector('.map');
     if (!el || reduceMotion()) return Promise.resolve();
+    if (from !== 'world' && to !== 'world' && mapOf(from) === mapOf(to)) return flyWithin(el, from, to);
     state.flying = true;
     el.classList.add('leaving');
     return new Promise((done) => setTimeout(() => {
@@ -403,6 +459,29 @@
     }, 200));
   }
 
+  // Region <-> broad topic: the same detailed map, the camera moves in or out.
+  function flyWithin(el, from, to) {
+    state.flying = true;
+    el.classList.add('leaving');
+    return new Promise((done) => setTimeout(() => {
+      const svg = el.querySelector('svg');
+      if (!svg) { state.flying = false; done(); return; }
+      const m = state.api.maps[mapOf(to)];
+      const A = cropOf(from), B = cropOf(to);
+      const t0 = performance.now(), D = 800;
+      const step = (now) => {
+        const t = Math.min(1, (now - t0) / D), e = ease(t);
+        const w = A.w * (B.w / A.w) ** e, h = A.h * (B.h / A.h) ** e;
+        const cx = A.x + A.w / 2 + (B.x + B.w / 2 - A.x - A.w / 2) * e;
+        const cy = A.y + A.h / 2 + (B.y + B.h / 2 - A.y - A.h / 2) * e;
+        svg.setAttribute('viewBox', `${cx - w / 2} ${cy - h / 2} ${w} ${h}`);
+        svg.style.setProperty('--s', (w / m.width).toFixed(3));
+        if (t < 1) requestAnimationFrame(step); else { state.flying = false; done(); }
+      };
+      requestAnimationFrame(step);
+    }, 200));
+  }
+
   async function go(to, { push = true } = {}) {
     if (!to || to === state.view || state.flying) return;
     if (push) history.pushState({ view: to }, '', urlFor(to));
@@ -411,13 +490,18 @@
     await fly(from, to);
     state.view = to;
     state.arrive = true;
+    if (state.pending) { state.area = state.pending; state.pending = null; }
     refresh();
     document.querySelector('.map')?.focus({ preventScroll: true });
   }
 
   function cartouche() {
     if (state.view === 'world') return '';
-    const r = regions().find((x) => x.id === state.view);
+    const r = regionOf(state.view);
+    const t = topicOf(state.view);
+    if (t) {
+      return `<div class="cartouche"><button class="back" data-view="${esc(r.id)}" aria-label="Zoom out to ${esc(r.label)}">← ${esc(r.label)}</button><div><span class="kick">Topic · ${plural(t.stories.length, 'story')}</span><strong>${esc(t.label)}</strong>${state.data?.node?.about ? `<small>${esc(state.data.node.about)}</small>` : ''}</div></div>`;
+    }
     const bg = state.bg?.regions?.[state.view];
     return `<div class="cartouche"><button class="back" data-view="world" aria-label="Zoom out to the world map">← World</button><div><span class="kick">Zoomed in</span><strong>${esc(r?.label || '')}</strong>${bg?.kicker ? `<small>${esc(bg.kicker)}</small>` : ''}</div></div>`;
   }
@@ -437,10 +521,14 @@
   }
 
   function background() {
-    const bg = state.bg?.regions?.[state.view];
+    const bg = state.bg?.regions?.[regionOf(state.view)?.id];
     if (!bg) return '';
-    const label = (id) => state.data.areas.find((a) => a.id === id)?.label;
-    const conflicts = bg.conflicts.map((c, i) => `<details class="conflict"${i === 0 ? ' open' : ''}>
+    const label = (id) => nodeLabel(id);
+    const t = topicOf(state.view);
+    // On a topic, open the conflict that covers most of its stories.
+    const hits = (c) => (t ? (c.places || []).filter((p) => p === t.id || t.stories.includes(p)).length : 0);
+    const best = t ? bg.conflicts.reduce((b, c, i) => (hits(c) > hits(bg.conflicts[b]) ? i : b), 0) : 0;
+    const conflicts = bg.conflicts.map((c, i) => `<details class="conflict"${i === best ? ' open' : ''}>
         <summary><span class="ctitle">${esc(c.title)}</span><span class="since">${c.since ? `Since ${esc(dateText(c.since))} · ${esc(howLong(c.since))}` : esc(c.sinceText || '')}</span></summary>
         <h3>How it started</h3>${c.started.map((t) => `<p>${esc(t)}</p>`).join('')}
         <h3>What each side wants</h3><dl class="sides">${c.goals.map((g) => `<dt>${esc(g.side)}</dt><dd>${esc(g.text)}</dd>`).join('')}</dl>
@@ -464,7 +552,7 @@
   function summaryPanel(d) {
     const s = d.summary;
     if (!s) return '';
-    const head = `<p class="eyebrow">Last ${s.hours} hours · updates live</p><h2 id="sumh">What happened in ${d.node.id === 'middle-east' ? 'the ' : ''}${esc(d.node.label)}</h2>`;
+    const head = `<p class="eyebrow">Last ${s.hours} hours · updates live</p><h2 id="sumh">${d.node.topic ? `What happened: ${esc(d.node.label)}` : `What happened in ${d.node.id === 'middle-east' ? 'the ' : ''}${esc(d.node.label)}`}</h2>`;
     if (!s.posts) return `<section class="panel sum" aria-labelledby="sumh">${head}<p class="muted">Nothing from tracked voices or outlets in the last ${s.hours} hours.</p></section>`;
     const by = (x) => {
       const n = x.sources.length;
@@ -483,7 +571,7 @@
         <div><strong>${s.stories}</strong>${s.stories === 1 ? 'story' : 'stories'}: ${s.confirmed} confirmed by 2+ sources${s.disputed ? `, ${s.disputed} disputed` : ''}</div>
         <div><strong>${s.newStories}</strong>new in the last ${s.recentHours}h</div>
         <div>${paceTile}</div>
-        <div><strong>${esc(s.busiestPlace?.label || '–')}</strong>busiest place${s.busiestPlace ? `, ${plural(s.busiestPlace.count, 'item')}` : ''}</div>
+        <div><strong>${esc(s.busiestPlace?.label || '–')}</strong>busiest story${s.busiestPlace ? `, ${plural(s.busiestPlace.count, 'item')}` : ''}</div>
       </div>
       <p class="muted" style="margin:6px 0 0;font-size:14px">From ${plural(s.posts - s.articles, 'post')} and ${plural(s.articles, 'article')} by ${plural(s.sources, 'source')}.</p>
       ${more.length ? `<h3>Also big today</h3><ul class="plain">${more.map((x) => `<li><a class="txt" href="${safeUrl(x.url)}" target="_blank" rel="noopener">${esc(x.headline)}</a>${story(x)}</li>`).join('')}</ul>` : ''}
@@ -498,7 +586,7 @@
 
   function detail(d) {
     const a = d.areas.find((x) => x.id === state.area);
-    if (!a) return '';
+    if (!a) return topicList(d);
     const st = a.count ? a.status : 'quiet';
     const stories = a.storylines.length
       ? `<ul class="plain">${a.storylines.map((s) => `<li>
@@ -508,6 +596,7 @@
       : `<p class="muted" style="margin:0">Nothing from tracked voices in the last ${esc(state.window)}.</p>`;
     return `<section class="panel" aria-labelledby="dh">
       <div class="phead"><h2 id="dh">${esc(a.label)}</h2><button class="close" id="close" aria-label="Close ${esc(a.label)}">×</button></div>
+      ${a.about ? `<p class="about">${esc(a.about)}</p>` : ''}
       <div class="stats">
         <div><strong>${a.count}</strong>posts and articles in ${esc(state.window)}</div>
         <div><strong>${a.pace == null ? '–' : `${a.pace}×`}</strong>${a.pace == null ? 'no earlier posts' : 'its usual pace'}</div>
@@ -515,17 +604,27 @@
       </div>
       <div class="row" style="margin-bottom:8px"><span class="chip c-${st}">${esc(STATUS[st])}</span><span>overall, by share of posts</span></div>
       ${stories}
-      <a class="btn" href="briefing.html?node=${encodeURIComponent(a.id)}&since=24h${state.demo ? '&demo=1' : ''}">Open the ${esc(a.label)} briefing</a>
+      ${a.topic ? `<button class="btn" data-view="${esc(a.id)}">See its ${plural(a.stories, 'story')} on the map</button>` : `<a class="btn" href="briefing.html?node=${encodeURIComponent(a.id)}&since=24h${state.demo ? '&demo=1' : ''}">Open the story</a>`}
+    </section>`;
+  }
+
+  // Nothing picked: what you can click on this map, so the next step is obvious.
+  function topicList(d) {
+    const t = topicOf(state.view);
+    const items = d.areas.map((a) => `<li><button data-${a.topic ? 'view' : 'pick'}="${esc(a.id)}"><strong>${esc(a.label)}${a.topic ? ` · ${plural(a.stories, 'story')} ›` : ''}</strong>${a.about ? `<span>${esc(a.about)}</span>` : ''}<span>${a.count ? `${plural(a.count, 'item')} in ${esc(state.window)}` : `Quiet in the last ${esc(state.window)}`}</span></button></li>`).join('');
+    return `<section class="panel" aria-labelledby="th">
+      <h2 id="th">${t ? 'Stories in this topic' : 'Topics in this region'}</h2>
+      <ul class="topiclist">${items}</ul>
+      ${t && d.other ? `<p class="muted" style="margin:8px 0 0;font-size:14px">Plus ${plural(d.other, 'item')} in ${esc(state.window)} about ${esc(t.label)} in general.</p>` : ''}
     </section>`;
   }
 
   function feed(d) {
-    const label = (id) => d.areas.find((a) => a.id === id)?.label;
     const items = d.feed; // up to 30; the list scrolls
     return `<section class="panel" aria-labelledby="fh">
       <div class="phead"><h2 id="fh">Just in</h2><span class="muted" style="font-size:13px">newest first</span></div>
       ${items.length ? `<ul class="plain feedlist" id="feedlist" tabindex="0" aria-label="Newest posts and articles" style="margin-top:8px">${items.map((p) => `<li class="${state.fresh.has(p.uri) ? 'fresh' : ''}">
-        <div class="row"><strong style="color:var(--ink)">${esc(ago(p.at))}</strong>${label(p.area) ? `<span class="area-tag">${esc(label(p.area))}</span>` : `<span class="area-tag">${esc(p.topicLabel)}</span>`}<span>${esc(p.who)}${p.stateAffiliated ? stateTag(p.country) : ''}</span>${p.telegram ? '<span class="area-tag news-tag">Telegram</span>' : p.news ? '<span class="area-tag news-tag">Article</span>' : ''}${state.fresh.has(p.uri) ? '<strong style="color:var(--loop)">Live</strong>' : ''}</div>
+        <div class="row"><strong style="color:var(--ink)">${esc(ago(p.at))}</strong><span class="area-tag">${esc(p.topicLabel)}</span><span>${esc(p.who)}${p.stateAffiliated ? stateTag(p.country) : ''}</span>${p.telegram ? '<span class="area-tag news-tag">Telegram</span>' : p.news ? '<span class="area-tag news-tag">Article</span>' : ''}${state.fresh.has(p.uri) ? '<strong style="color:var(--loop)">Live</strong>' : ''}</div>
         <a class="txt" href="${safeUrl(p.url)}" target="_blank" rel="noopener">${esc(oneLine(p.text))}</a>
       </li>`).join('')}</ul>` : '<p class="muted" style="margin:8px 0 0">Nothing from tracked voices in the last day.</p>'}
     </section>`;
@@ -560,9 +659,13 @@
     const active = d.areas.filter((a) => a.count);
     const hot = d.areas.filter(isHot).map((a) => a.label);
     const world = state.view === 'world';
+    const topic = topicOf(state.view);
+    const region = regionOf(state.view);
     const sub = active.length
-      ? `${plural(active.reduce((s, a) => s + a.count, 0), 'item')} from tracked voices and outlets in the last ${state.window} across ${plural(active.length, world ? 'region' : 'place')}.${hot.length ? ` Busier than usual: ${esc(hot.join(', '))}.` : ''}`
+      ? `${plural(active.reduce((s, a) => s + a.count, 0), 'item')} from tracked voices and outlets in the last ${state.window} across ${plural(active.length, world ? 'region' : topic ? 'story' : 'topic')}.${hot.length ? ` Busier than usual: ${esc(hot.join(', '))}.` : ''}`
       : `No posts or articles from tracked voices in the last ${state.window}.`;
+    const how = topic ? 'Click a story to preview it, then open its page.' : 'Click a topic to see its stories.';
+    const crumbs = [['world', 'World'], ...(region ? [[region.id, region.label]] : []), ...(topic ? [[topic.id, topic.label]] : [])];
     const focused = document.activeElement?.dataset?.area;
     const feedTop = document.getElementById('feedlist')?.scrollTop || 0;
     app.innerHTML = `
@@ -570,14 +673,14 @@
       <div class="wrap">
         <header class="top">
           <a class="brand" href="index.html${state.demo ? '?demo=1' : ''}" title="Go to the home page"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="10" fill="none" stroke="var(--track)" stroke-width="4"/><path d="M14 4a10 10 0 0 1 9.5 13" fill="none" stroke="var(--loop)" stroke-width="4" stroke-linecap="round"/></svg>in the loop</a>
-          <nav class="crumbs" aria-label="Topic path"><span>Politics</span><span aria-hidden="true">/</span><span>Geopolitics</span><span aria-hidden="true">/</span>${world ? '<span class="here">World</span>' : `<span class="here">${esc(d.node.label)}</span>`}</nav>
+          <nav class="crumbs" aria-label="Topic path"><span>Politics</span><span aria-hidden="true">/</span><span>Geopolitics</span>${crumbs.map(([id, l], i) => `<span aria-hidden="true">/</span>${i === crumbs.length - 1 ? `<span class="here">${esc(l)}</span>` : `<button data-view="${esc(id)}">${esc(l)}</button>`}`).join('')}</nav>
           <a class="brieflink" href="briefing.html?node=${encodeURIComponent(world ? 'geopolitics' : d.node.id)}&since=24h${state.demo ? '&demo=1' : ''}" title="The topic briefing is still being worked on">${world ? 'Geopolitics' : esc(d.node.label)} briefing <span class="beta">In progress</span></a>
           <div class="status ${state.conn === 'open' && !state.demo ? 'on' : ''}" role="status"><span class="pulse-dot" aria-hidden="true"></span><span>${statusText(d)}</span></div>
         </header>
         <div class="bar">
-          <div><h1>${world ? "What's moving around the world" : `What's moving in ${d.node.id === 'middle-east' ? 'the ' : ''}${esc(d.node.label)}`}</h1><p class="sub">${world ? `One bubble per tracked region: ${esc(regions().map((r) => r.label).join(', '))}. Click a bubble to zoom in. More regions come with more voices and keywords.` : `${sub} Bubble size is posts and articles; colour is where the main stories stand.`}</p></div>
+          <div><h1>${world ? "What's moving around the world" : topic ? esc(topic.label) : `What's moving in ${d.node.id === 'middle-east' ? 'the ' : ''}${esc(d.node.label)}`}</h1><p class="sub">${world ? `One bubble per tracked region: ${esc(regions().map((r) => r.label).join(', '))}. Click a bubble to zoom in. More regions come with more voices and keywords.` : `${sub} Bubble size is posts and articles; colour is where the main stories stand. ${how}`}</p></div>
           <div class="controls">
-            <div class="seg" role="group" aria-label="Map">${[['world', 'World'], ...regions().map((r) => [r.id, r.label])].map(([k, l]) => `<button data-view="${k}" aria-pressed="${k === state.view}">${l}</button>`).join('')}</div>
+            <div class="seg" role="group" aria-label="Map">${[['world', 'World'], ...regions().map((r) => [r.id, r.label])].map(([k, l]) => `<button data-view="${k}" aria-pressed="${k === (region?.id || 'world')}">${l}</button>`).join('')}</div>
             <div class="seg" role="group" aria-label="Time window">${Object.keys(HOURS).map((w) => `<button data-window="${w}" aria-pressed="${w === state.window}">Last ${w}</button>`).join('')}</div>
           </div>
         </div>
@@ -600,12 +703,13 @@
 
     state.arrive = false;
     app.querySelectorAll('[data-view]').forEach((b) => b.addEventListener('click', () => go(b.dataset.view)));
-    app.querySelectorAll('[data-pick]').forEach((b) => b.addEventListener('click', () => { state.area = b.dataset.pick; refresh(); app.querySelector('.map')?.scrollIntoView({ behavior: reduceMotion() ? 'auto' : 'smooth', block: 'center' }); }));
+    app.querySelectorAll('[data-pick]').forEach((b) => b.addEventListener('click', () => pickNode(b.dataset.pick)));
     const frame = (id, on) => app.querySelector(`.frame[data-frame="${CSS.escape(id)}"]`)?.classList.toggle('on', on);
     app.querySelectorAll('[data-window]').forEach((b) => b.addEventListener('click', () => { state.window = b.dataset.window; refresh(); }));
     app.querySelectorAll('.bubble').forEach((g) => {
       const pick = () => {
-        if (state.view === 'world') { go(g.dataset.area); return; }
+        const a = state.data.areas.find((x) => x.id === g.dataset.area);
+        if (state.view === 'world' || a?.topic) { go(g.dataset.area); return; }
         state.area = state.area === g.dataset.area ? null : g.dataset.area; refresh(); app.querySelector(`.bubble[data-area="${CSS.escape(g.dataset.area)}"]`)?.focus();
       };
       g.addEventListener('click', pick);
@@ -622,6 +726,18 @@
     if (col && window.ResizeObserver) { feedObserver = new ResizeObserver(fitFeed); feedObserver.observe(col); }
   }
 
+  const nodeLabel = (id) => state.api.live.trail(id).at(-1)?.label;
+  // Show a node from anywhere (backgrounder chips, lists): a topic zooms in;
+  // a story is picked on its topic's map (zooming there first if needed).
+  function pickNode(id) {
+    if (topicOf(id)) { go(id); return; }
+    const t = topics().find((x) => x.stories.includes(id));
+    const home = t ? t.id : regionOf(state.view)?.id;
+    if (home && home !== state.view) { state.pending = id; go(home).then(() => { state.pending = null; }); return; }
+    state.area = id; refresh();
+    document.querySelector('.map')?.scrollIntoView({ behavior: reduceMotion() ? 'auto' : 'smooth', block: 'center' });
+  }
+
   function refresh() {
     syncUrl();
     state.data = state.api.live.view({ now: new Date(), windowHours: HOURS[state.window], region: state.view });
@@ -634,7 +750,7 @@
       const bgLoad = fetch('backgrounders.json').then((r) => (r.ok ? r.json() : null)).catch(() => null);
       await state.api.live.load();
       state.bg = await bgLoad;
-      if (!regions().some((r) => r.id === state.view)) state.view = 'world';
+      if (!validView(state.view)) state.view = 'world';
       refresh();
       const follow = () => state.api.follow({
         onPost: (post) => {
@@ -650,7 +766,7 @@
       let sub = follow();
       window.addEventListener('popstate', () => {
         const v = new URLSearchParams(location.search).get('view') || 'world';
-        go(regions().some((r) => r.id === v) ? v : 'world', { push: false });
+        go(validView(v) ? v : 'world', { push: false });
       });
       setInterval(refresh, 60_000); // keep "x min ago" and the window current
       let rt; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(render, 150); });

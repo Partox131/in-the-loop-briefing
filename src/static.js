@@ -10,17 +10,17 @@
 // as the fallback (src/snapshot.js). Add ?direct=1 to the URL to skip the
 // server, or ?snapshot=<url> to try another one.
 
-import { BskyClient } from './bsky.js?v=eec7a70b5d';
-import { buildBrief } from './brief.js?v=eec7a70b5d';
-import { DEMO_VOICES, demoFetch } from './demo.js?v=eec7a70b5d';
-import { project } from './geo.js?v=eec7a70b5d';
-import { makeHierarchy } from './hierarchy.js?v=eec7a70b5d';
-import { subscribePosts } from './jetstream.js?v=eec7a70b5d';
-import { makeLive } from './live.js?v=eec7a70b5d';
-import { newsPosts } from './news.js?v=eec7a70b5d';
-import { SnapshotClient } from './snapshot.js?v=eec7a70b5d';
-import { makeVoice } from './voices.js?v=eec7a70b5d';
-import { briefView } from './view.js?v=eec7a70b5d';
+import { BskyClient } from './bsky.js?v=72b3fdad1a';
+import { buildBrief } from './brief.js?v=72b3fdad1a';
+import { DEMO_VOICES, demoFetch } from './demo.js?v=72b3fdad1a';
+import { project } from './geo.js?v=72b3fdad1a';
+import { makeHierarchy } from './hierarchy.js?v=72b3fdad1a';
+import { subscribePosts } from './jetstream.js?v=72b3fdad1a';
+import { makeLive } from './live.js?v=72b3fdad1a';
+import { newsPosts } from './news.js?v=72b3fdad1a';
+import { SnapshotClient } from './snapshot.js?v=72b3fdad1a';
+import { makeVoice } from './voices.js?v=72b3fdad1a';
+import { briefView } from './view.js?v=72b3fdad1a';
 
 const SINCE_HOURS = { '6h': 6, '12h': 12, '24h': 24, '48h': 48, '7d': 168 };
 const CACHE_MS = 120_000;

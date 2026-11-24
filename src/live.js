@@ -6,10 +6,10 @@
 // up through Jetstream: a WebSocket of new posts filtered to the voices'
 // accounts, which works straight from the browser. Read-only, no login.
 
-import { buildBrief } from './brief.js?v=eec7a70b5d';
-import { rankPosts } from './rank.js?v=eec7a70b5d';
-import { buildStorylines } from './storylines.js?v=eec7a70b5d';
-import { byDid } from './voices.js?v=eec7a70b5d';
+import { buildBrief } from './brief.js?v=72b3fdad1a';
+import { rankPosts } from './rank.js?v=72b3fdad1a';
+import { buildStorylines } from './storylines.js?v=72b3fdad1a';
+import { byDid } from './voices.js?v=72b3fdad1a';
 
 const HOUR = 3_600_000;
 
@@ -25,6 +25,57 @@ export function placeOf(h, topicId, scope) {
     queue.push(...h.get(id).parents);
   }
   return null;
+}
+
+/** How many posts name each of a node's spots (cities); only the ones named. */
+export function spotCounts(n, posts) {
+  if (!n.spots?.length) return [];
+  return n.spots
+    .map((s) => ({
+      name: s.name,
+      place: { lon: s.lon, lat: s.lat },
+      count: posts.filter((p) => {
+        const text = `${p.linkTitle || ''} ${p.text || ''}`.toLowerCase();
+        const tags = new Set((p.tags || []).map((t) => t.toLowerCase()));
+        return s.test.some((t) => t(text, tags));
+      }).length,
+    }))
+    .filter((s) => s.count)
+    .sort((a, b) => b.count - a.count);
+}
+
+/** The nodes drawn as bubbles when a node is on screen: its children that have a place. */
+export function mapChildren(h, node) {
+  return h.children(node).filter((id) => h.get(id).place);
+}
+
+/** Which of `node`'s bubbles a topic rolls up to (itself or the child it sits under), or null. */
+export function childOf(h, topicId, node) {
+  const kids = mapChildren(h, node);
+  if (kids.includes(topicId)) return topicId;
+  return kids.find((k) => h.descendants(k).includes(topicId)) || null;
+}
+
+/**
+ * Broad topics: a region's bubbles that hold stories of their own ("War in
+ * Iran" holds "Strait of Hormuz"). Clicking one zooms in to its stories; a
+ * bubble without stories (Syria) is a story itself.
+ */
+export function isTopic(h, id) {
+  if (!h.nodes.has(id)) return false;
+  const n = h.get(id);
+  return n.parents.some((p) => h.get(p).map) && mapChildren(h, id).length > 0;
+}
+
+/** Where a node sits: its region and, for a story, its broad topic. */
+export function trail(h, id) {
+  if (!h.nodes.has(id)) return [];
+  const out = [];
+  for (let n = h.get(id); n; n = n.parents.length ? h.get(n.parents[0]) : null) {
+    out.unshift({ id: n.id, label: n.label });
+    if (n.map) break;
+  }
+  return out[0] && h.get(out[0].id).map ? out : [];
 }
 
 /** Mostly confirmed, mostly single-source, or contested: by share of posts. */
@@ -66,8 +117,6 @@ function postLine(p, h) {
  */
 export function liveView({ posts, hierarchy: h, node, now, windowHours = 1, lookbackHours = 24 }) {
   const scope = new Set([node, ...h.descendants(node)]);
-  // The node itself may have a place (for the world map); here only what's under it counts.
-  const under = new Set(h.descendants(node));
   const t = now.getTime();
   const winStart = t - windowHours * HOUR;
   const lookStart = t - lookbackHours * HOUR;
@@ -76,12 +125,14 @@ export function liveView({ posts, hierarchy: h, node, now, windowHours = 1, look
     const at = Date.parse(p.createdAt);
     if (!(at >= lookStart && at <= t + 5 * 60_000)) continue;
     if (!scope.has(p.topicId)) continue;
-    const place = placeOf(h, p.topicId, under) || 'other';
+    // One bubble per child of the node: a region shows its broad topics,
+    // a broad topic its stories. Posts about the node itself go to "other".
+    const place = childOf(h, p.topicId, node) || 'other';
     if (!byPlace.has(place)) byPlace.set(place, []);
     byPlace.get(place).push(p);
   }
 
-  const places = [...under].filter((id) => h.get(id).place);
+  const places = mapChildren(h, node);
   const areas = places.map((id) => {
     const all = byPlace.get(id) || [];
     const recent = all.filter((p) => Date.parse(p.createdAt) >= winStart);
@@ -93,7 +144,11 @@ export function liveView({ posts, hierarchy: h, node, now, windowHours = 1, look
     return {
       id,
       label: n.label,
+      about: n.about,
       place: n.place,
+      // a broad topic: clicking zooms in to its stories
+      topic: isTopic(h, id),
+      stories: mapChildren(h, id).length,
       count: recent.length,
       perHour: Math.round(perHour * 10) / 10,
       usualPerHour: Math.round(usual * 10) / 10,
@@ -102,6 +157,8 @@ export function liveView({ posts, hierarchy: h, node, now, windowHours = 1, look
       status: overallStatus(stories),
       voices: new Set(recent.filter((p) => p.voice).map((p) => p.voice.affiliation)).size,
       latest: recent.length ? recent.map((p) => p.createdAt).sort().at(-1) : null,
+      // Cities this story spans, with how many of its posts name each one.
+      spots: spotCounts(n, recent),
       storylines: stories.slice(0, 3).map((s) => ({
         status: s.status,
         text: s.lead.text,
@@ -122,11 +179,12 @@ export function liveView({ posts, hierarchy: h, node, now, windowHours = 1, look
     .filter((p) => scope.has(p.topicId) && Date.parse(p.createdAt) >= lookStart)
     .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))
     .slice(0, 30)
-    .map((p) => ({ ...postLine(p, h), area: placeOf(h, p.topicId, under) }));
+    .map((p) => ({ ...postLine(p, h), area: childOf(h, p.topicId, node) }));
 
   return {
     generatedAt: now.toISOString(),
-    node: { id: node, label: h.get(node).label },
+    node: { id: node, label: h.get(node).label, about: h.get(node).about, topic: isTopic(h, node) },
+    trail: trail(h, node),
     windowHours,
     areas: areas.sort((a, b) => b.count - a.count),
     other: (byPlace.get('other') || []).filter((p) => Date.parse(p.createdAt) >= winStart).length,
@@ -316,10 +374,20 @@ export function makeLive({ client, hierarchy: h, voices, node = 'geopolitics', l
     },
     /** Regions with a map, for the view switcher. */
     regions: () => regionsOf(h, node).map((id) => ({ id, label: h.get(id).label, map: h.get(id).map })),
-    /** region: a region node id, or "world" for one bubble per region. */
+    /** Broad topics in a region, with their stories (for links and checking URLs). */
+    topics: () => regionsOf(h, node).flatMap((r) => mapChildren(h, r).filter((id) => isTopic(h, id))
+      .map((id) => ({ id, label: h.get(id).label, region: r, stories: mapChildren(h, id) }))),
+    /** Region > topic > story for a node, for breadcrumbs. */
+    trail: (id) => trail(h, id),
+    /** Lon/lat of a node on the map, or null. */
+    placeOf: (id) => (h.nodes.has(id) ? h.get(id).place : null),
+    /**
+     * region: a region node id, a broad topic id (one bubble per story),
+     * or "world" for one bubble per region.
+     */
     view({ now = new Date(), windowHours = 1, region = 'world' } = {}) {
       const args = { posts, hierarchy: h, now, windowHours, lookbackHours };
-      const world = region === 'world' || !h.nodes.has(region);
+      const world = region === 'world' || !h.nodes.has(region) || !(h.get(region).map || isTopic(h, region));
       const v = world ? worldView({ ...args, node }) : liveView({ ...args, node: region });
       const summary = world ? null : regionSummary({ posts, hierarchy: h, node: region, now, lookbackHours });
       return { ...v, summary, ...meta };

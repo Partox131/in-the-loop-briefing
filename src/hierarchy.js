@@ -6,7 +6,7 @@
 // it, but higher nodes use a longer time window and only surface the top few
 // items per child. See docs/design/topic-tracking.md.
 
-import { compileMatcher, compileTerm, makeTopic } from './topic.js?v=eec7a70b5d';
+import { compileMatcher, compileTerm, makeTopic } from './topic.js?v=72b3fdad1a';
 
 /**
  * @typedef {Object} TopicNode
@@ -30,7 +30,11 @@ export function makeHierarchy(spec) {
     // gate: terms a post must also contain to count anywhere under this node
     // (Geopolitics uses it so "Taiwan" film-award news stays off the map).
     const gate = n.gate?.length ? n.gate.map(compileTerm) : null;
-    nodes.set(id, { id, label: n.label || id, parents, topic, gate, lenses: n.lenses || {}, place: n.place || null, map: n.map || null });
+    // spots: the cities a story spans (strikes inside Russia hit many), each a
+    // small dot on the map when posts name it: { name, lon, lat, terms }.
+    const spots = (n.spots || []).map((x) => ({ name: x.name, lon: x.lon, lat: x.lat, test: (x.terms || [x.name]).map(compileTerm) }));
+    // about: one hand-written line saying what a topic or story is (shown on the map and story page).
+    nodes.set(id, { id, label: n.label || id, about: n.about || '', spots, parents, topic, gate, lenses: n.lenses || {}, place: n.place || null, map: n.map || null });
   }
   const children = new Map([...nodes.keys()].map((id) => [id, []]));
   for (const n of nodes.values()) {
