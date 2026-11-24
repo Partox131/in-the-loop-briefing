@@ -1,7 +1,8 @@
 // Turn a brief (see brief.js) into the JSON the briefing web page renders.
 // Kept separate from the server so it's easy to test and to reuse.
 
-import { TIER_NAME } from './voices.js?v=eec7a70b5d';
+import { isTopic, trail } from './live.js?v=72b3fdad1a';
+import { TIER_NAME } from './voices.js?v=72b3fdad1a';
 
 const HOUR = 3_600_000;
 
@@ -105,10 +106,25 @@ export function briefView(brief, h, { now = new Date() } = {}) {
     disagreements: s.disagreements.map(disagreementView),
     related: s.posts.slice(1, 4).map(postView),
   }));
+  // Where the node sits on the live map: region > broad topic > story.
+  const onMap = trail(h, id);
+  const kind = !onMap.length ? null : onMap.length === 1 ? 'region' : isTopic(h, id) ? 'topic' : 'story';
+  const confirmed = stories.filter((s) => s.status === 'corroborated' || s.status === 'official').length;
   return {
     generatedAt: now.toISOString(),
     since: brief.since,
-    node: { id, label: brief.node.label, path: brief.path },
+    node: { id, label: brief.node.label, path: brief.path, about: h.get(id).about || '', kind },
+    // The live map view to go back to, and the bubble to pick there.
+    map: !kind ? null : kind === 'story' ? { view: onMap.at(-2).id, area: id } : { view: id, area: null },
+    // "What changed", built from the data (no AI).
+    recap: {
+      updates: stories.length,
+      confirmed,
+      disputed: stories.filter((s) => s.status === 'disputed').length,
+      sources: new Set(stories.flatMap((s) => s.sources.map((x) => x.affiliation))).size,
+      latest: stories.length ? stories.map((s) => s.lastSeen).sort().at(-1) : null,
+      top: [...stories].sort((a, b) => b.sources.length - a.sources.length || b.postCount - a.postCount)[0]?.lead.text || null,
+    },
     crumbs,
     parent: crumbs.length > 1 ? crumbs.at(-2) : null,
     children: h.children(id).map((c) => ({ id: c, label: h.get(c).label })),

@@ -54,6 +54,9 @@
   .dial .big { font: 800 64px var(--display); fill: var(--ink); }
   h1 { margin: 0; font: 800 clamp(48px, 7vw, 80px)/1 var(--display); letter-spacing: -0.03em; }
   .sub { margin: 14px 0 0; color: var(--muted); font-size: 17px; max-width: 60ch; }
+  .kind { margin: 0 0 6px; font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--loop); }
+  .about { margin: 12px 0 0; font-size: 19px; max-width: 56ch; color: var(--ink); }
+  .recap { margin: 12px 0 0; font-size: 16px; max-width: 64ch; padding: 10px 14px; border-left: 3px solid var(--loop); background: color-mix(in srgb, var(--loop) 6%, transparent); border-radius: 0 10px 10px 0; }
   .sub a { color: inherit; }
   .since { margin-top: 26px; max-width: 640px; }
   .since h2 { margin: 0 0 12px; font-size: 15px; font-weight: 600; color: var(--muted); }
@@ -135,7 +138,7 @@
 </head>
 <body>
 <div id="app"><p class="loading">Loading the latest…</p></div>
-<script>window.itlSearch = location.search; window.itlStatic = import('./src/static.js?v=eec7a70b5d').then((m) => m.init({ search: window.itlSearch }));</script>
+<script>window.itlSearch = location.search; window.itlStatic = import('./src/static.js?v=72b3fdad1a').then((m) => m.init({ search: window.itlSearch }));</script>
 <script>
 (() => {
   const params = new URLSearchParams(location.search);
@@ -302,6 +305,26 @@
     </aside>`;
   }
 
+  // Back to the live map, on the view this page came from (story picked).
+  function mapHref(d) {
+    const q = new URLSearchParams();
+    if (d.map) { q.set('view', d.map.view); if (d.map.area) q.set('area', d.map.area); }
+    if (state.demo) q.set('demo', '1');
+    return `index.html${q.size ? `?${q}` : ''}`;
+  }
+
+  // What changed, from the data: no AI. An AI paragraph can sit above it later.
+  function recapLine(d) {
+    const r = d.recap;
+    if (!r || !d.node.kind) return '';
+    if (!r.updates) return `<p class="recap">Nothing new in the last ${esc(state.since)}.</p>`;
+    const parts = [`<strong>${plural(r.updates, 'update')}</strong> in the last ${esc(state.since)} from ${plural(r.sources, 'source')}`];
+    if (r.confirmed) parts.push(`${r.confirmed} confirmed by 2+ sources`);
+    if (r.disputed) parts.push(`${r.disputed} disputed`);
+    if (r.latest) parts.push(`latest ${esc(ago(r.latest))}`);
+    return `<p class="recap">${parts.join(', ')}.${r.top ? ` Most covered: “${esc(oneLine(r.top, 160))}”` : ''}</p>`;
+  }
+
   function spikeLine(d) {
     const recent = d.activity.slice(-4).reduce((a, b) => a + b.count, 0) / 4;
     const before = d.activity.slice(0, -4).reduce((a, b) => a + b.count, 0) / Math.max(1, d.activity.length - 4);
@@ -323,21 +346,24 @@
         <div style="display:flex;flex-wrap:wrap;gap:12px 32px;align-items:center">
           <a class="brand" href="index.html${state.demo ? '?demo=1' : ''}" title="Go to the home page"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="10" fill="none" stroke="var(--track)" stroke-width="4"/><path d="M14 4a10 10 0 0 1 9.5 13" fill="none" stroke="var(--loop)" stroke-width="4" stroke-linecap="round"/></svg>in the loop</a>
           <nav class="crumbs" aria-label="Topic path">${crumbs}</nav>
-          ${window.itlStatic ? `<a class="backlink" href="index.html${state.demo ? '?demo=1' : ''}">← Live map</a>` : ''}
+          ${window.itlStatic ? `<a class="backlink" href="${mapHref(d)}">← ${d.map ? 'Back to the map' : 'Live map'}</a>` : ''}
         </div>
         <div class="seg" role="group" aria-label="Time window">${WINDOWS.map((w) => `<button data-since="${w}" aria-pressed="${w === state.since}">${w}</button>`).join('')}</div>
       </header>
       <section class="hero">
         ${dial(d, c)}
         <div>
+          ${d.node.kind ? `<p class="kind">${d.node.kind === 'story' ? `Story · ${esc(d.crumbs.at(-2)?.label || '')}` : d.node.kind === 'topic' ? 'Topic' : 'Region'}</p>` : ''}
           <h1>${esc(d.node.label)}</h1>
+          ${d.node.about ? `<p class="about">${esc(d.node.about)}</p>` : ''}
+          ${recapLine(d)}
           <p class="sub">${spikeLine(d)} Following ${plural(d.stats.voices, 'Bluesky voice')}${d.stats.articles ? ` and ${plural(d.stats.articles, 'news article')} from ${plural(d.stats.outlets, 'outlet')}` : ''}, updated ${esc(ago(d.generatedAt))}.${broader}${narrower}</p>
           ${sinceList(d, c)}
         </div>
       </section>
       <main>
         <div class="col">
-          <div class="listhead"><h2>Storylines</h2><div class="lenses" role="group" aria-label="Lens">${LENSES.map(([k, l]) => `<button data-lens="${k}" aria-pressed="${k === state.lens}">${l}</button>`).join('')}</div></div>
+          <div class="listhead"><h2>${d.node.kind === 'story' ? 'Updates in this story' : 'Storylines'}</h2><div class="lenses" role="group" aria-label="Lens">${LENSES.map(([k, l]) => `<button data-lens="${k}" aria-pressed="${k === state.lens}">${l}</button>`).join('')}</div></div>
           ${visible.length ? visible.map((s) => story(s, !seen || !seen.status[s.id])).join('') : '<p class="muted" style="padding:28px 0">No storylines for this lens in this window.</p>'}
           ${d.missingVoices.length ? `<p class="notes">Voices not found on Bluesky: ${esc(d.missingVoices.join(', '))}</p>` : ''}
           ${d.errors.length ? `<details class="notes"><summary>${plural(d.errors.length, 'warning')}</summary><ul>${d.errors.map((e) => `<li>${esc(e)}</li>`).join('')}</ul></details>` : ''}

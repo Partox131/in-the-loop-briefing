@@ -21,42 +21,72 @@
   },
   "hormuz": {
     "label": "Strait of Hormuz",
-    "parents": ["middle-east", "oil"],
+    "about": "Iran's threats to the shipping lane that carries about a fifth of the world's oil, and the tankers, navies and prices caught up in it.",
+    "parents": ["iran-war", "oil"],
     "include": ["hormuz", "strait of hormuz", "#Hormuz", "هرمز"],
     "exclude": [],
     "place": {"lon": 56.4, "lat": 26.5}
   },
   "iran-war": {
-    "label": "Iran war",
+    "label": "War in Iran",
+    "about": "The war between Israel, the United States and Iran, and the fighting it pulls in around the region.",
     "parents": ["middle-east", "oil"],
     "include": ["iran", "iranian", "tehran", "irgc", "khamenei", "fordow", "natanz", "isfahan", "hormuz", "#Iran", "#IranWar", "ایران", "تهران", "איראן", "إيران"],
     "require": ["war", "strike", "strikes", "struck", "attack", "attacks", "missile", "missiles", "drone", "drones", "airstrike", "ceasefire", "retaliation", "retaliate", "escalation", "bombing", "military", "nuclear", "#IranWar", "جنگ", "حمله", "מלחמה", "תקיפה", "حرب", "هجوم"],
     "exclude": ["world cup", "football", "#nsfw"],
     "place": {"lon": 53.7, "lat": 32.4}
   },
+  "iran-strikes": {
+    "label": "Strikes on Iranian sites",
+    "about": "Israeli and US strikes on Iran's nuclear sites, bases and cities, and the damage they do.",
+    "parent": "iran-war",
+    "include": ["isfahan", "fordow", "natanz", "bushehr", "tabriz", "shiraz", "kermanshah", "arak", "bandar abbas", "nuclear site", "nuclear sites", "nuclear facility", "nuclear facilities", "اصفهان", "فردو", "نطنز", "بوشهر"],
+    "require": ["strike", "strikes", "struck", "attack", "attacks", "attacked", "missile", "missiles", "drone", "drones", "airstrike", "airstrikes", "bombing", "bombed", "explosion", "explosions", "damage", "damaged", "حمله", "انفجار"],
+    "exclude": [],
+    "spots": [
+      {"name": "Isfahan", "lon": 51.67, "lat": 32.65, "terms": ["isfahan", "اصفهان"]},
+      {"name": "Natanz", "lon": 51.92, "lat": 33.72, "terms": ["natanz", "نطنز"]},
+      {"name": "Fordow", "lon": 50.99, "lat": 34.88, "terms": ["fordow", "فردو"]},
+      {"name": "Bushehr", "lon": 50.84, "lat": 28.92, "terms": ["bushehr", "بوشهر"]},
+      {"name": "Tabriz", "lon": 46.29, "lat": 38.08, "terms": ["tabriz"]},
+      {"name": "Shiraz", "lon": 52.53, "lat": 29.59, "terms": ["shiraz"]},
+      {"name": "Kermanshah", "lon": 47.06, "lat": 34.31, "terms": ["kermanshah"]}
+    ],
+    "place": {"lon": 51.7, "lat": 33.7}
+  },
+  "israel-gaza": {
+    "label": "Israel and Gaza",
+    "about": "Israel's war with Hamas in Gaza, the West Bank, and the fighting with Hezbollah in Lebanon.",
+    "parent": "middle-east",
+    "place": {"lon": 35.0, "lat": 32.2}
+  },
   "gaza": {
     "label": "Gaza",
-    "parent": "middle-east",
+    "about": "The war in Gaza, the ceasefire and the aid getting in, or not.",
+    "parent": "israel-gaza",
     "include": ["gaza", "gazan", "gazans", "hamas", "rafah", "khan younis", "deir al-balah", "#Gaza", "غزة", "עזה"],
     "exclude": [],
     "place": {"lon": 34.4, "lat": 31.4}
   },
   "west-bank": {
     "label": "West Bank",
-    "parent": "middle-east",
+    "about": "Raids, settler attacks and arrests in the occupied West Bank.",
+    "parent": "israel-gaza",
     "include": ["west bank", "jenin", "nablus", "ramallah", "hebron", "tulkarm", "#WestBank", "الضفة الغربية"],
     "exclude": [],
     "place": {"lon": 35.25, "lat": 32.0}
   },
   "lebanon": {
     "label": "Lebanon",
-    "parent": "middle-east",
+    "about": "Israel's strikes on Hezbollah in Lebanon and the fragile ceasefire there.",
+    "parent": "israel-gaza",
     "include": ["lebanon", "lebanese", "hezbollah", "beirut", "litani", "#Lebanon", "لبنان", "حزب الله", "לבנון", "חיזבאללה"],
     "exclude": [],
     "place": {"lon": 35.9, "lat": 33.9}
   },
   "syria": {
     "label": "Syria",
+    "about": "Syria after Assad: the new government, Israeli strikes and fighting between armed groups.",
     "parent": "middle-east",
     "include": ["syria", "syrian", "damascus", "aleppo", "idlib", "homs", "latakia", "#Syria", "سوريا", "סוריה"],
     "exclude": [],
@@ -64,13 +94,15 @@
   },
   "iraq": {
     "label": "Iraq",
-    "parent": "middle-east",
+    "about": "Iran-backed militias in Iraq, their attacks and the strikes on them.",
+    "parent": "iran-war",
     "include": ["iraq", "iraqi", "baghdad", "erbil", "kataib hezbollah", "popular mobilization forces", "#Iraq", "العراق"],
     "exclude": [],
     "place": {"lon": 43.7, "lat": 33.2}
   },
   "red-sea": {
     "label": "Yemen and Red Sea",
+    "about": "The Houthis in Yemen, their attacks on ships and Israel, and the strikes on them.",
     "parent": "middle-east",
     "include": ["red sea", "houthi", "houthis", "yemen", "yemeni", "sanaa", "hodeidah", "bab el-mandeb", "bab al-mandab", "#Yemen", "اليمن", "الحوثي"],
     "exclude": ["red sea diving"],
@@ -84,22 +116,45 @@
   },
   "ukraine-front": {
     "label": "Front line",
+    "about": "The ground war in eastern and southern Ukraine: who is advancing where.",
     "parent": "ukraine-war",
     "include": ["front line", "frontline", "pokrovsk", "kostiantynivka", "myrnohrad", "huliaipole", "zaporizhzhia", "donetsk", "donbas", "kupiansk", "siversk", "kramatorsk", "sloviansk", "lyman", "покровськ*", "костянтинівк*", "мирноград*", "гуляйпол*", "запоріж*", "донеччин*", "донецьк*", "донбас*", "куп'янськ*", "куп’янськ*", "сіверськ*", "краматорськ*", "слов'янськ*", "слов’янськ*", "лиман*"],
     "require": ["ukraine", "ukrainian", "russia", "russian", "drone", "drones", "troops", "advance", "advances", "assault", "offensive", "shelling", "killed", "штурм*", "атак*", "обстріл*", "наступальн*", "окупант*", "ворог*", "бої", "боїв", "просув*", "дрон*", "бпла", "загибл*", "поранен*"],
     "exclude": [],
+    "spots": [
+      {"name": "Pokrovsk", "lon": 37.18, "lat": 48.28, "terms": ["pokrovsk", "покровськ*"]},
+      {"name": "Kostiantynivka", "lon": 37.7, "lat": 48.53, "terms": ["kostiantynivka", "костянтинівк*"]},
+      {"name": "Kramatorsk", "lon": 37.56, "lat": 48.72, "terms": ["kramatorsk", "краматорськ*"]},
+      {"name": "Siversk", "lon": 38.1, "lat": 48.87, "terms": ["siversk", "сіверськ*"]},
+      {"name": "Lyman", "lon": 37.8, "lat": 48.99, "terms": ["lyman", "лиман*"]},
+      {"name": "Kupiansk", "lon": 37.61, "lat": 49.71, "terms": ["kupiansk", "куп'янськ*", "куп’янськ*"]},
+      {"name": "Huliaipole", "lon": 36.26, "lat": 47.66, "terms": ["huliaipole", "гуляйпол*"]}
+    ],
     "place": {"lon": 37.6, "lat": 48.2}
   },
   "ukraine-cities": {
     "label": "Strikes on Ukrainian cities",
+    "about": "Russian missile and drone attacks on Ukrainian cities and the power grid.",
     "parent": "ukraine-war",
     "include": ["kyiv", "kharkiv", "dnipro", "lviv", "kryvyi rih", "sumy", "chernihiv", "power grid", "blackout", "blackouts", "energy infrastructure", "київ*", "києв*", "харків*", "дніпр*", "львів*", "одес*", "кривий ріг", "кривого рогу", "сум*", "чернігів*", "енергетик*", "енергосистем*", "знеструмлен*", "відключен* світла"],
     "require": ["strike", "strikes", "attack", "attacks", "missile", "missiles", "drone", "drones", "ballistic", "explosion", "explosions", "shelling", "killed", "injured", "air raid", "outage", "outages", "blackout", "blackouts", "атак*", "удар*", "ракет*", "дрон*", "бпла", "шахед*", "обстріл*", "вибух*", "загибл*", "загинув", "загинули", "поранен*", "тривог*", "знеструмлен*"],
     "exclude": [],
+    "spots": [
+      {"name": "Kyiv", "lon": 30.52, "lat": 50.45, "terms": ["kyiv", "київ*", "києв*"]},
+      {"name": "Kharkiv", "lon": 36.23, "lat": 49.99, "terms": ["kharkiv", "харків*"]},
+      {"name": "Dnipro", "lon": 35.05, "lat": 48.46, "terms": ["dnipro", "дніпр*"]},
+      {"name": "Lviv", "lon": 24.03, "lat": 49.84, "terms": ["lviv", "львів*"]},
+      {"name": "Odesa", "lon": 30.73, "lat": 46.48, "terms": ["odesa", "odessa", "одес*"]},
+      {"name": "Kryvyi Rih", "lon": 33.39, "lat": 47.91, "terms": ["kryvyi rih", "кривий ріг", "кривого рогу"]},
+      {"name": "Sumy", "lon": 34.8, "lat": 50.91, "terms": ["sumy", "суми", "сумах", "сумськ*", "сумщин*"]},
+      {"name": "Chernihiv", "lon": 31.29, "lat": 51.5, "terms": ["chernihiv", "чернігів*"]},
+      {"name": "Zaporizhzhia", "lon": 35.14, "lat": 47.84, "terms": ["zaporizhzhia", "запоріж*"]}
+    ],
     "place": {"lon": 30.5, "lat": 50.45}
   },
   "black-sea": {
     "label": "Black Sea and Crimea",
+    "about": "The fight at sea and in occupied Crimea: ships, ports and the Kerch bridge.",
     "parent": "ukraine-war",
     "include": ["black sea", "crimea", "crimean", "kerch", "sevastopol", "odesa", "odessa", "novorossiysk", "#Crimea", "чорн* мор*", "крим*", "керч*", "севастопол*"],
     "exclude": [],
@@ -107,14 +162,26 @@
   },
   "russia-strikes": {
     "label": "Strikes inside Russia",
+    "about": "Ukrainian drone and missile strikes on Russian refineries, bases and border regions.",
     "parent": "ukraine-war",
     "include": ["belgorod", "kursk", "bryansk", "ryazan", "saratov", "tuapse", "refinery", "refineries", "oil depot", "бєлгород*", "курськ*", "брянськ*", "рязан*", "саратов*", "туапсе", "нпз", "нафтобаз*"],
     "require": ["ukraine", "ukrainian", "drone", "drones", "missile", "missiles", "дрон*", "бпла", "ракет*", "удар*", "вибух*", "атак*"],
     "exclude": [],
+    "spots": [
+      {"name": "Belgorod", "lon": 36.6, "lat": 50.6, "terms": ["belgorod", "бєлгород*", "белгород*"]},
+      {"name": "Kursk", "lon": 36.19, "lat": 51.73, "terms": ["kursk", "курськ*", "курск*"]},
+      {"name": "Bryansk", "lon": 34.36, "lat": 53.25, "terms": ["bryansk", "брянськ*", "брянск*"]},
+      {"name": "Moscow", "lon": 37.62, "lat": 55.75, "terms": ["moscow", "москв*"]},
+      {"name": "Ryazan", "lon": 39.74, "lat": 54.63, "terms": ["ryazan", "рязан*"]},
+      {"name": "Saratov", "lon": 46.03, "lat": 51.53, "terms": ["saratov", "саратов*"]},
+      {"name": "Tuapse", "lon": 39.07, "lat": 44.1, "terms": ["tuapse", "туапсе"]},
+      {"name": "Voronezh", "lon": 39.2, "lat": 51.67, "terms": ["voronezh", "воронеж*"]}
+    ],
     "place": {"lon": 39.5, "lat": 53.5}
   },
   "ukraine-war": {
-    "label": "Ukraine war",
+    "label": "Ukraine–Russia war",
+    "about": "Russia's full-scale war on Ukraine, on the ground, in the air and at sea.",
     "parent": "eastern-europe",
     "include": ["ukraine", "ukrainian", "ukrainians", "zelensky", "zelenskyy", "#Ukraine", "#StandWithUkraine", "україна", "украина", "україн*", "зеленськ*", "зсу", "сили оборони", "окупант*", "рф", "росі*"],
     "exclude": ["eurovision"],
@@ -122,6 +189,7 @@
   },
   "baltic": {
     "label": "Baltic states and Baltic Sea",
+    "about": "Russian pressure on Estonia, Latvia and Lithuania: sabotage, cables, airspace.",
     "parent": "nato-east",
     "include": ["estonia", "estonian", "latvia", "latvian", "lithuania", "lithuanian", "baltic sea", "baltic states", "gulf of finland", "kaliningrad", "narva"],
     "require": ["russia", "russian", "nato", "drone", "drones", "sabotage", "cable", "cables", "spy", "spies", "plot", "airspace", "military", "troops", "missile", "missiles", "defence", "defense", "border", "shadow fleet", "hybrid"],
@@ -130,6 +198,7 @@
   },
   "poland": {
     "label": "Poland",
+    "about": "Drones, sabotage and the border with Belarus and Russia.",
     "parent": "nato-east",
     "include": ["poland", "polish", "warsaw", "rzeszow", "rzeszów"],
     "require": ["russia", "russian", "nato", "drone", "drones", "sabotage", "cable", "cables", "spy", "spies", "plot", "airspace", "military", "troops", "missile", "missiles", "defence", "defense", "border", "shadow fleet", "hybrid"],
@@ -138,6 +207,7 @@
   },
   "nordics": {
     "label": "Nordics",
+    "about": "Finland, Sweden, Norway and Denmark facing Russia: drones, cables and defence build-up.",
     "parent": "nato-east",
     "include": ["finland", "finnish", "sweden", "swedish", "norway", "norwegian", "denmark", "danish", "gotland", "bornholm"],
     "require": ["russia", "russian", "nato", "drone", "drones", "sabotage", "cable", "cables", "spy", "spies", "plot", "airspace", "military", "troops", "missile", "missiles", "defence", "defense", "border", "shadow fleet", "hybrid"],
@@ -146,6 +216,7 @@
   },
   "nato-east": {
     "label": "NATO's eastern flank",
+    "about": "How NATO countries bordering Russia are being tested, and how the alliance answers.",
     "parent": "eastern-europe",
     "include": ["nato", "eastern flank", "article 4", "article 5", "suwalki", "suwałki"],
     "exclude": [],
@@ -157,22 +228,31 @@
     "map": "east-asia",
     "place": {"lon": 118, "lat": 30}
   },
-  "taiwan": {
+  "china-taiwan": {
     "label": "China and Taiwan",
+    "about": "China's pressure on Taiwan, and the rivalry between Beijing and Washington around it.",
     "parent": "east-asia",
+    "place": {"lon": 119, "lat": 27.5}
+  },
+  "taiwan": {
+    "label": "Taiwan",
+    "about": "Chinese military drills around Taiwan and the island's politics and defence.",
+    "parent": "china-taiwan",
     "include": ["taiwan", "taiwanese", "taipei", "taiwan strait", "lai ching-te", "kuomintang", "kmt", "#Taiwan", "台灣", "台湾", "臺灣"],
     "exclude": [],
     "place": {"lon": 121, "lat": 23.7}
   },
   "us-china": {
     "label": "Beijing and US–China",
-    "parent": "east-asia",
+    "about": "Decisions in Beijing and the US–China rivalry: trade, tech and military contacts.",
+    "parent": "china-taiwan",
     "include": ["xi jinping", "beijing", "us-china", "u.s.-china", "china-us", "us–china", "pla", "people's liberation army", "chinese communist party", "ccp", "中国"],
     "exclude": [],
     "place": {"lon": 116.4, "lat": 39.9}
   },
   "south-china-sea": {
     "label": "South China Sea",
+    "about": "China's stand-offs with the Philippines and others over reefs and shoals.",
     "parent": "east-asia",
     "include": ["south china sea", "scarborough", "second thomas shoal", "spratly", "spratlys", "paracel", "paracels", "philippine coast guard"],
     "exclude": [],
