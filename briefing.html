@@ -12,7 +12,7 @@
     --bg: #F5F6F8; --raise: #FFFFFF; --ink: #1D2147; --muted: #5B6080; --line: #E2E5EF; --track: #E2E5EF;
     --loop: #3047D6; --on-loop: #FFFFFF; --bars: #B9C1E6;
     --reported: #8A5608; --reported-dot: #C27A10;
-    --confirmed: #0F6B5C; --disputed: #9B2C74; --new: #3047D6;
+    --confirmed: #0F6B5C; --disputed: #9B2C74; --new: #3047D6; --breaking: #C8102E;
     --warn: #8A5608; --banner-bg: #FBEFD8;
     --display: 'Bricolage Grotesque', 'Figtree', system-ui, sans-serif;
     --body: 'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -23,7 +23,7 @@
       --bg: #12142B; --raise: #1B1E3B; --ink: #E7E9F5; --muted: #A3A8C8; --line: #2C3056; --track: #2A2E52;
       --loop: #7C8FFF; --on-loop: #12142B; --bars: #4A5390;
       --reported: #F0C27A; --reported-dot: #E0A040;
-      --confirmed: #7FD6C2; --disputed: #F0A8D6; --new: #9DB0FF;
+      --confirmed: #7FD6C2; --disputed: #F0A8D6; --new: #9DB0FF; --breaking: #FF6B6B;
       --warn: #F0C27A; --banner-bg: #3A2E14;
       --r1: #7C8FFF; --r2: #7FD6C2; --r3: #E0A040; --r4: #F0A8D6; --r5: #A3A8C8; --r6: #C2CAFF;
     }
@@ -54,6 +54,7 @@
   .dial .big { font: 800 64px var(--display); fill: var(--ink); }
   h1 { margin: 0; font: 800 clamp(48px, 7vw, 80px)/1 var(--display); letter-spacing: -0.03em; }
   .sub { margin: 14px 0 0; color: var(--muted); font-size: 17px; max-width: 60ch; }
+  .breakingtag { display: inline-block; margin-bottom: 8px; padding: 2px 10px; border-radius: 999px; background: var(--breaking); color: #fff; font-size: 13px; font-weight: 700; letter-spacing: .04em; }
   .kind { margin: 0 0 6px; font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--loop); }
   .about { margin: 12px 0 0; font-size: 19px; max-width: 56ch; color: var(--ink); }
   .recap { margin: 12px 0 0; font-size: 16px; max-width: 64ch; padding: 10px 14px; border-left: 3px solid var(--loop); background: color-mix(in srgb, var(--loop) 6%, transparent); border-radius: 0 10px 10px 0; }
@@ -138,7 +139,7 @@
 </head>
 <body>
 <div id="app"><p class="loading">Loading the latest…</p></div>
-<script>window.itlSearch = location.search; window.itlStatic = import('./src/static.js?v=72b3fdad1a').then((m) => m.init({ search: window.itlSearch }));</script>
+<script>window.itlSearch = location.search; window.itlStatic = import('./src/static.js?v=8d51f892d0').then((m) => m.init({ search: window.itlSearch }));</script>
 <script>
 (() => {
   const params = new URLSearchParams(location.search);
@@ -277,7 +278,7 @@
       ? `<details><summary>${s.postCount - 1 > s.related.length ? `Top ${s.related.length} of ${s.postCount - 1} related posts` : plural(s.postCount - 1, 'related post')}</summary><div class="rel">${s.related.map((p) => `<div><strong>${esc(p.voice ? p.voice.name : '@' + p.handle)}</strong>${p.voice?.stateAffiliated ? stateTag(p.voice.country) : ''} <span class="muted">${esc(ago(p.createdAt))}</span><br>${esc(oneLine(p.text))} <a href="${safeUrl(p.url)}" target="_blank" rel="noopener">${p.telegram ? 'View on Telegram' : p.news ? 'Read article' : 'View post'}</a></div>`).join('')}</div></details>`
       : '';
     return `<article class="story">
-      <div><div class="state ${s.status}"><span class="dot ${s.status}"></span>${STATE_LABEL[s.status]}</div>${rail(s)}${isNew ? '<span class="newtag">New to you</span>' : ''}</div>
+      <div>${s.breaking ? `<span class="breakingtag" title="First reported under 3 hours ago, by ${s.breaking} independent outlets within 90 minutes">Breaking · ${plural(s.breaking, 'outlet')}</span>` : ''}<div class="state ${s.status}"><span class="dot ${s.status}"></span>${STATE_LABEL[s.status]}</div>${rail(s)}${isNew ? '<span class="newtag">New to you</span>' : ''}</div>
       <div>
         <h3><a href="${safeUrl(s.lead.url)}" target="_blank" rel="noopener">${esc(oneLine(s.lead.text, 280))}</a></h3>
         <p class="by">Led by ${who}, ${esc(ago(s.lead.createdAt))}${lift}. ${[s.postCount - s.articleCount ? plural(s.postCount - s.articleCount, 'post') : '', s.articleCount ? plural(s.articleCount, 'news article') : ''].filter(Boolean).join(' and ')} from ${plural(s.voiceCount, 'source')}.${topic}</p>

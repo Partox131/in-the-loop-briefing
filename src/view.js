@@ -1,8 +1,8 @@
 // Turn a brief (see brief.js) into the JSON the briefing web page renders.
 // Kept separate from the server so it's easy to test and to reuse.
 
-import { isTopic, trail } from './live.js?v=72b3fdad1a';
-import { TIER_NAME } from './voices.js?v=72b3fdad1a';
+import { breakingCount, isTopic, trail } from './live.js?v=8d51f892d0';
+import { TIER_NAME } from './voices.js?v=8d51f892d0';
 
 const HOUR = 3_600_000;
 
@@ -92,6 +92,8 @@ export function briefView(brief, h, { now = new Date() } = {}) {
     // Stable id for "since you last checked": the storyline's earliest post.
     id: [...s.posts].sort((a, b) => Date.parse(a.createdAt) - Date.parse(b.createdAt))[0].uri,
     status: s.status,
+    // outlets reporting it if it's breaking news right now, else 0
+    breaking: breakingCount(s, now),
     lead: postView(s.lead),
     topicId: s.lead.topicId,
     topicLabel: h.get(s.lead.topicId).label,
@@ -106,6 +108,8 @@ export function briefView(brief, h, { now = new Date() } = {}) {
     disagreements: s.disagreements.map(disagreementView),
     related: s.posts.slice(1, 4).map(postView),
   }));
+  // Breaking news goes first (stable: the rest keep their ranking).
+  stories.sort((a, b) => Number(b.breaking > 0) - Number(a.breaking > 0));
   // Where the node sits on the live map: region > broad topic > story.
   const onMap = trail(h, id);
   const kind = !onMap.length ? null : onMap.length === 1 ? 'region' : isTopic(h, id) ? 'topic' : 'story';
