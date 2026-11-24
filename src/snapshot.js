@@ -30,7 +30,13 @@ export const MAX_AGE_MS = 20 * 60_000;
  * @param {number} [o.perVoice]          newest posts kept per account
  * @param {object} [o.status]            worker health, shown for debugging
  */
-export function buildSnapshot({ posts, profiles, news, now, hours = 48, perVoice = 100, status = {} }) {
+/**
+ * Newest posts kept per voice: 48 hours of the busiest voice (Reuters posts
+ * ~250 a day on Bluesky), with room to spare. The pages ask for the same.
+ */
+export const KEEP_PER_VOICE = 600;
+
+export function buildSnapshot({ posts, profiles, news, now, hours = 48, perVoice = KEEP_PER_VOICE, status = {} }) {
   const cutoff = now.getTime() - hours * 3_600_000;
   const byDid = new Map();
   for (const p of posts) {

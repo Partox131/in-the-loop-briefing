@@ -12,11 +12,12 @@
 //                                                      ▼
 //                     breadth quota (fewer items per child higher up)
 
-import { ago, bold, cyan, dim, formatPost, green, magenta, yellow } from './format.js?v=8d51f892d0';
-import { applyQuota, rankPosts } from './rank.js?v=8d51f892d0';
-import { searchTopic } from './search.js?v=8d51f892d0';
-import { buildStorylines } from './storylines.js?v=8d51f892d0';
-import { byDid, resolveVoices, TIER_NAME, voicesFor } from './voices.js?v=8d51f892d0';
+import { ago, bold, cyan, dim, formatPost, green, magenta, yellow } from './format.js?v=58061ac813';
+import { applyQuota, rankPosts } from './rank.js?v=58061ac813';
+import { searchTopic } from './search.js?v=58061ac813';
+import { KEEP_PER_VOICE } from './snapshot.js?v=58061ac813';
+import { buildStorylines } from './storylines.js?v=58061ac813';
+import { byDid, resolveVoices, TIER_NAME, voicesFor } from './voices.js?v=58061ac813';
 
 /**
  * @param {object} o
@@ -29,7 +30,7 @@ import { byDid, resolveVoices, TIER_NAME, voicesFor } from './voices.js?v=8d51f8
  * @param {boolean} [o.search]   also pull the open conversation via search (default true)
  * @param {{posts: Array, voices: Map}} [o.news]  news articles as posts (see news.js newsPosts)
  */
-export async function buildBrief({ client, hierarchy: h, node, voices, since, now = new Date(), search = true, perVoice = 50, perTerm = 100, news }) {
+export async function buildBrief({ client, hierarchy: h, node, voices, since, now = new Date(), search = true, perVoice = KEEP_PER_VOICE, perTerm = 100, news }) {
   const breadth = h.breadth(node);
   const scope = new Set([node, ...h.descendants(node)]);
   const errors = [];
