@@ -20,6 +20,7 @@
     { "handle": "thejerusalempost.bsky.social", "name": "The Jerusalem Post", "tier": 1, "affiliation": "Jerusalem Post", "region": "Israel", "topics": ["middle-east"] },
     { "handle": "presstv.bsky.social", "name": "Press TV", "tier": 4, "affiliation": "Press TV", "region": "Iran", "stateAffiliated": true, "country": "IR", "topics": ["iran-war"] },
 
+    { "handle": "sewella.bsky.social", "name": "Abby Sewell (AP)", "tier": 2, "affiliation": "Associated Press", "region": "Lebanon", "topics": ["middle-east"] },
     { "handle": "lkrozen.bsky.social", "name": "Laura Rozen", "tier": 2, "affiliation": "Diplomatic (newsletter)", "region": "US", "topics": ["iran-war"] },
     { "handle": "shashj.bsky.social", "name": "Shashank Joshi", "tier": 2, "affiliation": "The Economist", "region": "UK", "topics": ["geopolitics"] },
 

@@ -6,10 +6,11 @@
 // up through Jetstream: a WebSocket of new posts filtered to the voices'
 // accounts, which works straight from the browser. Read-only, no login.
 
-import { buildBrief } from './brief.js?v=8d51f892d0';
-import { rankPosts } from './rank.js?v=8d51f892d0';
-import { buildStorylines } from './storylines.js?v=8d51f892d0';
-import { byDid } from './voices.js?v=8d51f892d0';
+import { buildBrief } from './brief.js?v=58061ac813';
+import { KEEP_PER_VOICE } from './snapshot.js?v=58061ac813';
+import { rankPosts } from './rank.js?v=58061ac813';
+import { buildStorylines } from './storylines.js?v=58061ac813';
+import { byDid } from './voices.js?v=58061ac813';
 
 const HOUR = 3_600_000;
 
@@ -398,7 +399,7 @@ export function makeLive({ client, hierarchy: h, voices, node = 'geopolitics', l
         now,
         since: new Date(now - lookbackHours * HOUR),
         search: false,
-        perVoice: 100,
+        perVoice: KEEP_PER_VOICE,
       });
       voiceIndex = byDid(brief.voices);
       const live = posts.filter((p) => p.source === 'live' && !brief.posts.some((q) => q.uri === p.uri));
