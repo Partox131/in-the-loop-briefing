@@ -266,6 +266,17 @@
   .arclabel { font-family: var(--body); font-size: 12px; font-weight: 700; fill: var(--loop); paint-order: stroke; stroke: var(--land-dim); stroke-linejoin: round; pointer-events: none; }
   /* On the world map: the way into US politics. */
   .portal { cursor: pointer; }
+  /* Geopolitics regions: their countries lift off the world map under the pointer. */
+  .lift { pointer-events: none; opacity: 0; transition: opacity .25s; }
+  .lift.on { opacity: 1; }
+  .lift .liftshadow { fill: #0A0B1C; opacity: .2; filter: blur(3px); }
+  .lift .liftside path { fill: color-mix(in srgb, var(--lc) 70%, #1D2147); stroke: color-mix(in srgb, var(--lc) 70%, #1D2147); stroke-width: .6; }
+  .lift .lifttop { transform: translateY(4px); transition: transform .4s cubic-bezier(.3, 1.5, .5, 1); }
+  .lift.on .lifttop { transform: translateY(-1px); }
+  .lift .liftface { fill: color-mix(in srgb, var(--lc) 22%, #FFFFFF); stroke: var(--lc); stroke-width: .9; stroke-linejoin: round; }
+  .map:not(.zoomed) .bubble { transform-box: fill-box; transform-origin: center; }
+  .map:not(.zoomed) .bubble .disc { transition: r .6s ease, transform .35s cubic-bezier(.3, 1.5, .5, 1), filter .35s; transform-box: fill-box; transform-origin: center; }
+  .map:not(.zoomed) .bubble:hover .disc, .map:not(.zoomed) .bubble:focus-visible .disc { transform: translateY(-4px); filter: drop-shadow(0 5px 4px rgba(10, 11, 28, .3)); fill-opacity: .15; }
   .portal .slabshadow { fill: #0A0B1C; opacity: .18; filter: blur(4px); transition: opacity .3s, transform .3s; }
   .portal .slabside { fill: color-mix(in srgb, var(--loop) 55%, #1D2147); stroke: color-mix(in srgb, var(--loop) 55%, #1D2147); stroke-width: .8; }
   .portal .slabtop { transition: transform .35s cubic-bezier(.3, 1.5, .5, 1); }
@@ -310,7 +321,7 @@
   @keyframes tourbar { from { transform: scaleX(0); } }
   .arrivewait { margin-top: 24px; }
   .arrivewait p { position: absolute; left: 0; right: 0; bottom: 12px; text-align: center; color: var(--muted); margin: 0; }
-  @media (prefers-reduced-motion: reduce) { .arc, .tourcap, .tourcap .bar2 i, .map.arrive .sculpt .sc, .map.arrive .portal .slabtop { animation: none; } .sculpt .sc, .portal .slabtop { transition: none; } }
+  @media (prefers-reduced-motion: reduce) { .arc, .tourcap, .tourcap .bar2 i, .map.arrive .sculpt .sc, .map.arrive .portal .slabtop { animation: none; } .sculpt .sc, .portal .slabtop, .lift, .lift .lifttop { transition: none; } }
   .leantag { font-size: 12px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 0 7px; white-space: nowrap; }
   .flag { width: 16px; height: 12px; border-radius: 2px; box-shadow: 0 0 0 1px color-mix(in srgb, currentColor 20%, transparent); object-fit: cover; flex: none; }
 </style>
@@ -592,9 +603,7 @@
     const bg = state.bg?.regions?.[regionOf(state.view)?.id];
     const cls = (name) => (bg?.focus?.includes(name) ? 'country focus' : bg?.watch?.includes(name) ? 'country watch' : 'country');
     const countries = baseShapes(m, cls, true);
-    const frames = mapId === 'world'
-      ? regions().map((r) => { const b = boxOf(r.id); return `<rect class="frame" data-frame="${esc(r.id)}" x="${b.x.toFixed(1)}" y="${b.y.toFixed(1)}" width="${b.w.toFixed(1)}" height="${b.h.toFixed(1)}" rx="6"/>`; }).join('')
-      : '';
+    const frames = mapId === 'world' ? regions().map((r) => lift(r, m, d) || (() => { const b = boxOf(r.id); return `<rect class="frame" data-frame="${esc(r.id)}" x="${b.x.toFixed(1)}" y="${b.y.toFixed(1)}" width="${b.w.toFixed(1)}" height="${b.h.toFixed(1)}" rx="6"/>`; })()).join('') : '';
     const extras = mapId === 'world' ? frames + portal() : m.city ? cityLabels(m, k, s) : graticule(m) + (bg?.labels || []).map((l) => {
       const [x, y] = state.api.project(m, l.lon, l.lat);
       return `<text class="clabel" x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="middle" style="font-size:${(l.size || 15) * Math.min(k, 1.6 * s)}px">${esc(l.text.toUpperCase())}</text>`;
@@ -703,6 +712,23 @@
   }
 
   // On the world map: the United States opens US politics (its own map).
+  // On the world map, pointing at a region lifts the countries at its heart
+  // and around it (backgrounders.json "focus" and "watch") off the map,
+  // tinted in the region's status colour, like the raised United States.
+  // Hidden until then. Russia stays flat: lifting it would light up all of
+  // Siberia for "Eastern Europe".
+  function lift(r, m, d) {
+    const bgr = state.bg?.regions?.[r.id];
+    const names = [...(bgr?.focus || []), ...(bgr?.watch || [])].filter((n) => n !== 'Russia');
+    const shapes = m.countries.filter((c) => names.includes(c.name));
+    if (!shapes.length) return '';
+    const a = d.areas.find((x) => x.id === r.id);
+    const c = COLOR[a?.count ? a.status : 'quiet'] || COLOR.reported;
+    const all = shapes.map((x) => x.d).join('');
+    const sides = [4, 3, 2, 1].map((y) => `<path d="${all}" transform="translate(0 ${y})"/>`).join('');
+    return `<g class="lift" data-frame="${esc(r.id)}" style="--lc:${c}" aria-hidden="true"><path class="liftshadow" d="${all}" transform="translate(2 7)"/><g class="liftside">${sides}</g><g class="lifttop"><path class="liftface" d="${all}"/></g></g>`;
+  }
+
   // US politics is its own section, so on the world map the United States
   // itself lifts off the map: a raised marble slab with its state lines and
   // the Capitol standing on it. It rises a little higher under the pointer.
@@ -1083,7 +1109,7 @@
       portalEl.addEventListener('click', open);
       portalEl.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
     }
-    const frame = (id, on) => app.querySelector(`.frame[data-frame="${CSS.escape(id)}"]`)?.classList.toggle('on', on);
+    const frame = (id, on) => app.querySelector(`[data-frame="${CSS.escape(id)}"]`)?.classList.toggle('on', on);
     app.querySelectorAll('[data-window]').forEach((b) => b.addEventListener('click', () => { state.window = b.dataset.window; refresh(); }));
     app.querySelectorAll('.bubble').forEach((g) => {
       const pick = () => {
