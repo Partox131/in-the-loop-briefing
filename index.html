@@ -18,9 +18,10 @@
 <meta name="twitter:title" content="In the Loop: what's moving around the world">
 <meta name="twitter:description" content="A live map of what credible voices and outlets are saying about geopolitics, US politics and Canadian politics: what's confirmed, what's disputed, and what changed.">
 <meta name="twitter:image" content="https://inthelooplive.com/og-image.png">
-<title>In the Loop</title>
+<title>In the Loop: live map of world news, US and Canadian politics</title>
 <script>if (/[?&](node|since)=/.test(location.search)) location.replace('briefing.html' + location.search + location.hash);</script>
 <script src="analytics.js?v=00b8c0f4b5"></script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://inthelooplive.com/#website","name":"In the Loop","url":"https://inthelooplive.com/","publisher":{"@id":"https://inthelooplive.com/#org"}},{"@type":"Organization","@id":"https://inthelooplive.com/#org","name":"In the Loop","url":"https://inthelooplive.com/","logo":"https://inthelooplive.com/og-image.png"}]}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -238,6 +239,9 @@
   .banner { background: var(--banner-bg); color: var(--reported); padding: 10px 40px; font-size: 14px; }
   .footnote { font-size: 14px; color: var(--muted); max-width: 80ch; margin: 18px 2px 0; }
   .loading { padding: 64px 32px; text-align: center; color: var(--muted); }
+  .crawl { max-width: 640px; margin: 0 auto; padding: 0 16px 48px; color: var(--muted); font-size: 14px; }
+  .crawl h1 { font-size: 18px; color: var(--ink); }
+  .crawl a { color: inherit; }
   @media (max-width: 640px) {
     .wrap { padding: 0 16px; }
     .banner { padding: 10px 16px; }
@@ -356,7 +360,13 @@
 </style>
 </head>
 <body>
-<div id="app"><p class="loading">Loading the live map…</p></div>
+<div id="app"><p class="loading">Loading the live map…</p>
+<!-- Plain text for search engines and crawlers that don't run JavaScript; the map replaces it. -->
+<div class="crawl">
+  <h1>In the Loop: what's moving around the world</h1>
+  <p>A live map of what credible outlets, reporters and analysts are saying about geopolitics, US politics and Canadian politics. Each story shows how many independent outlets carry it, whether it's confirmed or disputed, and what changed since you last looked. Sources include Bluesky, news outlets' feeds and official Telegram channels, refreshed every few minutes.</p>
+  <nav aria-label="Regions and segments"><a href="index.html?view=middle-east">Middle East: the war with Iran, Gaza and Lebanon</a> · <a href="index.html?view=eastern-europe">Eastern Europe: the war in Ukraine and NATO's eastern flank</a> · <a href="index.html?view=east-asia">East Asia: China and Taiwan</a> · <a href="index.html?segment=us">US politics</a> · <a href="index.html?segment=ca">Canadian politics</a> · <a href="briefing.html">Briefing</a></nav>
+</div></div>
 <script>window.itlSearch = location.search; window.itlLive = (demo, node) => import('./src/static.js?v=4841c59de7').then((m) => m.initLive({ demo, node, search: window.itlSearch }));</script>
 <script>
 (() => {
