@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>In the Loop</title>
 <script>if (/[?&](node|since)=/.test(location.search)) location.replace('briefing.html' + location.search + location.hash);</script>
+<script src="analytics.js?v=00b8c0f4b5"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -993,6 +994,7 @@
     await fly(from, to);
     state.view = to;
     state.arrive = true;
+    if (push) window.itlTrack?.('map_zoom', { from_view: from, to_view: to, view_kind: to === 'world' ? 'home' : topicOf(to) ? 'topic' : 'region' });
     if (state.pending) { state.area = state.pending; state.pending = null; }
     refresh();
     if (!state.tour) document.querySelector('.map')?.focus({ preventScroll: true });
@@ -1241,7 +1243,7 @@
       b.addEventListener('click', () => pickNode(b.dataset.pick));
       if (b.tagName === 'path') b.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pickNode(b.dataset.pick); } });
     });
-    app.querySelectorAll('[data-tour]').forEach((b) => b.addEventListener('click', (e) => { e.stopPropagation(); startTour(); }));
+    app.querySelectorAll('[data-tour]').forEach((b) => b.addEventListener('click', (e) => { e.stopPropagation(); window.itlTrack?.('tour_start', { trigger: 'button' }); startTour(); }));
     app.querySelector('.tourcap .next')?.addEventListener('click', (e) => { e.stopPropagation(); nextStop(); });
     app.querySelector('.tourcap .stop')?.addEventListener('click', (e) => { e.stopPropagation(); endTour(false); });
     app.querySelectorAll('.portal').forEach((portalEl) => {
@@ -1255,7 +1257,9 @@
       const pick = () => {
         const a = state.data.areas.find((x) => x.id === g.dataset.area);
         if (state.view === 'world' || a?.topic) { go(g.dataset.area); return; }
-        state.area = state.area === g.dataset.area ? null : g.dataset.area; refresh(); app.querySelector(`.bubble[data-area="${CSS.escape(g.dataset.area)}"]`)?.focus();
+        state.area = state.area === g.dataset.area ? null : g.dataset.area;
+        if (state.area) window.itlTrack?.('story_preview', { story: state.area, from_view: state.view });
+        refresh(); app.querySelector(`.bubble[data-area="${CSS.escape(g.dataset.area)}"]`)?.focus();
       };
       g.addEventListener('click', pick);
       for (const [ev, on] of [['mouseenter', true], ['mouseleave', false], ['focus', true], ['blur', false]]) g.addEventListener(ev, () => frame(g.dataset.area, on));
@@ -1291,7 +1295,9 @@
     if (home === SEG_NODE) home = 'world'; // a story right on the home map
     if (!home) return Promise.resolve();
     if (home !== state.view) { state.pending = id; return (go(home) || Promise.resolve()).then(() => { state.pending = null; }); }
-    state.area = id; refresh();
+    state.area = id;
+    if (!state.tour) window.itlTrack?.('story_preview', { story: id, from_view: state.view });
+    refresh();
     if (!state.tour) document.querySelector('.map')?.scrollIntoView({ behavior: reduceMotion() ? 'auto' : 'smooth', block: 'center' });
     return Promise.resolve();
   }
@@ -1366,6 +1372,7 @@
     if (key === SEG_KEY) { if (view !== state.view) await go(view, { push }); return; }
     endTour(false, true);
     const from = SEG_KEY, ready = segApi(key);
+    if (push) window.itlTrack?.('segment_switch', { from_segment: from || 'geopolitics', to_segment: key || 'geopolitics' });
     const el = document.querySelector('.map');
     state.area = null;
     if (el && !reduceMotion()) {
