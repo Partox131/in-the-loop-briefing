@@ -6,7 +6,7 @@
 // it, but higher nodes use a longer time window and only surface the top few
 // items per child. See docs/design/topic-tracking.md.
 
-import { compileMatcher, compileTerm, makeTopic } from './topic.js?v=be58a7d5f0';
+import { compileMatcher, compileTerm, makeTopic } from './topic.js?v=11e28f81b7';
 
 /**
  * @typedef {Object} TopicNode
@@ -33,8 +33,11 @@ export function makeHierarchy(spec) {
     // spots: the cities a story spans (strikes inside Russia hit many), each a
     // small dot on the map when posts name it: { name, lon, lat, terms }.
     const spots = (n.spots || []).map((x) => ({ name: x.name, lon: x.lon, lat: x.lat, test: (x.terms || [x.name]).map(compileTerm) }));
+    // stages: the steps an ongoing fight goes through (a lawsuit, a bill),
+    // each with the words reports use when it gets there: [{ label, terms }].
+    const stages = (n.stages || []).map((x) => ({ label: x.label, test: (x.terms || [x.label]).map(compileTerm) }));
     // about: one hand-written line saying what a topic or story is (shown on the map and story page).
-    nodes.set(id, { id, label: n.label || id, about: n.about || '', spots, parents, topic, gate, lenses: n.lenses || {}, place: n.place || null, map: n.map || null });
+    nodes.set(id, { id, label: n.label || id, about: n.about || '', spots, stages, parents, topic, gate, lenses: n.lenses || {}, place: n.place || null, map: n.map || null });
   }
   const children = new Map([...nodes.keys()].map((id) => [id, []]));
   for (const n of nodes.values()) {
@@ -100,8 +103,11 @@ export function makeHierarchy(spec) {
       const r = m(post);
       if (r.matched) hits.set(id, r.terms);
     }
+    // Stories before broad topics: "Senate confirms the Fed chair nominee"
+    // is about the nomination, not Congress in general. Otherwise file order.
     let out = [...hits.keys()]
       .filter((id) => !descendants(id).some((d) => hits.has(d)))
+      .sort((a, b) => Number(children.get(a).length > 0) - Number(children.get(b).length > 0))
       .map((id) => ({ id, terms: hits.get(id) }));
     if (root === undefined) return out;
     out = out.filter((m) => under(m.id, root));

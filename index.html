@@ -220,38 +220,96 @@
     .wrap { padding: 0 16px; }
     .banner { padding: 10px 16px; }
     .status { margin-left: 0; }
-    .cartouche { top: 8px; left: 8px; padding: 4px 10px 4px 4px; gap: 8px; }
+    /* Under the map on a phone, so it never hides a bubble. */
+    .cartouche { position: static; margin: 8px; max-width: none; padding: 4px 10px 4px 4px; gap: 8px; }
     .cartouche small, .cartouche .kick { display: none; }
     .cartouche strong { font-size: 16px; }
   }
   .statetag { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
-  /* US politics: arenas as a board of cards (the arena map comes next). */
+  /* Segment switch: Geopolitics or US politics. */
   .segswitch { display: inline-flex; }
   .segswitch a { text-decoration: none; border: 0; color: var(--muted); padding: 8px 14px; min-height: 40px; border-radius: 999px; font-size: 15px; white-space: nowrap; display: inline-flex; align-items: center; }
   .segswitch a[aria-current="page"] { background: var(--ink); color: var(--bg); font-weight: 600; }
-  .board { list-style: none; margin: 0; padding: 14px; display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; background: var(--sea); border: 1px solid var(--line); border-radius: 16px; }
-  .board .card { width: 100%; height: 100%; text-align: left; font: inherit; color: var(--ink); background: var(--raise); border: 1px solid var(--line); border-left: 6px solid var(--st); border-radius: 12px; padding: 14px 16px; cursor: pointer; display: flex; flex-direction: column; gap: 6px; }
-  .board .card:hover, .board .card:focus-visible { border-color: var(--loop); border-left-color: var(--st); }
-  .board .card[aria-pressed="true"] { outline: 3px solid var(--loop); outline-offset: 1px; }
-  .board .card.hot { box-shadow: 0 0 0 3px color-mix(in srgb, var(--st) 35%, transparent); }
-  .board .card .name { font: 800 20px/1.15 var(--display); }
-  .board .card .num { font: 800 30px/1 var(--display); }
-  .board .card .num small { font: 500 13px/1.2 var(--body, inherit); color: var(--muted); margin-left: 6px; }
-  .board .card .meta, .board .card .busy { font-size: 13px; color: var(--muted); }
-  .board .card .more { margin-top: auto; font-size: 13px; font-weight: 600; color: var(--loop); }
+  /* US politics: the US map (states) and the D.C. map (arenas on their buildings). */
+  .state { fill: var(--focus-land); stroke: color-mix(in srgb, var(--loop) 30%, var(--border)); stroke-width: calc(.7px * var(--s, 1)); }
+  .map.flying .state { vector-effect: non-scaling-stroke; }
+  .map.city { background: var(--land-dim); }
+  .city .water { fill: color-mix(in srgb, var(--loop) 16%, var(--sea)); }
+  .city .park { fill: color-mix(in srgb, var(--confirmed) 13%, var(--land-dim)); }
+  .city .road { fill: none; stroke: var(--line); stroke-width: calc(2px * var(--s, 1)); stroke-linecap: round; stroke-linejoin: round; }
+  .city .road.major { stroke: var(--track); stroke-width: calc(5px * var(--s, 1)); }
+  .city .building { fill: var(--focus-land); stroke: color-mix(in srgb, var(--loop) 45%, var(--border)); stroke-width: calc(1px * var(--s, 1)); }
+  .city .mon { fill: var(--muted); }
+  .city .bubble text { stroke: var(--land-dim); }
+  .citylabel { font-family: var(--body); font-weight: 700; letter-spacing: .18em; fill: var(--muted); opacity: .5; pointer-events: none; text-transform: uppercase; }
+  .citylabel.water { fill: color-mix(in srgb, var(--loop) 60%, var(--muted)); font-style: italic; letter-spacing: .08em; text-transform: none; font-weight: 600; }
+  .citylabel.road { letter-spacing: .04em; text-transform: none; font-weight: 600; opacity: .8; }
+  .map.leaving .citylabel, .map.leaving .arcs, .map.leaving .portal { opacity: 0; transition: opacity .2s; }
+  .map.arrive .citylabel, .map.arrive .city-base { animation: fadein .5s ease-out both; }
+  .map.arrive .arcs { animation: fadein .6s .5s ease-out both; }
+  /* Stories that link two arenas: arcs with a pulse travelling along. */
+  .arc { fill: none; stroke: var(--loop); stroke-opacity: .6; stroke-linecap: round; stroke-dasharray: calc(7px * var(--s, 1)) calc(7px * var(--s, 1)); animation: flow 1.1s linear infinite; pointer-events: none; }
+  @keyframes flow { to { stroke-dashoffset: calc(-14px * var(--s, 1)); } }
+  .arcpulse { fill: var(--loop); pointer-events: none; }
+  .archit { fill: none; stroke: transparent; cursor: pointer; }
+  .archit:hover + .arc, .archit:focus-visible + .arc { stroke-opacity: 1; }
+  .archit:focus { outline: none; }
+  .arclabel { font-family: var(--body); font-size: 12px; font-weight: 700; fill: var(--loop); paint-order: stroke; stroke: var(--land-dim); stroke-linejoin: round; pointer-events: none; }
+  /* On the world map: the way into US politics. */
+  .portal { cursor: pointer; }
+  .portal rect { fill: color-mix(in srgb, var(--loop) 8%, transparent); stroke: var(--loop); stroke-width: 1.5; stroke-dasharray: 5 4; }
+  .portal:hover rect, .portal:focus-visible rect { fill: color-mix(in srgb, var(--loop) 16%, transparent); stroke-width: 2.5; }
+  .portal:focus { outline: none; }
+  .portal text { font-family: var(--body); fill: var(--ink); paint-order: stroke; stroke: var(--sea); stroke-width: 4px; stroke-linejoin: round; }
+  .portal .pname { font-weight: 800; font-size: 15px; }
+  .portal .pgo { font-weight: 700; font-size: 12px; fill: var(--loop); }
+  /* Progress of an ongoing fight: under its bubble, and as steps in the panel. */
+  .bubble .trk { font-size: 12px; font-weight: 700; fill: var(--ink); }
+  .bubble .trk .off { fill: var(--muted); opacity: .6; }
+  .bubble .trk .on { fill: var(--loop); }
+  .steps { margin: 4px 0 14px; }
+  .steps ol { list-style: none; display: flex; margin: 6px 0 4px; padding: 0; }
+  .steps li { flex: 1; position: relative; padding-top: 18px; font-size: 12px; line-height: 1.25; color: var(--muted); text-align: center; }
+  .steps li::before { content: ''; position: absolute; z-index: 1; top: 3px; left: 50%; width: 12px; height: 12px; border-radius: 50%; transform: translateX(-50%); background: var(--raise); border: 2px solid var(--track); box-sizing: border-box; }
+  .steps li + li::after { content: ''; position: absolute; top: 8px; right: 50%; width: 100%; height: 2px; background: var(--track); }
+  .steps li.done::before, .steps li.cur::before { background: var(--loop); border-color: var(--loop); }
+  .steps li.done + li::after, .steps li.cur::after { background: var(--loop); }
+  .steps li.cur { color: var(--ink); font-weight: 700; }
+  .steps li.cur::before { box-shadow: 0 0 0 4px color-mix(in srgb, var(--loop) 25%, transparent); }
+  .steps p { margin: 4px 0 0; font-size: 13px; color: var(--muted); }
+  /* "Today in Washington": a short guided tour of the day's top stories. */
+  .tourbtn { border: 1px solid var(--line); background: var(--raise); color: var(--ink); border-radius: 999px; min-height: 40px; padding: 0 16px; font-weight: 600; font-size: 15px; white-space: nowrap; }
+  .tourbtn:hover { border-color: var(--loop); color: var(--loop); }
+  .tourcap { margin-top: 10px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; background: color-mix(in srgb, var(--raise) 94%, transparent); backdrop-filter: blur(6px); border: 1px solid color-mix(in srgb, var(--loop) 40%, var(--line)); border-radius: 14px; padding: 12px 14px; box-shadow: 0 10px 30px -14px rgba(20, 24, 60, .45); animation: slidein .4s ease-out both; }
+  .tourcap .tk { font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--loop); }
+  .tourcap .th { flex: 1 1 320px; min-width: 0; font: 700 17px/1.3 var(--display); color: var(--ink); text-decoration: none; }
+  .tourcap .th:hover { text-decoration: underline; }
+  .tourcap .tm { font-size: 13px; color: var(--muted); flex-basis: 100%; order: 3; }
+  .tourcap .tb { display: flex; gap: 6px; margin-left: auto; }
+  .tourcap button { border: 1px solid var(--line); background: var(--bg); border-radius: 999px; min-height: 36px; padding: 0 12px; font-size: 14px; font-weight: 600; }
+  .tourcap button.next { background: var(--loop); color: var(--on-loop); border-color: var(--loop); }
+  .tourcap .bar2 { flex-basis: 100%; order: 4; height: 3px; border-radius: 3px; background: var(--track); overflow: hidden; }
+  .tourcap .bar2 i { display: block; height: 100%; width: 100%; background: var(--loop); transform-origin: left; animation: tourbar var(--dur, 6s) linear both; }
+  @keyframes tourbar { from { transform: scaleX(0); } }
+  .arrivewait { margin-top: 24px; }
+  .arrivewait p { position: absolute; left: 0; right: 0; bottom: 12px; text-align: center; color: var(--muted); margin: 0; }
+  @media (prefers-reduced-motion: reduce) { .arc, .tourcap, .tourcap .bar2 i { animation: none; } }
   .leantag { font-size: 12px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 0 7px; white-space: nowrap; }
   .flag { width: 16px; height: 12px; border-radius: 2px; box-shadow: 0 0 0 1px color-mix(in srgb, currentColor 20%, transparent); object-fit: cover; flex: none; }
 </style>
 </head>
 <body>
 <div id="app"><p class="loading">Loading the live map…</p></div>
-<script>window.itlSearch = location.search; window.itlLive = (demo, node) => import('./src/static.js?v=be58a7d5f0').then((m) => m.initLive({ demo, node, search: window.itlSearch }));</script>
+<script>window.itlSearch = location.search; window.itlLive = (demo, node) => import('./src/static.js?v=11e28f81b7').then((m) => m.initLive({ demo, node, search: window.itlSearch }));</script>
 <script>
 (() => {
   const params = new URLSearchParams(location.search);
   // Main segment: Geopolitics (the world map) or US politics (?segment=us).
   const US = params.get('segment') === 'us';
   const SEG_NODE = US ? 'us-politics' : 'geopolitics';
+  // The home view's map: the world, or the lower 48 for US politics.
+  const HOME = US ? 'usa' : 'world';
+  const HOME_LABEL = US ? 'United States' : 'World';
   const state = {
     view: params.get('view') || 'world', // "world" or a region id; checked once regions load
     window: ['1h', '6h', '24h'].includes(params.get('window')) ? params.get('window') : '6h',
@@ -265,6 +323,7 @@
     bg: null,        // backgrounders.json: the broad story of each region
     flying: false,   // a zoom animation is running; renders wait for it
     arrive: true,    // pop the bubbles in on the next render
+    tour: null,      // the guided tour while it runs: { list, i, timer }
   };
   const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const HOURS = { '1h': 1, '6h': 6, '24h': 24 };
@@ -310,8 +369,12 @@
   const topicOf = (view) => topics().find((t) => t.id === view);
   // The region a view belongs to: itself, or a broad topic's region.
   const regionOf = (view) => regions().find((r) => r.id === view) || regions().find((r) => r.id === topicOf(view)?.region);
-  const validView = (v) => v === 'world' || Boolean(regionOf(v));
-  const mapOf = (view) => (view === 'world' ? 'world' : regionOf(view)?.map || 'world');
+  const validView = (v) => v === 'world' || Boolean(regionOf(v)) || Boolean(topicOf(v));
+  const mapOf = (view) => (view === 'world' ? HOME : regionOf(view)?.map || HOME);
+  // Where "back" goes from a view, and what it's called.
+  const parentOf = (view) => { const r = regionOf(view); return topicOf(view) && r ? r : null; };
+  // The views you can jump to from the bar: regions, and topics on the home map.
+  const jumps = () => [...regions(), ...topics().filter((t) => t.region === 'world')];
 
   // What part of its map a view shows, in that map's pixels. A region shows
   // all of it; a broad topic crops to its stories (same aspect, so the frame
@@ -323,7 +386,7 @@
     if (!t) return full;
     const pts = [t.id, ...t.stories].map((id) => state.api.live.placeOf(id)).filter(Boolean).map((p) => state.api.project(m, p.lon, p.lat));
     const xs = pts.map((p) => p[0]), ys = pts.map((p) => p[1]);
-    const pad = 150; // room for bubbles and labels round the edge
+    const pad = m.city ? 90 : 150; // room for bubbles and labels round the edge
     let b = { x: Math.min(...xs) - pad, y: Math.min(...ys) - pad, w: Math.max(...xs) - Math.min(...xs) + 2 * pad, h: Math.max(...ys) - Math.min(...ys) + 2 * pad + 40 };
     if (b.w < m.width * 0.42) { b.x -= (m.width * 0.42 - b.w) / 2; b.w = m.width * 0.42; }
     b = fit(b, m.width / m.height);
@@ -337,7 +400,7 @@
   function layout(areas, view, box, s) {
     const m = state.api.maps[view];
     const max = Math.max(1, ...areas.map((a) => a.count));
-    const top = view === 'world' ? 44 : 70;
+    const top = view === 'world' ? 44 : state.api.maps[view].city ? 46 : 70;
     const nodes = areas.map((a) => {
       const [x0, y0] = state.api.project(m, a.place.lon, a.place.lat);
       const r = (a.count ? 12 + (top - 12) * Math.sqrt(a.count / max) : 7) * s;
@@ -378,11 +441,11 @@
     const k = s * Math.min(2.6, Math.max(1, 720 / (document.querySelector('.map')?.clientWidth || window.innerWidth)));
     const bg = state.bg?.regions?.[regionOf(state.view)?.id];
     const cls = (name) => (bg?.focus?.includes(name) ? 'country focus' : bg?.watch?.includes(name) ? 'country watch' : 'country');
-    const countries = m.countries.map((c) => `<path class="${cls(c.name)}" d="${c.d}"><title>${esc(c.name)}</title></path>`).join('');
+    const countries = baseShapes(m, cls, true);
     const frames = mapId === 'world'
       ? regions().map((r) => { const b = boxOf(r.id); return `<rect class="frame" data-frame="${esc(r.id)}" x="${b.x.toFixed(1)}" y="${b.y.toFixed(1)}" width="${b.w.toFixed(1)}" height="${b.h.toFixed(1)}" rx="6"/>`; }).join('')
       : '';
-    const extras = mapId === 'world' ? frames : graticule(m) + (bg?.labels || []).map((l) => {
+    const extras = mapId === 'world' ? frames + portal() : m.city ? cityLabels(m, k, s) : graticule(m) + (bg?.labels || []).map((l) => {
       const [x, y] = state.api.project(m, l.lon, l.lat);
       return `<text class="clabel" x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="middle" style="font-size:${(l.size || 15) * Math.min(k, 1.6 * s)}px">${esc(l.text.toUpperCase())}</text>`;
     }).join('');
@@ -402,22 +465,71 @@
       const st = a.count ? a.status : 'quiet';
       const c = COLOR[st] || COLOR.reported;
       const x = n.x.toFixed(1), y = n.y.toFixed(1);
-      const label = `${a.region || a.topic ? 'Zoom into ' : ''}${a.label}: ${plural(a.count, 'item')} in the last ${state.window}${a.pace == null ? '' : `, ${paceText(a)}`}, ${STATUS[st]}${a.topic ? `, ${plural(a.stories, 'story')}` : ''}${a.breaking ? ', breaking news' : ''}`;
+      const label = `${a.region || a.topic ? 'Zoom into ' : ''}${a.label}: ${plural(a.count, 'item')} in the last ${state.window}${a.pace == null ? '' : `, ${paceText(a)}`}, ${STATUS[st]}${a.topic ? `, ${plural(a.stories, 'story')}` : ''}${a.track ? `, stage: ${a.track.label}` : ''}${a.breaking ? ', breaking news' : ''}`;
       const ring = a.breaking ? `<circle class="bring" cx="${x}" cy="${y}" r="${n.r.toFixed(1)}"/>` : isHot(a) ? `<circle class="ring" cx="${x}" cy="${y}" r="${n.r.toFixed(1)}" style="stroke:${c}"/>` : '';
       const btag = a.breaking ? `<text class="btag" style="font-size:${11 * k}px" x="${x}" y="${(n.y - n.r - 6 * k).toFixed(1)}" text-anchor="middle">BREAKING</text>` : '';
       const flash = state.flashes.has(a.id) ? `<circle class="flash" cx="${x}" cy="${y}" r="${n.r.toFixed(1)}"/>` : '';
       const ly = n.y + n.r + 16 * k;
       const meta = a.count ? `<text class="meta" style="font-size:${13 * k}px" x="${x}" y="${(ly + 15 * k).toFixed(1)}" text-anchor="middle">${plural(a.count, 'item')}${a.pace == null ? '' : ` · ${esc(paceText(a))}`}</text>` : '';
       // A broad topic says it opens up into stories.
-      const more = a.topic ? `<text class="more" style="font-size:${12 * k}px" x="${x}" y="${(ly + (a.count ? 30 : 15) * k).toFixed(1)}" text-anchor="middle">${plural(a.stories, 'story')} ›</text>` : '';
+      const more = a.topic || (a.region && a.stories) ? `<text class="more" style="font-size:${12 * k}px" x="${x}" y="${(ly + (a.count ? 30 : 15) * k).toFixed(1)}" text-anchor="middle">${a.topic ? plural(a.stories, 'story') : plural(a.stories, US ? 'arena' : 'topic')} ›</text>` : '';
+      // An ongoing fight: how far it has got (filled dots), and the step's name.
+      const trk = a.track ? `<text class="trk" style="font-size:${12 * k}px" x="${x}" y="${(ly + (a.count ? 30 : 15) * k).toFixed(1)}" text-anchor="middle"><tspan class="on">${'●'.repeat(a.track.at + 1)}</tspan><tspan class="off">${'●'.repeat(a.track.stages.length - a.track.at - 1)}</tspan> ${esc(a.track.label)}</text>` : '';
       return `<g class="bubble${a.count ? '' : ' quiet'}${state.area === a.id ? ' sel' : ''}" data-area="${esc(a.id)}" style="--i:${order.length - 1 - i}" tabindex="0" role="button" aria-label="${esc(label)}">
         ${ring}<circle class="disc" cx="${x}" cy="${y}" r="${n.r.toFixed(1)}" style="fill:color-mix(in srgb, ${c} ${a.count ? 30 : 12}%, transparent);stroke:${c}${a.count ? '' : ';stroke-dasharray:3 3'}"/>${flash}
-        <text class="name" style="font-size:${(a.count ? 15 : 13) * k}px" x="${x}" y="${ly.toFixed(1)}" text-anchor="middle">${esc(a.label)}</text>${meta}${more}${btag}
+        <text class="name" style="font-size:${(a.count ? 15 : 13) * k}px" x="${x}" y="${ly.toFixed(1)}" text-anchor="middle">${esc(a.label)}</text>${meta}${more}${trk}${btag}
       </g>`;
     }).join('');
     state.flashes.clear();
-    const what = mapId === 'world' ? 'region' : topicOf(state.view) ? 'story' : 'topic';
-    return `<svg viewBox="${box.x.toFixed(1)} ${box.y.toFixed(1)} ${box.w.toFixed(1)} ${box.h.toFixed(1)}" style="--s:${s.toFixed(3)}" role="group" aria-label="Map of ${esc(topicOf(state.view)?.label || m.label)} with one bubble per ${what}">${countries}${extras}${dots}${leaders}${bubbles}</svg>`;
+    const what = mapId === 'world' ? 'region' : topicOf(state.view) ? 'story' : US ? 'arena' : 'topic';
+    return `<svg viewBox="${box.x.toFixed(1)} ${box.y.toFixed(1)} ${box.w.toFixed(1)} ${box.h.toFixed(1)}" style="--s:${s.toFixed(3)}" role="group" aria-label="Map of ${esc(topicOf(state.view)?.label || m.label)} with one bubble per ${what}">${countries}${extras}${dots}${leaders}${arcs(d.links, nodes, s, k)}${bubbles}</svg>`;
+  }
+
+  // The land under the bubbles: countries, US states, or the streets of D.C.
+  function baseShapes(m, cls, titles) {
+    const t = (name) => (titles ? `<title>${esc(name)}</title>` : '');
+    if (m.city) {
+      return `<g class="city-base">${m.city.shapes.map((f) => `<path class="${f.kind}" d="${f.d}">${f.kind === 'building' ? t(f.name) : ''}</path>`).join('')}${m.city.monuments.map((x) => `<circle class="mon" cx="${x.xy[0]}" cy="${x.xy[1]}" r="${titles ? 3 : 0}">${t(x.name)}</circle>`).join('')}</g>`;
+    }
+    return m.countries.map((c) => `<path class="${cls(c.name)}" d="${c.d}">${t(c.name)}</path>`).join('')
+      + (m.states || []).map((c) => `<path class="state" d="${c.d}">${t(c.name)}</path>`).join('');
+  }
+  function cityLabels(m, k, s) {
+    // On a phone the bubbles' own labels need the room: keep only the water.
+    const phone = k / s > 1.3;
+    return m.city.labels.filter((l) => !phone || l.kind === 'water').map((l) => `<text class="citylabel ${l.kind}" x="${l.xy[0]}" y="${l.xy[1]}" text-anchor="middle"${l.angle ? ` transform="rotate(${l.angle} ${l.xy[0]} ${l.xy[1]})"` : ''} style="font-size:${(l.size || 12) * Math.min(k, 1.6 * s)}px">${esc(l.text)}</text>`).join('');
+  }
+
+  // Stories that touch two bubbles: a curved arc between them, a pulse
+  // running along it, thicker for more posts. Click to see the story.
+  function arcs(links, nodes, s, k) {
+    if (!links?.length) return '';
+    const at = new Map(nodes.map((n) => [n.a.id, n]));
+    const max = Math.max(...links.map((l) => l.posts));
+    const out = links.map((l, i) => {
+      const p = at.get(l.from), q = at.get(l.to);
+      if (!p || !q) return '';
+      const dx = q.x - p.x, dy = q.y - p.y, dist = Math.hypot(dx, dy) || 1;
+      const bend = Math.min(0.45 * dist, 220 * s);
+      // Bend downwards, away from the caption box in the top corner.
+      const side = dx / dist >= 0 ? 1 : -1;
+      const cx = (p.x + q.x) / 2 - side * (dy / dist) * bend, cy = (p.y + q.y) / 2 + side * (dx / dist) * bend;
+      const d = `M${p.x.toFixed(1)} ${p.y.toFixed(1)}Q${cx.toFixed(1)} ${cy.toFixed(1)} ${q.x.toFixed(1)} ${q.y.toFixed(1)}`;
+      const w = (2 + 4 * Math.sqrt(l.posts / max)) * s;
+      const label = `${l.headline} (links ${nodeLabel(l.from) || l.from} and ${nodeLabel(l.to) || l.to}, ${plural(l.posts, 'item')})`;
+      // the curve's middle, for the count
+      const mx = 0.25 * p.x + 0.5 * cx + 0.25 * q.x, my = 0.25 * p.y + 0.5 * cy + 0.25 * q.y;
+      const pulse = reduceMotion() ? '' : `<circle class="arcpulse" r="${(w * 0.9 + 1.5 * s).toFixed(1)}"><animateMotion dur="${(2.2 + i * 0.3).toFixed(1)}s" repeatCount="indefinite" path="${d}"/></circle>`;
+      return `<path class="archit" d="${d}" style="stroke-width:${(18 * s).toFixed(1)}px" data-pick="${esc(l.topicId || '')}" tabindex="0" role="button" aria-label="${esc(label)}"><title>${esc(label)}</title></path><path class="arc" d="${d}" style="stroke-width:${w.toFixed(1)}px"/>${pulse}${k / s > 1.3 ? '' : `<text class="arclabel" x="${mx.toFixed(1)}" y="${(my - 6 * s).toFixed(1)}" text-anchor="middle" style="font-size:${11 * k}px;stroke-width:${3 * s}px">${plural(l.stories, 'shared story')}</text>`}`;
+    }).join('');
+    return `<g class="arcs">${out}</g>`;
+  }
+
+  // On the world map: the United States opens US politics (its own map).
+  function portal() {
+    if (US || !state.api.maps.usa) return '';
+    const b = boxOf('@us');
+    return `<g class="portal" tabindex="0" role="button" aria-label="Open US politics: zoom into the United States"><rect x="${b.x.toFixed(1)}" y="${b.y.toFixed(1)}" width="${b.w.toFixed(1)}" height="${b.h.toFixed(1)}" rx="6"/><text class="pname" x="${(b.x + b.w / 2).toFixed(1)}" y="${(b.y + b.h / 2).toFixed(1)}" text-anchor="middle">US politics</text><text class="pgo" x="${(b.x + b.w / 2).toFixed(1)}" y="${(b.y + b.h / 2 + 16).toFixed(1)}" text-anchor="middle">Zoom in ›</text></g>`;
   }
 
   // Dashed lines every 5 degrees, the atlas feel of a zoomed-in view.
@@ -429,12 +541,12 @@
     return `<path class="grat" d="${d}"/>`;
   }
 
-  /** A view's area in world-map pixels: the whole world, or a region's lon/lat box. */
+  /** A view's area in home-map pixels: the whole home map, or a region's lon/lat box. */
   function boxOf(view) {
-    const W = state.api.maps.world;
+    const W = state.api.maps[HOME];
     if (view === 'world') return { x: 0, y: 0, w: W.width, h: W.height };
-    const v = state.api.maps[mapOf(view)];
-    const c = cropOf(view);
+    const v = state.api.maps[view === '@us' ? 'usa' : mapOf(view)];
+    const c = view === '@us' ? { x: 0, y: 0, w: v.width, h: v.height } : cropOf(view);
     // map pixels back to lon/lat (the projection is linear), then to world pixels
     const lon = (x) => v.west + (x / v.width) * (v.east - v.west);
     const lat = (y) => v.north - (y / v.height) * (v.north - v.south);
@@ -456,12 +568,12 @@
   function fly(from, to) {
     const el = document.querySelector('.map');
     if (!el || reduceMotion()) return Promise.resolve();
-    if (from !== 'world' && to !== 'world' && mapOf(from) === mapOf(to)) return flyWithin(el, from, to);
+    if (to !== '@us' && mapOf(from) === mapOf(to)) return flyWithin(el, from, to);
     state.flying = true;
     el.classList.add('leaving');
     return new Promise((done) => setTimeout(() => {
-      const W = state.api.maps.world;
-      const target = state.api.maps[mapOf(to)];
+      const W = state.api.maps[HOME];
+      const target = state.api.maps[to === '@us' ? 'usa' : mapOf(to)];
       const width = el.clientWidth, h0 = el.clientHeight;
       const h1 = (width * target.height) / target.width;
       const A = fit(boxOf(from), width / h0), B = fit(boxOf(to), width / h1);
@@ -469,11 +581,11 @@
       const cls = (name) => (bg?.focus?.includes(name) ? 'country focus' : bg?.watch?.includes(name) ? 'country watch' : 'country');
       el.style.height = `${h0}px`;
       el.className = 'map flying';
-      el.innerHTML = `<svg viewBox="${A.x} ${A.y} ${A.w} ${A.h}" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${W.countries.map((c) => `<path class="${cls(c.name)}" d="${c.d}"/>`).join('')}</svg>`;
+      el.innerHTML = `<svg viewBox="${A.x} ${A.y} ${A.w} ${A.h}" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${baseShapes(W, cls, false)}</svg>`;
       const svg = el.firstElementChild;
       el.getBoundingClientRect();
       el.style.height = `${h1}px`;
-      if (to !== 'world') el.classList.add('zoomed'); // tints the countries in as we fly
+      if (to !== 'world' || US) el.classList.add('zoomed'); // tints the countries in as we fly
       const t0 = performance.now(), D = 950;
       const step = (now) => {
         const t = Math.min(1, (now - t0) / D), e = ease(t);
@@ -515,48 +627,30 @@
     if (push) history.pushState({ view: to }, '', urlFor(to));
     const from = state.view;
     state.area = null;
-    if (!US) await fly(from, to);
+    await fly(from, to);
     state.view = to;
     state.arrive = true;
     if (state.pending) { state.area = state.pending; state.pending = null; }
     refresh();
-    document.querySelector(US ? '.board' : '.map')?.focus({ preventScroll: true });
-  }
-
-  // US politics, for now: one card per arena (or per topic, or per story)
-  // instead of a map. Same data and clicks as the bubbles; the drawn arena
-  // map is the next step (Amir chose it on 24 Nov 2026).
-  function board(d) {
-    const world = state.view === 'world';
-    const cards = d.areas.map((a) => {
-      const st = a.count ? a.status : 'quiet';
-      const what = world ? 'Arena' : a.topic ? `Topic · ${plural(a.stories, 'story')}` : 'Story';
-      const busy = world && a.busiest?.length ? `<span class="busy">Busiest: ${esc(a.busiest.join(', '))}</span>` : a.about ? `<span class="busy">${esc(a.about)}</span>` : '';
-      const next = world || a.topic ? 'See inside ›' : state.area === a.id ? 'Picked: details on the right' : 'Preview ›';
-      return `<li><button class="card bubble${isHot(a) ? ' hot' : ''}" data-area="${esc(a.id)}" aria-pressed="${state.area === a.id}" style="--st:${COLOR[st] || COLOR.quiet}">
-        <span class="meta">${esc(what)}</span>
-        <span class="name">${esc(a.label)}</span>
-        <span class="num">${a.count}<small>${a.count === 1 ? 'item' : 'items'} in ${esc(state.window)}</small></span>
-        <span class="meta"><span class="chip c-${esc(st)}">${esc(STATUS[st])}</span>${a.pace != null ? ` · ${esc(paceText(a))}` : ''}</span>
-        ${busy}
-        <span class="more">${next}</span>
-      </button></li>`;
-    }).join('');
-    const label = world ? 'US politics arenas' : `${topicOf(state.view)?.label || regionOf(state.view)?.label || ''}`;
-    return `<ul class="board" tabindex="-1" aria-label="${esc(label)}">${cards}</ul>`;
+    if (!state.tour) document.querySelector('.map')?.focus({ preventScroll: true });
   }
 
   const leanTag = (l) => (l ? ` <span class="leantag" title="Where this source sits, left to right: our own first call">${esc(l)}</span>` : '');
 
   function cartouche() {
-    if (state.view === 'world') return '';
+    if (state.view === 'world') {
+      // US politics has a way back out to the world map.
+      return US ? `<div class="cartouche"><a class="back" href="index.html${state.demo ? '?demo=1' : ''}" style="display:inline-flex;align-items:center;text-decoration:none" aria-label="Back to the world map (Geopolitics)">← World</a><div><span class="kick">US politics</span><strong>United States</strong><small>Washington, the elections and the states. Pick a bubble to zoom in.</small></div></div>` : '';
+    }
     const r = regionOf(state.view);
     const t = topicOf(state.view);
     if (t) {
-      return `<div class="cartouche"><button class="back" data-view="${esc(r.id)}" aria-label="Zoom out to ${esc(r.label)}">← ${esc(r.label)}</button><div><span class="kick">Topic · ${plural(t.stories.length, 'story')}</span><strong>${esc(t.label)}</strong>${state.data?.node?.about ? `<small>${esc(state.data.node.about)}</small>` : ''}</div></div>`;
+      const up = r || { id: 'world', label: HOME_LABEL };
+      return `<div class="cartouche"><button class="back" data-view="${esc(up.id)}" aria-label="Zoom out to ${esc(up.label)}">← ${esc(up.label)}</button><div><span class="kick">Topic · ${plural(t.stories.length, 'story')}</span><strong>${esc(t.label)}</strong>${state.data?.node?.about ? `<small>${esc(state.data.node.about)}</small>` : ''}</div></div>`;
     }
     const bg = state.bg?.regions?.[state.view];
-    return `<div class="cartouche"><button class="back" data-view="world" aria-label="Zoom out to the world map">← World</button><div><span class="kick">Zoomed in</span><strong>${esc(r?.label || '')}</strong>${bg?.kicker ? `<small>${esc(bg.kicker)}</small>` : ''}</div></div>`;
+    const kicker = bg?.kicker || (US ? state.data?.node?.about : '');
+    return `<div class="cartouche"><button class="back" data-view="world" aria-label="Zoom out to the ${US ? 'US' : 'world'} map">← ${HOME_LABEL}</button><div><span class="kick">Zoomed in</span><strong>${esc(r?.label || '')}</strong>${kicker ? `<small>${esc(kicker)}</small>` : ''}</div></div>`;
   }
 
   const dateText = (iso) => {
@@ -605,7 +699,7 @@
   function summaryPanel(d) {
     const s = d.summary;
     if (!s) return '';
-    const head = `<p class="eyebrow">Last ${s.hours} hours · updates live</p><h2 id="sumh">${d.node.topic ? `What happened: ${esc(d.node.label)}` : `What happened in ${d.node.id === 'middle-east' ? 'the ' : ''}${esc(d.node.label)}`}</h2>`;
+    const head = `<p class="eyebrow">Last ${s.hours} hours · updates live</p><h2 id="sumh">${d.node.topic ? `What happened: ${esc(d.node.label)}` : `What happened in ${d.node.id === 'middle-east' ? 'the ' : ''}${esc(d.node.label)}`}</h2>${US && state.view === 'world' && s.top.some((x) => x.topicId) ? '<button class="tourbtn" data-tour style="margin-top:10px">▶ Take the tour: today in Washington</button>' : ''}`;
     if (!s.posts) return `<section class="panel sum" aria-labelledby="sumh">${head}<p class="muted">Nothing from tracked voices or outlets in the last ${s.hours} hours.</p></section>`;
     const by = (x) => {
       const n = x.sources.length;
@@ -634,7 +728,8 @@
   function regionList() {
     if (!state.bg || US) return '';
     const items = regions().filter((r) => state.bg.regions[r.id]).map((r) => `<li><button data-view="${esc(r.id)}"><strong>${esc(r.label)}</strong><span>${esc(state.bg.regions[r.id].teaser)}</span></button></li>`).join('');
-    return `<section class="panel regions" aria-labelledby="rh"><h2 id="rh">The regions we follow</h2><ul class="regionlist">${items}</ul><p class="fine">Pick one to zoom in and read how it started, what each side wants and why it's on the map now.</p></section>`;
+    const usItem = state.api.maps.usa ? `<li><button data-us><strong>United States · US politics</strong><span>Its own map: Washington's arenas on their real buildings, the elections and the states.</span></button></li>` : '';
+    return `<section class="panel regions" aria-labelledby="rh"><h2 id="rh">The regions we follow</h2><ul class="regionlist">${items}${usItem}</ul><p class="fine">Pick one to zoom in and read how it started, what each side wants and why it's on the map now.</p></section>`;
   }
 
   function detail(d) {
@@ -656,17 +751,24 @@
         <div><strong>${a.voices}</strong>${a.voices === 1 ? 'outlet' : 'outlets'}</div>
       </div>
       <div class="row" style="margin-bottom:8px"><span class="chip c-${st}">${esc(STATUS[st])}</span><span>overall, by share of posts</span></div>
+      ${steps(a.track)}
       ${stories}
       ${a.topic ? `<button class="btn" data-view="${esc(a.id)}">See its ${plural(a.stories, 'story')}${US ? '' : ' on the map'}</button>` : `<a class="btn" href="briefing.html?node=${encodeURIComponent(a.id)}&since=24h${state.demo ? '&demo=1' : ''}">Open the story</a>`}
     </section>`;
   }
 
+  // Where an ongoing fight stands: its steps, with the one reports last reached.
+  function steps(t) {
+    if (!t) return '';
+    return `<div class="steps" aria-label="Where it stands: ${esc(t.label)}, step ${t.at + 1} of ${t.stages.length}"><span class="eyebrow">Where it stands</span><ol>${t.stages.map((x, i) => `<li class="${i < t.at ? 'done' : i === t.at ? 'cur' : ''}">${esc(x)}</li>`).join('')}</ol><p>Based on what the last day's reports say (${plural(t.mentions, 'mention')}, latest ${esc(ago(t.latest))}), not an official record.</p></div>`;
+  }
+
   // Nothing picked: what you can click on this map, so the next step is obvious.
   function topicList(d) {
     const t = topicOf(state.view);
-    const items = d.areas.map((a) => `<li><button data-${a.topic ? 'view' : 'pick'}="${esc(a.id)}"><strong>${esc(a.label)}${a.topic ? ` · ${plural(a.stories, 'story')} ›` : ''}</strong>${a.about ? `<span>${esc(a.about)}</span>` : ''}<span>${a.count ? `${plural(a.count, 'item')} in ${esc(state.window)}` : `Quiet in the last ${esc(state.window)}`}</span></button></li>`).join('');
+    const items = d.areas.map((a) => `<li><button data-${a.topic || a.region ? 'view' : 'pick'}="${esc(a.id)}"><strong>${esc(a.label)}${a.topic ? ` · ${plural(a.stories, 'story')} ›` : a.region ? ` · ${plural(a.stories, US ? 'arena' : 'topic')} ›` : ''}${a.track ? ` · ${esc(a.track.label)}` : ''}</strong>${a.about ? `<span>${esc(a.about)}</span>` : ''}<span>${a.count ? `${plural(a.count, 'item')} in ${esc(state.window)}` : `Quiet in the last ${esc(state.window)}`}</span></button></li>`).join('');
     return `<section class="panel" aria-labelledby="th">
-      <h2 id="th">${t ? 'Stories in this topic' : US ? 'Topics in this arena' : 'Topics in this region'}</h2>
+      <h2 id="th">${t ? 'Stories in this topic' : US ? (state.view === 'world' ? 'On the US map' : 'Arenas in Washington') : 'Topics in this region'}</h2>
       <ul class="topiclist">${items}</ul>
       ${t && d.other ? `<p class="muted" style="margin:8px 0 0;font-size:14px">Plus ${plural(d.other, 'item')} in ${esc(state.window)} about ${esc(t.label)} in general.</p>` : ''}
     </section>`;
@@ -728,7 +830,8 @@
       ? `${plural(active.reduce((s, a) => s + a.count, 0), 'item')} from tracked voices and outlets in the last ${state.window} across ${plural(active.length, world ? 'region' : topic ? 'story' : 'topic')}.${hot.length ? ` Busier than usual: ${esc(hot.join(', '))}.` : ''}`
       : `No posts or articles from tracked voices in the last ${state.window}.`;
     const how = topic ? 'Click a story to preview it, then open its page.' : 'Click a topic to see its stories.';
-    const crumbs = [['world', US ? 'All arenas' : 'World'], ...(region ? [[region.id, region.label]] : []), ...(topic ? [[topic.id, topic.label]] : [])];
+    const crumbs = [['world', HOME_LABEL], ...(region ? [[region.id, region.label]] : []), ...(topic ? [[topic.id, topic.label]] : [])];
+    const here = region?.id || (topic ? topic.id : 'world');
     const focused = document.activeElement?.dataset?.area;
     const feedTop = document.getElementById('feedlist')?.scrollTop || 0;
     app.innerHTML = `
@@ -741,35 +844,48 @@
           <div class="status ${state.conn === 'open' && !state.demo ? 'on' : ''}" role="status"><span class="pulse-dot" aria-hidden="true"></span><span>${statusText(d)}</span></div>
         </header>
         <div class="bar">
-          <div><h1>${world ? (US ? "What's moving in US politics" : "What's moving around the world") : topic ? esc(topic.label) : `What's moving in ${d.node.id === 'middle-east' ? 'the ' : ''}${esc(d.node.label)}`}</h1><p class="sub">${US ? (world ? `One card per arena: ${esc(regions().map((r) => r.label).join(', '))}. Each card counts posts and articles from tracked voices and outlets across the spectrum; the colour is where its main stories stand. Pick an arena to see its topics. The drawn arena map is coming next.` : `${sub} Colour is where the main stories stand. ${how}`) : world ? `One bubble per tracked region: ${esc(regions().map((r) => r.label).join(', '))}. Click a bubble to zoom in. More regions come with more voices and keywords.` : `${sub} Bubble size is posts and articles; colour is where the main stories stand. ${how}`}</p></div>
+          <div><h1>${world ? (US ? "What's moving in US politics" : "What's moving around the world") : topic ? esc(topic.label) : `What's moving in ${d.node.id === 'middle-east' ? 'the ' : ''}${esc(d.node.label)}`}</h1><p class="sub">${US ? (world ? `Washington, the elections and the states, from tracked voices and outlets across the spectrum. Bubble size is posts and articles; colour is where the main stories stand; a moving line joins two places that share a story. Zoom into Washington to see each arena on its real building.` : `${sub} Colour is where the main stories stand; a moving line joins two that share a story. ${how}`) : world ? `One bubble per tracked region: ${esc(regions().map((r) => r.label).join(', '))}. Click a bubble to zoom in. More regions come with more voices and keywords.` : `${sub} Bubble size is posts and articles; colour is where the main stories stand. ${how}`}</p></div>
           <div class="controls">
             <nav class="seg segswitch" aria-label="Segment"><a href="index.html${state.demo ? '?demo=1' : ''}"${US ? '' : ' aria-current="page"'}>Geopolitics</a><a href="index.html?segment=us${state.demo ? '&demo=1' : ''}"${US ? ' aria-current="page"' : ''}>US politics</a></nav>
-            <div class="seg" role="group" aria-label="${US ? 'Arena' : 'Map'}">${[['world', US ? 'All' : 'World'], ...regions().map((r) => [r.id, r.label])].map(([k, l]) => `<button data-view="${k}" aria-pressed="${k === (region?.id || 'world')}">${l}</button>`).join('')}</div>
+            <div class="seg" role="group" aria-label="Map">${[['world', HOME_LABEL], ...jumps().map((r) => [r.id, r.label])].map(([k, l]) => `<button data-view="${k}" aria-pressed="${k === here}">${esc(l)}</button>`).join('')}</div>
             <div class="seg" role="group" aria-label="Time window">${Object.keys(HOURS).map((w) => `<button data-window="${w}" aria-pressed="${w === state.window}">Last ${w}</button>`).join('')}</div>
           </div>
         </div>
         <div class="layout">
           <div class="mapcol">
             ${breakingStrip(d)}
-            ${US ? board(d) : `<div class="map${world ? '' : ' zoomed'}${state.arrive && !reduceMotion() ? ' arrive' : ''}" tabindex="-1">${mapSvg(d)}${cartouche()}</div>`}
+            <div class="map${world && !US ? '' : ' zoomed'}${state.api.maps[mapOf(state.view)].city ? ' city' : ''}${state.arrive && !reduceMotion() ? ' arrive' : ''}" tabindex="-1">${mapSvg(d)}${cartouche()}</div>${tourCaption()}
             <div class="legend">
               <span><i class="sw c-corroborated"></i>Mostly confirmed</span>
               <span><i class="sw c-reported"></i>Mostly reported once</span>
               <span><i class="sw c-disputed"></i>Sources disagree</span>
               <span><i class="sw c-quiet" style="background:none;border:2px dashed var(--muted)"></i>Quiet</span>
-              <span>${US ? 'Glow' : 'Pulsing ring'}: at least 1.5× its usual pace</span>
-              ${US ? "" : `<span><i class="sw" style="background:none;border:2px solid var(--breaking)"></i>Breaking: 3+ outlets within 90 min</span>`}
+              <span>Pulsing ring: at least 1.5× its usual pace</span>
+              <span><i class="sw" style="background:none;border:2px solid var(--breaking)"></i>Breaking: 3+ outlets within 90 min</span>
+              ${US ? '<span><i class="sw" style="background:none;border-radius:0;height:0;border-top:3px dashed var(--loop)"></i>Shared story</span><span><b style="color:var(--loop)">●●</b>● Where a fight stands</span>' : ''}
             </div>
-            ${world ? regionList() : summaryPanel(d) + background()}
+            ${world && !US ? regionList() : summaryPanel(d) + background()}
             ${d.errors?.length ? `<details class="footnote"><summary>${plural(d.errors.length, 'warning')}</summary><ul>${d.errors.map((e) => `<li>${esc(e)}</li>`).join('')}</ul></details>` : ''}
           </div>
-          <aside>${world ? '' : detail(d)}${feed(d)}</aside>
+          <aside>${world && !US ? '' : detail(d)}${feed(d)}</aside>
         </div>
       </div>`;
 
     state.arrive = false;
     app.querySelectorAll('[data-view]').forEach((b) => b.addEventListener('click', () => go(b.dataset.view)));
-    app.querySelectorAll('[data-pick]').forEach((b) => b.addEventListener('click', () => pickNode(b.dataset.pick)));
+    app.querySelectorAll('[data-pick]').forEach((b) => {
+      b.addEventListener('click', () => pickNode(b.dataset.pick));
+      if (b.tagName === 'path') b.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pickNode(b.dataset.pick); } });
+    });
+    app.querySelectorAll('[data-tour]').forEach((b) => b.addEventListener('click', (e) => { e.stopPropagation(); startTour(); }));
+    app.querySelector('.tourcap .next')?.addEventListener('click', (e) => { e.stopPropagation(); nextStop(); });
+    app.querySelector('.tourcap .stop')?.addEventListener('click', (e) => { e.stopPropagation(); endTour(false); });
+    const portalEl = app.querySelector('.portal');
+    if (portalEl) {
+      const open = () => toUS();
+      portalEl.addEventListener('click', open);
+      portalEl.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
+    }
     const frame = (id, on) => app.querySelector(`.frame[data-frame="${CSS.escape(id)}"]`)?.classList.toggle('on', on);
     app.querySelectorAll('[data-window]').forEach((b) => b.addEventListener('click', () => { state.window = b.dataset.window; refresh(); }));
     app.querySelectorAll('.bubble').forEach((g) => {
@@ -783,6 +899,7 @@
       g.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(); } });
     });
     app.querySelector('#close')?.addEventListener('click', () => { state.area = null; refresh(); });
+    app.querySelector('[data-us]')?.addEventListener('click', () => toUS());
     if (focused) app.querySelector(`.bubble[data-area="${CSS.escape(focused)}"]`)?.focus();
     const list = document.getElementById('feedlist');
     if (list) list.scrollTop = feedTop; // live updates keep your place in the list
@@ -796,14 +913,64 @@
   // Show a node from anywhere (backgrounder chips, lists): a topic zooms in;
   // a story is picked on its topic's map (zooming there first if needed).
   function pickNode(id) {
-    if (topicOf(id) || regions().some((r) => r.id === id)) { go(id); return; }
+    if (!id) return Promise.resolve();
+    if (topicOf(id) || regions().some((r) => r.id === id)) return go(id) || Promise.resolve();
     // The map a story is drawn on: its topic, or its region for a lone story.
     const path = state.api.live.trail(id);
-    const home = path.length >= 2 ? path.at(-2).id : null;
-    if (!home) return;
-    if (home && home !== state.view) { state.pending = id; go(home).then(() => { state.pending = null; }); return; }
+    let home = path.length >= 2 ? path.at(-2).id : null;
+    if (home === SEG_NODE) home = 'world'; // a story right on the home map
+    if (!home) return Promise.resolve();
+    if (home !== state.view) { state.pending = id; return (go(home) || Promise.resolve()).then(() => { state.pending = null; }); }
     state.area = id; refresh();
-    document.querySelector(US ? '.board' : '.map')?.scrollIntoView({ behavior: reduceMotion() ? 'auto' : 'smooth', block: 'center' });
+    if (!state.tour) document.querySelector('.map')?.scrollIntoView({ behavior: reduceMotion() ? 'auto' : 'smooth', block: 'center' });
+    return Promise.resolve();
+  }
+
+  // From the world map into US politics: the camera flies to the United
+  // States, then the US page opens on the same view and carries on.
+  async function toUS() {
+    const href = `index.html?segment=us&arrive=1${state.demo ? '&demo=1' : ''}`;
+    if (state.view !== 'world') { location.href = href; return; }
+    await fly('world', '@us');
+    location.href = href;
+  }
+
+  // "Today in Washington": the day's three biggest stories, one after the
+  // other. The camera flies to each one and a caption says what happened.
+  const STOP_MS = 6500;
+  function startTour() {
+    const list = state.api.live.tour({ now: new Date() });
+    if (!list.length) return;
+    endTour(false, true);
+    state.tour = { list, i: -1, timer: null };
+    nextStop();
+  }
+  async function nextStop() {
+    const t = state.tour;
+    if (!t) return;
+    clearTimeout(t.timer);
+    t.i += 1;
+    if (t.i >= t.list.length) { endTour(true); return; }
+    await pickNode(t.list[t.i].topicId);
+    if (state.tour !== t) return;
+    render();
+    document.querySelector('.map')?.scrollIntoView({ behavior: reduceMotion() ? 'auto' : 'smooth', block: 'nearest' });
+    t.timer = setTimeout(nextStop, STOP_MS);
+  }
+  function endTour(home, quiet) {
+    const t = state.tour;
+    if (!t) return;
+    clearTimeout(t.timer);
+    state.tour = null;
+    if (home && state.view !== 'world') go('world');
+    else if (!quiet) render();
+  }
+  function tourCaption() {
+    const t = state.tour;
+    if (!t || t.i < 0) return '';
+    const x = t.list[t.i];
+    const who = x.sources.length === 1 ? `by ${esc(x.sources[0])}` : `${plural(x.sources.length, 'source')}`;
+    return `<div class="tourcap" role="status" style="--dur:${STOP_MS}ms"><span class="tk">Today in Washington · ${t.i + 1} of ${t.list.length}</span><a class="th" href="${safeUrl(x.url)}" target="_blank" rel="noopener">${esc(x.headline)}</a><span class="tb"><button class="stop">Stop</button><button class="next">${t.i + 1 < t.list.length ? 'Next ›' : 'Finish'}</button></span><span class="tm"><span class="chip c-${esc(x.status)}">${esc(STATUS[x.status] || x.status)}</span> ${who} · ${plural(x.posts, 'item')} · ${esc(x.place?.label || nodeLabel(x.topicId) || '')} · latest ${esc(ago(x.lastSeen))}</span><span class="bar2"><i></i></span></div>`;
   }
 
   function refresh() {
@@ -820,6 +987,17 @@
       state.bg = await bgLoad;
       if (!validView(state.view)) state.view = 'world';
       refresh();
+      // Any click of yours stops a running tour (except its own buttons).
+      document.getElementById('app').addEventListener('click', (e) => {
+        if (state.tour && e.isTrusted && !e.target.closest('.tourcap, [data-tour]')) endTour(false, true);
+      }, true);
+      // The first visit of the day to US politics starts the tour by itself.
+      if (US && state.view === 'world' && !reduceMotion()) {
+        let seen = null;
+        const today = new Date().toISOString().slice(0, 10);
+        try { seen = localStorage.getItem('itl-us-tour'); localStorage.setItem('itl-us-tour', today); } catch {}
+        if (seen !== today) setTimeout(() => { if (!state.tour && state.view === 'world') startTour(); }, 1800);
+      }
       const follow = () => state.api.follow({
         onPost: (post) => {
           if (!state.api.live.add(post)) return;
@@ -844,6 +1022,18 @@
     } catch (err) {
       document.getElementById('app').innerHTML = `<p class="loading">Could not load the live map: ${esc(err.message)}</p>`;
     }
+  }
+  // Arriving from the world map's zoom: keep the United States on screen
+  // while the US data loads, so the zoom carries on instead of blinking.
+  if (US && params.get('arrive') && window.itlLive) {
+    fetch('maps.json').then((r) => r.json()).then((maps) => {
+      const app = document.getElementById('app');
+      if (state.data || !app.querySelector('.loading')) return;
+      const W = maps.views.world, u = maps.views.usa;
+      const k = Math.cos((((W.north + W.south) / 2) * Math.PI) / 180), sx = W.width / (W.east - W.west), sy = sx / k;
+      const x0 = (u.west - W.west) * sx, x1 = (u.east - W.west) * sx, y0 = (W.north - u.north) * sy, y1 = (W.north - u.south) * sy;
+      app.innerHTML = `<div class="wrap"><div class="map zoomed arrivewait"><svg viewBox="${x0} ${y0} ${x1 - x0} ${y1 - y0}" preserveAspectRatio="xMidYMid slice" style="aspect-ratio:${u.width}/${u.height}" aria-hidden="true">${W.countries.map((c) => `<path class="country${c.name === 'United States of America' ? ' focus' : ''}" style="vector-effect:non-scaling-stroke" d="${c.d}"/>`).join('')}</svg><p>Opening US politics…</p></div></div>`;
+    }).catch(() => {});
   }
   if (!window.itlLive) {
     document.getElementById('app').innerHTML = '<p class="loading">The live map runs in the static build. Run <code>npm run build:site</code> and open _site/index.html through any static web server.</p>';

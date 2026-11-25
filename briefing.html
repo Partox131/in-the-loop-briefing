@@ -55,6 +55,16 @@
   h1 { margin: 0; font: 800 clamp(48px, 7vw, 80px)/1 var(--display); letter-spacing: -0.03em; }
   .sub { margin: 14px 0 0; color: var(--muted); font-size: 17px; max-width: 60ch; }
   .breakingtag { display: inline-block; margin-bottom: 8px; padding: 2px 10px; border-radius: 999px; background: var(--breaking); color: #fff; font-size: 13px; font-weight: 700; letter-spacing: .04em; }
+  /* Where an ongoing fight stands (a court case, a bill): its steps. */
+  .steps { margin: 12px 0 4px; max-width: 560px; }
+  .steps ol { list-style: none; display: flex; margin: 6px 0 4px; padding: 0; }
+  .steps li { flex: 1; position: relative; padding-top: 18px; font-size: 13px; line-height: 1.25; color: var(--muted); text-align: center; }
+  .steps li::before { content: ''; position: absolute; z-index: 1; top: 3px; left: 50%; width: 12px; height: 12px; border-radius: 50%; transform: translateX(-50%); background: var(--bg); border: 2px solid var(--line); box-sizing: border-box; }
+  .steps li + li::after { content: ''; position: absolute; top: 8px; right: 50%; width: 100%; height: 2px; background: var(--line); }
+  .steps li.done::before, .steps li.cur::before { background: var(--loop); border-color: var(--loop); }
+  .steps li.done + li::after, .steps li.cur::after { background: var(--loop); }
+  .steps li.cur { color: var(--ink); font-weight: 700; }
+  .steps p { margin: 4px 0 0; font-size: 13px; color: var(--muted); }
   .kind { margin: 0 0 6px; font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--loop); }
   .about { margin: 12px 0 0; font-size: 19px; max-width: 56ch; color: var(--ink); }
   .recap { margin: 12px 0 0; font-size: 16px; max-width: 64ch; padding: 10px 14px; border-left: 3px solid var(--loop); background: color-mix(in srgb, var(--loop) 6%, transparent); border-radius: 0 10px 10px 0; }
@@ -139,7 +149,7 @@
 </head>
 <body>
 <div id="app"><p class="loading">Loading the latest…</p></div>
-<script>window.itlSearch = location.search; window.itlStatic = import('./src/static.js?v=be58a7d5f0').then((m) => m.init({ search: window.itlSearch }));</script>
+<script>window.itlSearch = location.search; window.itlStatic = import('./src/static.js?v=11e28f81b7').then((m) => m.init({ search: window.itlSearch }));</script>
 <script>
 (() => {
   const params = new URLSearchParams(location.search);
@@ -361,6 +371,7 @@
           ${d.node.kind ? `<p class="kind">${d.node.kind === 'story' ? `Story · ${esc(d.crumbs.at(-2)?.label || '')}` : d.node.kind === 'topic' ? 'Topic' : 'Region'}</p>` : ''}
           <h1>${esc(d.node.label)}</h1>
           ${d.node.about ? `<p class="about">${esc(d.node.about)}</p>` : ''}
+          ${d.track ? `<div class="steps" aria-label="Where it stands: ${esc(d.track.label)}, step ${d.track.at + 1} of ${d.track.stages.length}"><span class="kind">Where it stands</span><ol>${d.track.stages.map((x, i) => `<li class="${i < d.track.at ? 'done' : i === d.track.at ? 'cur' : ''}">${esc(x)}</li>`).join('')}</ol><p>Based on what these reports say, not an official record.</p></div>` : ''}
           ${recapLine(d)}
           <p class="sub">${spikeLine(d)} Following ${plural(d.stats.voices, 'Bluesky voice')}${d.stats.articles ? ` and ${plural(d.stats.articles, 'news article')} from ${plural(d.stats.outlets, 'outlet')}` : ''}, updated ${esc(ago(d.generatedAt))}.${broader}${narrower}</p>
           ${sinceList(d, c)}

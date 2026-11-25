@@ -263,52 +263,71 @@
     "about": "What Washington and the states are doing: the White House, Congress, the courts, federal agencies, elections and governors.",
     "parent": "politics",
     "segment": true,
-    "gate": ["congress", "congressional", "congressman", "congresswoman", "senate", "senator", "senators", "house speaker", "speaker johnson", "house republicans", "house democrats", "republican", "republicans", "democrat", "democrats", "democratic party", "gop", "maga", "white house", "trump administration", "oval office", "executive order", "executive orders", "supreme court", "scotus", "federal judge", "district judge", "appeals court", "justice department", "department of justice", "doj", "fbi", "attorney general", "federal reserve", "fed chair", "governor", "governors", "state legislature", "midterm", "midterms", "2028", "primary", "redistricting", "gerrymander*", "impeach*", "filibuster", "capitol hill", "war powers", "house votes", "house vote", "house passes", "senate votes", "senate vote", "senate passes", "shutdown", "appropriations", "tariff", "tariffs", "immigration", "deportation", "deportations", "ice agents", "national guard", "#uspol", "#uspolitics"]
+    "gate": ["congress", "congressional", "congressman", "congresswoman", "senate", "senator", "senators", "house speaker", "speaker johnson", "house republicans", "house democrats", "republican", "republicans", "democrat", "democrats", "democratic party", "gop", "maga", "white house", "trump administration", "oval office", "executive order", "executive orders", "supreme court", "scotus", "federal judge", "district judge", "appeals court", "justice department", "department of justice", "doj", "fbi", "attorney general", "federal reserve", "fed chair", "governor", "governors", "state legislature", "midterm", "midterms", "2028", "primary", "redistricting", "gerrymander*", "impeach*", "filibuster", "capitol hill", "war powers", "house votes", "house vote", "house passes", "senate votes", "senate vote", "senate passes", "shutdown", "appropriations", "tariff", "tariffs", "immigration", "deportation", "deportations", "ice agents", "national guard", "#uspol", "#uspolitics"],
+    "map": "usa"
+  },
+  "washington": {
+    "label": "Washington",
+    "about": "The White House, Congress, the Supreme Court and the agencies, a few blocks apart around the National Mall.",
+    "parent": "us-politics",
+    "map": "dc",
+    "place": { "lon": -77.0365, "lat": 38.9072 }
   },
   "congress": {
     "label": "Congress",
     "about": "The House and Senate: spending fights, bills, hearings and votes.",
-    "parent": "us-politics",
+    "parent": "washington",
     "include": ["congress", "congressional", "senate", "senator", "senators", "house republicans", "house democrats", "house speaker", "speaker johnson", "lawmakers", "capitol hill", "filibuster", "#Congress"],
-    "map": "us-arenas",
-    "place": { "x": 20, "y": 45 }
+    "exclude": ["congressional map", "congressional maps", "congressional district", "congressional districts"],
+    "place": { "lon": -77.0091, "lat": 38.8899 }
   },
   "funding": {
     "label": "Government funding",
     "about": "Spending bills, shutdown deadlines, the debt limit and budget deals.",
     "parent": "congress",
     "include": ["government shutdown", "shutdown", "appropriations", "spending bill", "spending bills", "continuing resolution", "stopgap", "debt ceiling", "debt limit", "budget reconciliation", "reconciliation bill", "funding deadline"],
-    "place": { "x": 10, "y": 38 }
+    "place": { "lon": -77.015, "lat": 38.8938 },
+    "stages": [
+      { "label": "Talks", "terms": ["negotiat*", "talks", "framework"] },
+      { "label": "Votes", "terms": ["passes", "passed", "vote", "votes", "voted"] },
+      { "label": "Deadline", "terms": ["deadline", "shutdown looms", "hours before", "midnight"] },
+      { "label": "Shutdown or deal", "terms": ["shutdown begins", "government shut down", "shutdown ends", "averts shutdown", "averted a shutdown", "signed into law", "signs the bill"] }
+    ]
   },
   "bills": {
     "label": "Bills and votes",
     "about": "Legislation moving through the House and Senate, and how the votes go.",
     "parent": "congress",
     "include": ["passed the house", "passed the senate", "house passes", "senate passes", "house votes", "senate votes", "house vote", "senate vote", "floor vote", "cloture", "signed into law", "the bill"],
-    "place": { "x": 20, "y": 55 }
+    "place": { "lon": -77.015, "lat": 38.8858 },
+    "stages": [
+      { "label": "Introduced", "terms": ["introduced", "unveiled", "bill would"] },
+      { "label": "Passed one chamber", "terms": ["house passes", "house passed", "passed the house", "senate passes", "senate passed", "passed the senate"] },
+      { "label": "Passed both", "terms": ["heads to the president", "sent to the president", "final passage", "cleared congress"] },
+      { "label": "Law", "terms": ["signed into law", "signs the bill", "signed the bill", "becomes law"] }
+    ]
   },
   "oversight": {
     "label": "Hearings and investigations",
     "about": "Committee hearings, subpoenas, contempt votes and impeachment.",
     "parent": "congress",
     "include": ["subpoena", "subpoenas", "subpoenaed", "oversight committee", "judiciary committee", "congressional hearing", "senate hearing", "house hearing", "testify", "testified", "testimony", "impeach*", "contempt of congress"],
-    "place": { "x": 30, "y": 38 }
+    "place": { "lon": -77.003, "lat": 38.8858 }
   },
   "war-powers": {
     "label": "War powers",
     "about": "Votes and fights in Congress over the president's power to use force abroad.",
     "parent": "congress",
     "include": ["war powers", "war powers resolution", "authorization for use of military force", "aumf"],
-    "place": { "x": 10, "y": 52 }
+    "place": { "lon": -77.003, "lat": 38.8948 }
   },
   "courts": {
     "label": "Courts",
     "about": "The Supreme Court and the lower courts ruling on the administration and on the law.",
-    "parent": "us-politics",
+    "parent": "washington",
     "include": ["supreme court", "scotus", "federal judge", "district judge", "appeals court", "circuit court", "court ruling", "ruled", "injunction", "lawsuit", "#SCOTUS"],
     "exclude": ["israel's supreme court", "israeli supreme court", "high court of justice", "india's supreme court", "indian supreme court", "uk supreme court", "brazil's supreme court", "brazilian supreme court", "pakistan's supreme court"],
-    "map": "us-arenas",
-    "place": { "x": 80, "y": 45 }
+    "place": { "lon": -77.0044, "lat": 38.8906 }
   },
   "supreme-court": {
     "label": "Supreme Court",
@@ -316,116 +335,164 @@
     "parent": "courts",
     "include": ["supreme court", "scotus", "chief justice", "justice roberts", "justice thomas", "justice alito", "justice sotomayor", "justice kagan", "justice gorsuch", "justice kavanaugh", "justice barrett", "justice jackson", "oral argument", "oral arguments", "emergency docket", "shadow docket", "#SCOTUS"],
     "exclude": ["israel's supreme court", "israeli supreme court", "high court of justice", "india's supreme court", "indian supreme court", "uk supreme court", "brazil's supreme court", "brazilian supreme court", "pakistan's supreme court"],
-    "place": { "x": 80, "y": 35 }
+    "place": { "lon": -77.001, "lat": 38.8915 },
+    "stages": [
+      { "label": "Asked", "terms": ["asks the supreme court", "emergency application", "petition", "asked the justices"] },
+      { "label": "Taken up", "terms": ["agrees to hear", "will hear", "takes up", "took up"] },
+      { "label": "Argued", "terms": ["hears arguments", "heard arguments", "argued before the justices", "justices heard"] },
+      { "label": "Decided", "terms": ["ruled", "rules that", "sided with", "struck down", "upheld"] }
+    ]
   },
   "lower-courts": {
     "label": "Rulings on the administration",
     "about": "Federal judges and appeals courts blocking or allowing what the administration does.",
     "parent": "courts",
     "include": ["federal judge", "district judge", "appeals court", "circuit court", "injunction", "restraining order", "judge blocks", "judge blocked", "judge rules", "judge ruled", "court blocks", "court blocked"],
-    "place": { "x": 85, "y": 55 }
+    "place": { "lon": -77.0165, "lat": 38.8933 },
+    "stages": [
+      { "label": "Sued", "terms": ["lawsuit", "sued", "sues", "files suit"] },
+      { "label": "Blocked", "terms": ["blocks", "blocked", "injunction", "restraining order", "halts", "halted"] },
+      { "label": "Appealed", "terms": ["appeal", "appeals", "appealed", "appeals court"] },
+      { "label": "Supreme Court", "terms": ["supreme court", "emergency application", "justices"] }
+    ]
   },
   "white-house": {
     "label": "White House",
     "about": "The president and his administration: orders, appointments, trade and immigration.",
-    "parent": "us-politics",
+    "parent": "washington",
     "include": ["white house", "oval office", "trump administration", "the administration", "press secretary", "president trump", "vice president vance", "#WhiteHouse"],
-    "map": "us-arenas",
-    "place": { "x": 50, "y": 20 }
+    "place": { "lon": -77.0365, "lat": 38.8977 }
   },
   "executive-orders": {
     "label": "Executive orders",
     "about": "Orders, proclamations and memos the president signs, and what they change.",
     "parent": "white-house",
     "include": ["executive order", "executive orders", "executive action", "presidential memorandum", "proclamation", "signs order", "signed an order", "signs an order"],
-    "place": { "x": 35, "y": 12 }
+    "place": { "lon": -77.0425, "lat": 38.9012 },
+    "stages": [
+      { "label": "Signed", "terms": ["signs", "signed", "executive order", "proclamation"] },
+      { "label": "Challenged", "terms": ["lawsuit", "sued", "sues", "challenge"] },
+      { "label": "Ruled on", "terms": ["blocks", "blocked", "injunction", "upheld", "struck down"] }
+    ]
   },
   "appointments": {
     "label": "Appointments and firings",
     "about": "Who the president nominates, who the Senate confirms, and who is pushed out.",
     "parent": "white-house",
     "include": ["nominee", "nominees", "nomination", "nominated", "confirmation hearing", "confirmation vote", "cabinet", "trump fired", "trump fires", "firing of", "ousted", "resigns", "resigned", "acting director"],
-    "place": { "x": 50, "y": 8 }
+    "place": { "lon": -77.0305, "lat": 38.9015 },
+    "stages": [
+      { "label": "Named", "terms": ["nominee", "nominated", "nominates", "tapped", "nomination"] },
+      { "label": "Hearing", "terms": ["confirmation hearing", "hearing", "testified"] },
+      { "label": "Vote", "terms": ["committee vote", "advances", "cloture"] },
+      { "label": "Confirmed", "terms": ["confirmed", "confirms", "sworn in"] }
+    ]
   },
   "tariffs": {
     "label": "Tariffs and trade",
     "about": "Tariffs the administration sets or threatens, trade deals, and the fights over them in court and Congress.",
     "parents": ["white-house", "economy"],
     "include": ["tariff", "tariffs", "trade deal", "trade war", "import duties", "import taxes", "section 232", "#tariffs"],
-    "place": { "x": 65, "y": 12 }
+    "place": { "lon": -77.0435, "lat": 38.895 }
   },
   "immigration": {
     "label": "Immigration enforcement",
     "about": "Raids, deportations, the border and asylum, and the court cases over them.",
     "parent": "white-house",
     "include": ["immigration", "immigrants", "ice raid", "ice raids", "ice agents", "ice detention", "deportation", "deportations", "deported", "border patrol", "asylum", "migrants", "daca", "birthright citizenship"],
-    "place": { "x": 50, "y": 30 }
+    "place": { "lon": -77.03, "lat": 38.895 }
   },
   "agencies": {
     "label": "Agencies",
     "about": "Federal departments and agencies, from the Justice Department and FBI to the Fed.",
-    "parent": "us-politics",
+    "parent": "washington",
     "include": ["federal agency", "federal agencies", "federal workers", "federal employees", "civil servants", "inspector general"],
-    "map": "us-arenas",
-    "place": { "x": 50, "y": 60 }
+    "place": { "lon": -77.027, "lat": 38.8935 }
   },
   "doj-fbi": {
     "label": "Justice Department and FBI",
     "about": "Prosecutions, investigations and fights over the independence of the Justice Department and FBI.",
     "parent": "agencies",
     "include": ["justice department", "department of justice", "doj", "fbi", "attorney general", "u.s. attorney", "us attorney", "indictment", "indicted", "special counsel"],
-    "place": { "x": 42, "y": 66 }
+    "place": { "lon": -77.0249, "lat": 38.8932 }
   },
   "fed": {
     "label": "The Fed",
     "about": "The Federal Reserve: interest rates, its chair and the pressure on it.",
     "parents": ["agencies", "economy"],
     "include": ["federal reserve", "the fed", "fed chair", "fomc", "interest rate", "interest rates", "rate cut", "rate cuts", "rate hike"],
-    "place": { "x": 58, "y": 66 }
+    "place": { "lon": -77.0457, "lat": 38.8928 }
   },
   "elections": {
     "label": "Elections",
     "about": "Results, races, candidates and the rules for voting.",
     "parent": "us-politics",
     "include": ["election", "elections", "voters", "ballot", "ballots", "campaign", "polls", "poll"],
-    "map": "us-arenas",
-    "place": { "x": 30, "y": 82 }
+    "place": { "lon": -92.0, "lat": 38.6 }
   },
   "race-2028": {
     "label": "The 2028 race",
     "about": "Who is running for president in 2028, the primaries and the polls.",
     "parent": "elections",
     "include": ["2028", "presidential race", "presidential campaign", "presidential primary", "presidential bid", "running for president", "iowa caucus", "new hampshire primary"],
-    "place": { "x": 22, "y": 78 }
+    "place": { "lon": -93.6, "lat": 41.6 },
+    "spots": [
+      { "name": "Iowa", "lon": -93.6, "lat": 41.9, "terms": ["iowa"] },
+      { "name": "New Hampshire", "lon": -71.5, "lat": 43.4, "terms": ["new hampshire"] },
+      { "name": "South Carolina", "lon": -80.9, "lat": 33.8, "terms": ["south carolina"] },
+      { "name": "Nevada", "lon": -116.6, "lat": 39.3, "terms": ["nevada"] }
+    ]
   },
   "midterms": {
     "label": "Midterm results",
     "about": "Counting, recounts and what the midterm results mean for the House and Senate.",
     "parent": "elections",
     "include": ["midterm", "midterms", "recount", "runoff", "special election", "house majority", "senate majority", "conceded", "concedes"],
-    "place": { "x": 38, "y": 78 }
+    "place": { "lon": -84.4, "lat": 33.9 }
   },
   "redistricting": {
     "label": "Redistricting and voting rules",
     "about": "Fights over congressional maps, gerrymandering and voting rights.",
     "parent": "elections",
     "include": ["redistricting", "gerrymander*", "congressional map", "congressional maps", "district lines", "voting rights act", "voting rights"],
-    "place": { "x": 30, "y": 90 }
+    "place": { "lon": -99.0, "lat": 31.3 },
+    "spots": [
+      { "name": "Texas", "lon": -99.0, "lat": 31.3, "terms": ["texas"] },
+      { "name": "California", "lon": -119.5, "lat": 37.2, "terms": ["california"] },
+      { "name": "Missouri", "lon": -92.5, "lat": 38.4, "terms": ["missouri"] },
+      { "name": "North Carolina", "lon": -79.4, "lat": 35.5, "terms": ["north carolina"] },
+      { "name": "Ohio", "lon": -82.8, "lat": 40.3, "terms": ["ohio"] },
+      { "name": "Indiana", "lon": -86.3, "lat": 39.9, "terms": ["indiana"] },
+      { "name": "Florida", "lon": -81.7, "lat": 28.1, "terms": ["florida"] }
+    ]
   },
   "states": {
     "label": "States",
     "about": "Governors, state laws and states pushing back against Washington.",
     "parent": "us-politics",
     "include": ["governor", "governors", "state legislature", "statehouse", "state attorney general", "state attorneys general", "state law", "ballot measure", "ballot initiative"],
-    "map": "us-arenas",
-    "place": { "x": 70, "y": 82 }
+    "place": { "lon": -104.5, "lat": 40.0 }
   },
   "national-guard": {
     "label": "National Guard deployments",
     "about": "Troops sent into US cities and states, and the legal fights over it.",
     "parent": "states",
     "include": ["national guard", "guard troops", "guardsmen"],
-    "place": { "x": 70, "y": 90 }
+    "place": { "lon": -87.6, "lat": 41.9 },
+    "spots": [
+      { "name": "Chicago", "lon": -87.63, "lat": 41.88, "terms": ["chicago", "illinois"] },
+      { "name": "Portland", "lon": -122.68, "lat": 45.52, "terms": ["portland", "oregon"] },
+      { "name": "Los Angeles", "lon": -118.24, "lat": 34.05, "terms": ["los angeles"] },
+      { "name": "Memphis", "lon": -90.05, "lat": 35.15, "terms": ["memphis"] },
+      { "name": "New Orleans", "lon": -90.07, "lat": 29.95, "terms": ["new orleans"] }
+    ]
+  },
+  "state-fights": {
+    "label": "Governors vs Washington",
+    "about": "Governors and state attorneys general suing, defying or bargaining with the federal government.",
+    "parent": "states",
+    "include": ["governor sues", "governors sue", "states sue", "state attorneys general", "attorneys general", "multistate lawsuit", "coalition of states", "governor signs", "governor vetoes"],
+    "place": { "lon": -112.0, "lat": 44.0 }
   },
   "economy": { "label": "Economy" },
   "energy": { "label": "Energy", "parent": "economy" },

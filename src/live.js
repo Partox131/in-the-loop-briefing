@@ -6,11 +6,11 @@
 // up through Jetstream: a WebSocket of new posts filtered to the voices'
 // accounts, which works straight from the browser. Read-only, no login.
 
-import { buildBrief } from './brief.js?v=be58a7d5f0';
-import { KEEP_PER_VOICE } from './snapshot.js?v=be58a7d5f0';
-import { rankPosts } from './rank.js?v=be58a7d5f0';
-import { buildStorylines } from './storylines.js?v=be58a7d5f0';
-import { byDid } from './voices.js?v=be58a7d5f0';
+import { buildBrief } from './brief.js?v=11e28f81b7';
+import { KEEP_PER_VOICE } from './snapshot.js?v=11e28f81b7';
+import { rankPosts } from './rank.js?v=11e28f81b7';
+import { buildStorylines } from './storylines.js?v=11e28f81b7';
+import { byDid } from './voices.js?v=11e28f81b7';
 
 const HOUR = 3_600_000;
 
@@ -45,6 +45,26 @@ export function spotCounts(n, posts) {
     .sort((a, b) => b.count - a.count);
 }
 
+/**
+ * How far an ongoing fight has got (a lawsuit, a bill, a funding deadline):
+ * the furthest of a story's stages that recent posts mention, or null when
+ * the story has no stages or nothing names one. Based only on the words
+ * reports use, so it is a guide, not an official record.
+ */
+export function stageTrack(n, posts) {
+  if (!n.stages?.length || !posts.length) return null;
+  const hits = n.stages.map((st) => posts.filter((p) => {
+    const text = `${p.linkTitle || ''} ${p.text || ''}`.toLowerCase();
+    const tags = new Set((p.tags || []).map((t) => t.toLowerCase()));
+    return st.test.some((t) => t(text, tags));
+  }));
+  let at = -1;
+  hits.forEach((list, i) => { if (list.length) at = i; });
+  if (at < 0) return null;
+  const latest = [...hits[at]].sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt))[0];
+  return { stages: n.stages.map((st) => st.label), at, label: n.stages[at].label, mentions: hits[at].length, latest: latest.createdAt, url: latest.url };
+}
+
 /** The nodes drawn as bubbles when a node is on screen: its children that have a place. */
 export function mapChildren(h, node) {
   return h.children(node).filter((id) => h.get(id).place);
@@ -65,7 +85,7 @@ export function childOf(h, topicId, node) {
 export function isTopic(h, id) {
   if (!h.nodes.has(id)) return false;
   const n = h.get(id);
-  return n.parents.some((p) => h.get(p).map) && mapChildren(h, id).length > 0;
+  return !n.map && n.parents.some((p) => h.get(p).map) && mapChildren(h, id).length > 0;
 }
 
 /**
@@ -164,6 +184,8 @@ export function liveView({ posts, hierarchy: h, node, now, windowHours = 1, look
       place: n.place,
       // a broad topic: clicking zooms in to its stories
       topic: isTopic(h, id),
+      // a region with its own map (Washington on the US map)
+      region: Boolean(n.map),
       breaking: 0, // set by makeLive.view from breakingNews
       stories: mapChildren(h, id).length,
       count: recent.length,
@@ -176,6 +198,8 @@ export function liveView({ posts, hierarchy: h, node, now, windowHours = 1, look
       latest: recent.length ? recent.map((p) => p.createdAt).sort().at(-1) : null,
       // Cities this story spans, with how many of its posts name each one.
       spots: spotCounts(n, recent),
+      // Where an ongoing fight stands, from the last day's reports.
+      track: stageTrack(n, all),
       storylines: stories.slice(0, 3).map((s) => ({
         status: s.status,
         text: s.lead.text,
@@ -198,10 +222,15 @@ export function liveView({ posts, hierarchy: h, node, now, windowHours = 1, look
     .slice(0, 30)
     .map((p) => ({ ...postLine(p, h), area: childOf(h, p.topicId, node) }));
 
+  const inWindow = posts.filter((p) => {
+    const at = Date.parse(p.createdAt);
+    return scope.has(p.topicId) && at >= winStart && at <= t + 5 * 60_000;
+  });
   return {
     generatedAt: now.toISOString(),
     node: { id: node, label: h.get(node).label, about: h.get(node).about, topic: isTopic(h, node) },
     trail: trail(h, node),
+    links: linksBetween(h, inWindow, node),
     windowHours,
     areas: areas.sort((a, b) => b.count - a.count),
     other: (byPlace.get('other') || []).filter((p) => Date.parse(p.createdAt) >= winStart).length,
@@ -210,6 +239,46 @@ export function liveView({ posts, hierarchy: h, node, now, windowHours = 1, look
 }
 
 const round1 = (x) => Math.round(x * 10) / 10;
+
+/**
+ * Stories that touch two of a node's bubbles (a court blocks an executive
+ * order: Courts and the White House), drawn as arcs between them. A story
+ * counts for every bubble its posts were classified under, so one post
+ * about a tariff ruling links both. Busiest pairs first.
+ */
+export function linksBetween(h, posts, node, { max = 5, minPosts = 2 } = {}) {
+  const pairs = new Map();
+  for (const s of buildStorylines(posts)) {
+    const where = new Set();
+    for (const p of s.posts) for (const id of p.topicIds || [p.topicId]) {
+      const c = childOf(h, id, node);
+      if (c) where.add(c);
+    }
+    const ids = [...where].sort();
+    for (let i = 0; i < ids.length; i++) {
+      for (let j = i + 1; j < ids.length; j++) {
+        const key = `${ids[i]}|${ids[j]}`;
+        const cur = pairs.get(key) || { from: ids[i], to: ids[j], stories: 0, posts: 0, lead: null };
+        cur.stories += 1;
+        cur.posts += s.posts.length;
+        if (!cur.lead || s.posts.length > cur.lead.posts.length) cur.lead = s;
+        pairs.set(key, cur);
+      }
+    }
+  }
+  return [...pairs.values()]
+    .filter((x) => x.posts >= minPosts)
+    .sort((a, b) => b.posts - a.posts)
+    .slice(0, max)
+    .map(({ lead, ...x }) => ({ ...x, headline: headlineOf(lead.lead), url: lead.lead.url, topicId: mainTopic(lead.posts) }));
+}
+
+/** The topic most of a group of posts sit under. */
+function mainTopic(posts) {
+  const counts = new Map();
+  for (const p of posts) counts.set(p.topicId, (counts.get(p.topicId) || 0) + 1);
+  return [...counts].sort((a, b) => b[1] - a[1])[0]?.[0] || null;
+}
 
 /** A story's headline: an article's title, a link card's title, or a post's first sentence. */
 export function headlineOf(p) {
@@ -271,6 +340,7 @@ export function regionSummary({ posts, hierarchy: h, node, now, recentHours = 6,
       posts: s.posts.length,
       articles: s.posts.filter((p) => p.source === 'news').length,
       place: placeLabel(s.posts),
+      topicId: mainTopic(s.posts),
       firstSeen: s.firstSeen,
       lastSeen: s.lastSeen,
     })),
@@ -314,9 +384,7 @@ export function breakingNews({ posts, hierarchy: h, node, now, rules = BREAKING 
     .filter((x) => x.outlets)
     .sort((a, b) => b.outlets - a.outlets || Date.parse(b.s.firstSeen) - Date.parse(a.s.firstSeen))
     .map(({ s, outlets }) => {
-      const counts = new Map();
-      for (const p of s.posts) counts.set(p.topicId, (counts.get(p.topicId) || 0) + 1);
-      const topicId = [...counts].sort((a, b) => b[1] - a[1])[0][0];
+      const topicId = mainTopic(s.posts);
       return {
         id: s.lead.uri,
         headline: headlineOf(s.lead),
@@ -376,6 +444,7 @@ export function worldView({ posts, hierarchy: h, node, now, windowHours = 1, loo
     generatedAt: now.toISOString(),
     node: { id: node, label: 'the world' },
     windowHours,
+    links: [],
     areas: areas.sort((a, b) => b.count - a.count),
     other: 0,
     feed,
@@ -440,14 +509,21 @@ export function makeLive({ client, hierarchy: h, voices, node = 'geopolitics', l
       const [ranked] = rankPosts([{ ...post, handle: post.handle || voice.handle, displayName: post.displayName || voice.name }], {
         voices: voiceIndex,
       });
-      posts.push({ ...ranked, topicId: hits[0].id, matchedTerms: hits.flatMap((m) => m.terms) });
+      posts.push({ ...ranked, topicId: hits[0].id, topicIds: hits.map((m) => m.id), matchedTerms: hits.flatMap((m) => m.terms) });
       return true;
     },
     /** Regions with a map, for the view switcher. */
     regions: () => regionsOf(h, node).map((id) => ({ id, label: h.get(id).label, map: h.get(id).map })),
     /** Broad topics in a region, with their stories (for links and checking URLs). */
-    topics: () => regionsOf(h, node).flatMap((r) => mapChildren(h, r).filter((id) => isTopic(h, id))
-      .map((id) => ({ id, label: h.get(id).label, region: r, stories: mapChildren(h, id) }))),
+    // A segment with its own home map (US politics) has topics right on it
+    // (Elections, States); their region is "world", the home view.
+    topics: () => [...(h.get(node).map ? [node] : []), ...regionsOf(h, node)]
+      .flatMap((r) => mapChildren(h, r).filter((id) => isTopic(h, id))
+        .map((id) => ({ id, label: h.get(id).label, region: r === node ? 'world' : r, stories: mapChildren(h, id) }))),
+    /** The home map's id: the world for Geopolitics, the US for US politics. */
+    home: () => h.get(node).map || 'world',
+    /** The day's three biggest stories under the segment, for the guided tour. */
+    tour: ({ now = new Date() } = {}) => regionSummary({ posts, hierarchy: h, node, now, lookbackHours }).top.filter((x) => x.topicId && x.topicId !== node),
     /** Region > topic > story for a node, for breadcrumbs. */
     trail: (id) => trail(h, id),
     /** Lon/lat of a node on the map, or null. */
@@ -459,8 +535,11 @@ export function makeLive({ client, hierarchy: h, voices, node = 'geopolitics', l
     view({ now = new Date(), windowHours = 1, region = 'world' } = {}) {
       const args = { posts, hierarchy: h, now, windowHours, lookbackHours };
       const world = region === 'world' || !h.nodes.has(region) || !(h.get(region).map || isTopic(h, region));
-      const v = world ? worldView({ ...args, node }) : liveView({ ...args, node: region });
-      const summary = world ? null : regionSummary({ posts, hierarchy: h, node: region, now, lookbackHours });
+      // A segment with its own map (US politics) shows its own children at
+      // home; Geopolitics shows one bubble per region on the world map.
+      const home = world && h.get(node).map;
+      const v = world && !home ? worldView({ ...args, node }) : liveView({ ...args, node: world ? node : region });
+      const summary = world && !home ? null : regionSummary({ posts, hierarchy: h, node: world ? node : region, now, lookbackHours });
       // Breaking news anywhere we follow (the strip), and which bubbles it sits under.
       const breaking = breakingNews({ posts, hierarchy: h, node, now });
       for (const a of v.areas) a.breaking = breaking.filter((b) => b.trail.includes(a.id)).length;
