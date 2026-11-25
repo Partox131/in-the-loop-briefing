@@ -39,9 +39,9 @@ jobs:
           node-version: 22
       - name: Collect news (RSS feeds and GDELT)
         continue-on-error: true
-        run: node tools/collect-news.js --sources news.sources.json --hierarchy topics.hierarchy.example.json --previous https://partox131.github.io/in-the-loop-briefing/news.json --out news.json
+        run: node tools/collect-news.js --sources news.sources.json --hierarchy topics.hierarchy.example.json --previous https://inthelooplive.com/news.json --out news.json
       - name: Keep the last news.json if collecting failed
-        run: test -s news.json || curl -sf https://partox131.github.io/in-the-loop-briefing/news.json -o news.json || true
+        run: test -s news.json || curl -sfL https://inthelooplive.com/news.json -o news.json || true
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
