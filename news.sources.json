@@ -1051,7 +1051,8 @@
         "ca-politics"
       ],
       "feeds": [
-        "https://nationalpost.com/category/news/politics/feed"
+        "https://nationalpost.com/category/news/feed",
+        "https://nationalpost.com/feed"
       ],
       "lean": "centre-right"
     },
