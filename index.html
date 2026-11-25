@@ -365,7 +365,7 @@
 <div class="crawl">
   <h1>In the Loop: what's moving around the world</h1>
   <p>A live map of what credible outlets, reporters and analysts are saying about geopolitics, US politics and Canadian politics. Each story shows how many independent outlets carry it, whether it's confirmed or disputed, and what changed since you last looked. Sources include Bluesky, news outlets' feeds and official Telegram channels, refreshed every few minutes.</p>
-  <nav aria-label="Regions and segments"><a href="index.html?view=middle-east">Middle East: the war with Iran, Gaza and Lebanon</a> · <a href="index.html?view=eastern-europe">Eastern Europe: the war in Ukraine and NATO's eastern flank</a> · <a href="index.html?view=east-asia">East Asia: China and Taiwan</a> · <a href="index.html?segment=us">US politics</a> · <a href="index.html?segment=ca">Canadian politics</a> · <a href="briefing.html">Briefing</a></nav>
+  <nav aria-label="Regions and segments"><a href="/middle-east/">Middle East: the war with Iran, Gaza and Lebanon</a> · <a href="/eastern-europe/">Eastern Europe: the war in Ukraine and NATO's eastern flank</a> · <a href="/east-asia/">East Asia: China and Taiwan</a> · <a href="/us-politics/">US politics</a> · <a href="/canadian-politics/">Canadian politics</a> · <a href="briefing.html">Briefing</a> · <a href="/about/">About and how it works</a></nav>
 </div></div>
 <script>window.itlSearch = location.search; window.itlLive = (demo, node) => import('./src/static.js?v=4841c59de7').then((m) => m.initLive({ demo, node, search: window.itlSearch }));</script>
 <script>
@@ -1079,6 +1079,7 @@
       <h2 id="bgh">${esc(bg.title)}</h2>
       <p class="lede">${esc(bg.lede)}</p>
       ${conflicts}
+      <p class="fine"><a href="/${esc(regionOf(state.view).id)}/">Read the background as a page you can share</a> · <a href="/about/">How In the Loop works</a></p>
       <p class="fine">Written by In the Loop on ${esc(dateText(state.bg.reviewed))} from the sources linked, and updated by hand. Figures are the latest we found that day, not live. Death tolls in wars are hard to verify and sources count differently, so we name who counted.</p>
     </section>`;
   }

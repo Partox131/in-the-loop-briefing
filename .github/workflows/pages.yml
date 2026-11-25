@@ -42,6 +42,10 @@ jobs:
         run: node tools/collect-news.js --sources news.sources.json --hierarchy topics.hierarchy.example.json --previous https://inthelooplive.com/news.json --out news.json
       - name: Keep the last news.json if collecting failed
         run: test -s news.json || curl -sfL https://inthelooplive.com/news.json -o news.json || true
+      - name: Refresh the region pages and sitemap from the server's snapshot
+        continue-on-error: true
+        timeout-minutes: 3
+        run: node tools/make-pages.js --dir .
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
