@@ -284,13 +284,13 @@
   .portal .slabstates { fill: none; stroke: color-mix(in srgb, var(--loop) 35%, #FFFFFF); stroke-width: .5; vector-effect: non-scaling-stroke; opacity: .9; }
   .portal:hover .slabtop, .portal:focus-visible .slabtop { transform: translateY(-3px); }
   .portal:hover .slabshadow, .portal:focus-visible .slabshadow { opacity: .3; }
-  /* Canada is red: its slab on the world map, and its provinces on its own map. */
-  .portal.ca .slabside { fill: #8E1B14; stroke: #8E1B14; }
-  .portal.ca .slabface { fill: url(#slabCa); stroke: #C8102E; }
-  .portal.ca .slabstates { stroke: #FFFFFF; opacity: .75; }
-  .portal.ca .pname, .portal.ca .pgo { fill: #FFFFFF; paint-order: stroke; stroke: #8E1B14; stroke-width: 2.5px; }
-  .seg-ca .state { fill: color-mix(in srgb, #D52B1E 22%, #FFFFFF); stroke: color-mix(in srgb, #D52B1E 45%, var(--border)); }
-  .seg-ca .zoomed .country.focus { fill: color-mix(in srgb, #D52B1E 22%, #FFFFFF); }
+  /* Canada is red like the US is blue: red borders, a light red surface, red province lines. */
+  .portal.ca .slabside { fill: color-mix(in srgb, #D52B1E 55%, #1D2147); stroke: color-mix(in srgb, #D52B1E 55%, #1D2147); }
+  .portal.ca .slabface { fill: url(#slabCa); stroke: #D52B1E; }
+  .portal.ca .slabstates { stroke: color-mix(in srgb, #D52B1E 35%, #FFFFFF); }
+  .portal.ca .pgo { fill: #C8102E; }
+  .seg-ca .state { fill: color-mix(in srgb, #D52B1E 12%, #FFFFFF); stroke: color-mix(in srgb, #D52B1E 55%, var(--border)); }
+  .seg-ca .zoomed .country.focus { fill: color-mix(in srgb, #D52B1E 12%, #FFFFFF); }
   .map.arrive .portal .slabtop { animation: lift .9s .3s cubic-bezier(.3, 1.5, .5, 1) both; }
   @keyframes lift { from { transform: translateY(5px); } }
   .portal:focus { outline: none; }
@@ -729,7 +729,7 @@
     const t = topicOf(state.view), tIcon = t && state.api.live.iconOf(t.id), tAt = tIcon && state.api.live.placeOf(t.id);
     const backdrop = tAt && SCULPTURES[tIcon] ? (() => { const [x, y] = state.api.project(m, tAt.lon, tAt.lat); return sculpture(tIcon, x, y, 115 * s, 'sc backdrop'); })() : '';
     const landmarks = m.city ? m.city.monuments.filter((x) => /Monument/.test(x.name)).map((x) => sculpture('monument', x.xy[0], x.xy[1], 150 * s, 'sc landmark')).join('') : '';
-    return `<svg viewBox="${box.x.toFixed(1)} ${box.y.toFixed(1)} ${box.w.toFixed(1)} ${box.h.toFixed(1)}" style="--s:${s.toFixed(3)}" role="group" aria-label="Map of ${esc(topicOf(state.view)?.label || m.label)} with one bubble per ${what}">${NAT || mapId === 'world' ? SCULPT_DEFS : ''}${mapId === 'world' ? '<defs><linearGradient id="slabCa" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F0505A"/><stop offset=".55" stop-color="#D52B1E"/><stop offset="1" stop-color="#A3171A"/></linearGradient><linearGradient id="slabG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".6" stop-color="#E6EAFB"/><stop offset="1" stop-color="#C9D1F5"/></linearGradient></defs>' : ''}${countries}${extras}${landmarks}${backdrop}${dots}${leaders}${arcs(d.links, nodes, s, k)}${bubbles}</svg>`;
+    return `<svg viewBox="${box.x.toFixed(1)} ${box.y.toFixed(1)} ${box.w.toFixed(1)} ${box.h.toFixed(1)}" style="--s:${s.toFixed(3)}" role="group" aria-label="Map of ${esc(topicOf(state.view)?.label || m.label)} with one bubble per ${what}">${NAT || mapId === 'world' ? SCULPT_DEFS : ''}${mapId === 'world' ? '<defs><linearGradient id="slabCa" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".6" stop-color="#FBE6E6"/><stop offset="1" stop-color="#F5C9C9"/></linearGradient><linearGradient id="slabG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".6" stop-color="#E6EAFB"/><stop offset="1" stop-color="#C9D1F5"/></linearGradient></defs>' : ''}${countries}${extras}${landmarks}${backdrop}${dots}${leaders}${arcs(d.links, nodes, s, k)}${bubbles}</svg>`;
   }
 
   // A place drawn as a model: a glow on the ground in its status colour
