@@ -6,7 +6,7 @@
 // it, but higher nodes use a longer time window and only surface the top few
 // items per child. See docs/design/topic-tracking.md.
 
-import { compileMatcher, compileTerm, makeTopic } from './topic.js?v=11e28f81b7';
+import { compileMatcher, compileTerm, makeTopic } from './topic.js?v=486381c70d';
 
 /**
  * @typedef {Object} TopicNode
@@ -36,8 +36,9 @@ export function makeHierarchy(spec) {
     // stages: the steps an ongoing fight goes through (a lawsuit, a bill),
     // each with the words reports use when it gets there: [{ label, terms }].
     const stages = (n.stages || []).map((x) => ({ label: x.label, test: (x.terms || [x.label]).map(compileTerm) }));
+    // icon: a small 3D model drawn instead of a plain bubble (the White House…), see public/live.html SCULPTURES.
     // about: one hand-written line saying what a topic or story is (shown on the map and story page).
-    nodes.set(id, { id, label: n.label || id, about: n.about || '', spots, stages, parents, topic, gate, lenses: n.lenses || {}, place: n.place || null, map: n.map || null });
+    nodes.set(id, { id, label: n.label || id, about: n.about || '', spots, stages, parents, topic, gate, lenses: n.lenses || {}, place: n.place || null, map: n.map || null, icon: n.icon || null });
   }
   const children = new Map([...nodes.keys()].map((id) => [id, []]));
   for (const n of nodes.values()) {

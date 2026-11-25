@@ -268,6 +268,7 @@
   },
   "washington": {
     "label": "Washington",
+    "icon": "monument",
     "about": "The White House, Congress, the Supreme Court and the agencies, a few blocks apart around the National Mall.",
     "parent": "us-politics",
     "map": "dc",
@@ -275,6 +276,7 @@
   },
   "congress": {
     "label": "Congress",
+    "icon": "capitol",
     "about": "The House and Senate: spending fights, bills, hearings and votes.",
     "parent": "washington",
     "include": ["congress", "congressional", "senate", "senator", "senators", "house republicans", "house democrats", "house speaker", "speaker johnson", "lawmakers", "capitol hill", "filibuster", "#Congress"],
@@ -323,6 +325,7 @@
   },
   "courts": {
     "label": "Courts",
+    "icon": "supreme-court",
     "about": "The Supreme Court and the lower courts ruling on the administration and on the law.",
     "parent": "washington",
     "include": ["supreme court", "scotus", "federal judge", "district judge", "appeals court", "circuit court", "court ruling", "ruled", "injunction", "lawsuit", "#SCOTUS"],
@@ -358,6 +361,7 @@
   },
   "white-house": {
     "label": "White House",
+    "icon": "white-house",
     "about": "The president and his administration: orders, appointments, trade and immigration.",
     "parent": "washington",
     "include": ["white house", "oval office", "trump administration", "the administration", "press secretary", "president trump", "vice president vance", "#WhiteHouse"],
@@ -404,6 +408,7 @@
   },
   "agencies": {
     "label": "Agencies",
+    "icon": "federal-building",
     "about": "Federal departments and agencies, from the Justice Department and FBI to the Fed.",
     "parent": "washington",
     "include": ["federal agency", "federal agencies", "federal workers", "federal employees", "civil servants", "inspector general"],
@@ -425,6 +430,7 @@
   },
   "elections": {
     "label": "Elections",
+    "icon": "ballot-box",
     "about": "Results, races, candidates and the rules for voting.",
     "parent": "us-politics",
     "include": ["election", "elections", "voters", "ballot", "ballots", "campaign", "polls", "poll"],
@@ -468,6 +474,7 @@
   },
   "states": {
     "label": "States",
+    "icon": "statehouse",
     "about": "Governors, state laws and states pushing back against Washington.",
     "parent": "us-politics",
     "include": ["governor", "governors", "state legislature", "statehouse", "state attorney general", "state attorneys general", "state law", "ballot measure", "ballot initiative"],

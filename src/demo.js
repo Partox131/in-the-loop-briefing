@@ -5,7 +5,7 @@
 // The data goes through the real pipeline (classify, rank, storylines), so
 // the demo also shows what the code does with it.
 
-import { makeVoice } from './voices.js?v=11e28f81b7';
+import { makeVoice } from './voices.js?v=486381c70d';
 
 const MIN = 60_000;
 

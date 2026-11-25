@@ -6,11 +6,11 @@
 // up through Jetstream: a WebSocket of new posts filtered to the voices'
 // accounts, which works straight from the browser. Read-only, no login.
 
-import { buildBrief } from './brief.js?v=11e28f81b7';
-import { KEEP_PER_VOICE } from './snapshot.js?v=11e28f81b7';
-import { rankPosts } from './rank.js?v=11e28f81b7';
-import { buildStorylines } from './storylines.js?v=11e28f81b7';
-import { byDid } from './voices.js?v=11e28f81b7';
+import { buildBrief } from './brief.js?v=486381c70d';
+import { KEEP_PER_VOICE } from './snapshot.js?v=486381c70d';
+import { rankPosts } from './rank.js?v=486381c70d';
+import { buildStorylines } from './storylines.js?v=486381c70d';
+import { byDid } from './voices.js?v=486381c70d';
 
 const HOUR = 3_600_000;
 
@@ -186,6 +186,8 @@ export function liveView({ posts, hierarchy: h, node, now, windowHours = 1, look
       topic: isTopic(h, id),
       // a region with its own map (Washington on the US map)
       region: Boolean(n.map),
+      // a small 3D model of the place (the White House…) instead of a plain bubble
+      icon: n.icon,
       breaking: 0, // set by makeLive.view from breakingNews
       stories: mapChildren(h, id).length,
       count: recent.length,
@@ -526,6 +528,8 @@ export function makeLive({ client, hierarchy: h, voices, node = 'geopolitics', l
     tour: ({ now = new Date() } = {}) => regionSummary({ posts, hierarchy: h, node, now, lookbackHours }).top.filter((x) => x.topicId && x.topicId !== node),
     /** Region > topic > story for a node, for breadcrumbs. */
     trail: (id) => trail(h, id),
+    /** The 3D model a node is drawn as (the White House…), or null. */
+    iconOf: (id) => (h.nodes.has(id) ? h.get(id).icon : null),
     /** Lon/lat of a node on the map, or null. */
     placeOf: (id) => (h.nodes.has(id) ? h.get(id).place : null),
     /**
