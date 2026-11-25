@@ -10,21 +10,21 @@
 // as the fallback (src/snapshot.js). Add ?direct=1 to the URL to skip the
 // server, or ?snapshot=<url> to try another one.
 
-import { BskyClient } from './bsky.js?v=0e5f91b6d6';
-import { buildBrief } from './brief.js?v=0e5f91b6d6';
-import { DEMO_VOICES, demoFetch } from './demo.js?v=0e5f91b6d6';
-import { project } from './geo.js?v=0e5f91b6d6';
-import { makeHierarchy } from './hierarchy.js?v=0e5f91b6d6';
-import { subscribePosts } from './jetstream.js?v=0e5f91b6d6';
-import { makeLive } from './live.js?v=0e5f91b6d6';
-import { newsPosts } from './news.js?v=0e5f91b6d6';
-import { SnapshotClient } from './snapshot.js?v=0e5f91b6d6';
-import { makeVoice } from './voices.js?v=0e5f91b6d6';
-import { briefView } from './view.js?v=0e5f91b6d6';
+import { BskyClient } from './bsky.js?v=4841c59de7';
+import { buildBrief } from './brief.js?v=4841c59de7';
+import { DEMO_VOICES, demoFetch } from './demo.js?v=4841c59de7';
+import { project } from './geo.js?v=4841c59de7';
+import { makeHierarchy } from './hierarchy.js?v=4841c59de7';
+import { subscribePosts } from './jetstream.js?v=4841c59de7';
+import { makeLive } from './live.js?v=4841c59de7';
+import { newsPosts } from './news.js?v=4841c59de7';
+import { SnapshotClient } from './snapshot.js?v=4841c59de7';
+import { makeVoice } from './voices.js?v=4841c59de7';
+import { briefView } from './view.js?v=4841c59de7';
 
 const SINCE_HOURS = { '6h': 6, '12h': 12, '24h': 24, '48h': 48, '7d': 168 };
 const CACHE_MS = 120_000;
-export const SNAPSHOT_URL = 'https://159-203-56-41.sslip.io/snapshot.json';
+export const SNAPSHOT_URL = 'https://api.inthelooplive.com/snapshot.json';
 
 /** The server's snapshot in front of Bluesky, unless the URL says ?direct=1. */
 export function makeClient({ search = globalThis.location?.search || '', url = SNAPSHOT_URL } = {}) {  const direct = new BskyClient();

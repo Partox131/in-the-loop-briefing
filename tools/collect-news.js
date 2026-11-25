@@ -16,11 +16,11 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { makeHierarchy } from '../src/hierarchy.js?v=0e5f91b6d6';
-import { makeOutlets, mergeArticles, parseFeed, parseGdelt, parseTelegram, telegramOutlets } from '../src/news.js?v=0e5f91b6d6';
+import { makeHierarchy } from '../src/hierarchy.js?v=4841c59de7';
+import { makeOutlets, mergeArticles, parseFeed, parseGdelt, parseTelegram, telegramOutlets } from '../src/news.js?v=4841c59de7';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const UA = 'InTheLoopNewsCollector/0.1 (+https://partox131.github.io/in-the-loop-briefing/)';
+const UA = 'InTheLoopNewsCollector/0.1 (+https://inthelooplive.com/)';
 const GDELT = 'https://api.gdeltproject.org/api/v2/doc/doc';
 const TELEGRAM_GAP_MS = 1_000; // one channel page a second, politely
 const GDELT_GAP_MS = 10_000; // GDELT asks for at most one request every 5 seconds

@@ -19,12 +19,12 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { BskyClient } from '../src/bsky.js?v=0e5f91b6d6';
-import { buildBrief } from '../src/brief.js?v=0e5f91b6d6';
-import { makeHierarchy } from '../src/hierarchy.js?v=0e5f91b6d6';
-import { newsPosts } from '../src/news.js?v=0e5f91b6d6';
-import { TIER_NAME, makeVoice } from '../src/voices.js?v=0e5f91b6d6';
-import { stateCountry } from '../src/flags.js?v=0e5f91b6d6';
+import { BskyClient } from '../src/bsky.js?v=4841c59de7';
+import { buildBrief } from '../src/brief.js?v=4841c59de7';
+import { makeHierarchy } from '../src/hierarchy.js?v=4841c59de7';
+import { newsPosts } from '../src/news.js?v=4841c59de7';
+import { TIER_NAME, makeVoice } from '../src/voices.js?v=4841c59de7';
+import { stateCountry } from '../src/flags.js?v=4841c59de7';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const HOUR = 3_600_000;
@@ -204,7 +204,7 @@ export { FEED_STATUS };
 
 function args(argv) {
   const o = {
-    news: 'https://partox131.github.io/in-the-loop-briefing/news.json',
+    news: 'https://inthelooplive.com/news.json',
     voices: join(root, 'voices.example.json'),
     hierarchy: join(root, 'topics.hierarchy.example.json'),
     node: 'geopolitics',
