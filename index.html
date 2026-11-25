@@ -84,7 +84,13 @@
   .map.leaving .bubble, .map.leaving .leader, .map.leaving .anchor, .map.leaving .clabel, .map.leaving .cartouche { opacity: 0; transition: opacity .2s; }
   .map.flying svg { height: 100%; }
   .map.flying .country { vector-effect: non-scaling-stroke; transition: fill .9s; }
-  .map.arrive .country, .map.arrive .grat, .map.arrive .clabel { animation: fadein .5s ease-out both; }
+  /* The land only fades in on the first load; after a flight it is already on
+     screen (the camera's last frame cross-fades into it), so it never blinks. */
+  .map.arrive.fresh .country, .map.arrive.fresh .state, .map.arrive .grat, .map.arrive .clabel { animation: fadein .5s ease-out both; }
+  .map > svg.handoff { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; animation: fadeout .45s ease-in both; }
+  .map > svg.handoff .country, .map > svg.handoff .state { vector-effect: non-scaling-stroke; }
+  @keyframes fadeout { to { opacity: 0; } }
+  .waitnote { position: absolute; left: 0; right: 0; bottom: 12px; margin: 0; text-align: center; color: var(--muted); font-size: 14px; animation: fadein .3s .25s both; }
   .map.arrive .bubble { animation: pop .55s cubic-bezier(.2, 1.4, .4, 1) both; animation-delay: calc(var(--i, 0) * 50ms + 80ms); transform-box: fill-box; transform-origin: center; }
   .map.arrive .cartouche { animation: slidein .5s .15s ease-out both; }
   @keyframes pop { from { opacity: 0; transform: scale(.2); } to { opacity: 1; transform: none; } }
@@ -245,7 +251,7 @@
   .citylabel.water { fill: color-mix(in srgb, var(--loop) 60%, var(--muted)); font-style: italic; letter-spacing: .08em; text-transform: none; font-weight: 600; }
   .citylabel.road { letter-spacing: .04em; text-transform: none; font-weight: 600; opacity: .8; }
   .map.leaving .citylabel, .map.leaving .arcs, .map.leaving .portal { opacity: 0; transition: opacity .2s; }
-  .map.arrive .citylabel, .map.arrive .city-base { animation: fadein .5s ease-out both; }
+  .map.arrive .citylabel, .map.arrive.fresh .city-base { animation: fadein .5s ease-out both; }
   .map.arrive .arcs { animation: fadein .6s .5s ease-out both; }
   /* Models of the places (the White House, the Capitol…) instead of plain bubbles. */
   .sculpt .sc { transform-box: fill-box; transform-origin: 50% 100%; transition: transform .3s cubic-bezier(.3, 1.4, .5, 1), filter .3s; filter: drop-shadow(0 1px 1px rgba(10, 11, 28, .18)); }
@@ -335,7 +341,7 @@
 </head>
 <body>
 <div id="app"><p class="loading">Loading the live map…</p></div>
-<script>window.itlSearch = location.search; window.itlLive = (demo, node) => import('./src/static.js?v=45341712be').then((m) => m.initLive({ demo, node, search: window.itlSearch }));</script>
+<script>window.itlSearch = location.search; window.itlLive = (demo, node) => import('./src/static.js?v=0e5f91b6d6').then((m) => m.initLive({ demo, node, search: window.itlSearch }));</script>
 <script>
 (() => {
   const params = new URLSearchParams(location.search);
@@ -359,14 +365,20 @@
       homeSub: 'Ottawa, the provinces, the polls, and Canada and the US, from tracked voices and outlets across the spectrum, in English for now. Bubble size is posts and articles; colour is where the main stories stand; a moving line joins two places that share a story. Zoom into Ottawa to see each arena on its real building.',
     },
   };
-  const SEG_KEY = SEGS[params.get('segment')] ? params.get('segment') : null;
-  const SEG = SEG_KEY ? SEGS[SEG_KEY] : null;
-  const NAT = Boolean(SEG); // a country's politics: own maps, arenas, lean labels
-  if (SEG_KEY) document.body.classList.add(`seg-${SEG_KEY}`);
-  const SEG_NODE = NAT ? SEG.node : 'geopolitics';
-  // The home view's map: the world, or the country's own map.
-  const HOME = NAT ? SEG.home : 'world';
-  const HOME_LABEL = NAT ? SEG.homeLabel : 'World';
+  // The segment on screen. The page switches segments in place (no reload),
+  // so these change with setSeg().
+  let SEG_KEY, SEG, NAT, SEG_NODE, HOME, HOME_LABEL;
+  function setSeg(key) {
+    SEG_KEY = SEGS[key] ? key : null;
+    SEG = SEG_KEY ? SEGS[SEG_KEY] : null;
+    NAT = Boolean(SEG); // a country's politics: own maps, arenas, lean labels
+    for (const k of Object.keys(SEGS)) document.body.classList.toggle(`seg-${k}`, k === SEG_KEY);
+    SEG_NODE = NAT ? SEG.node : 'geopolitics';
+    // The home view's map: the world, or the country's own map.
+    HOME = NAT ? SEG.home : 'world';
+    HOME_LABEL = NAT ? SEG.homeLabel : 'World';
+  }
+  setSeg(params.get('segment'));
   const state = {
     view: params.get('view') || 'world', // "world" or a region id; checked once regions load
     window: ['1h', '6h', '24h'].includes(params.get('window')) ? params.get('window') : '6h',
@@ -379,7 +391,9 @@
     data: null,
     bg: null,        // backgrounders.json: the broad story of each region
     flying: false,   // a zoom animation is running; renders wait for it
-    arrive: true,    // pop the bubbles in on the next render
+    switching: false, // moving to another segment; renders wait for it
+    arrive: 'fresh', // on the next render: 'fresh' fades the map in (first load), true pops the bubbles in
+    handoff: null,   // the camera's last frame after a flight, cross-faded into the new map
     tour: null,      // the guided tour while it runs: { list, i, timer }
   };
   const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -857,29 +871,32 @@
   // 25 Nov 2026): people first pick what they want to follow, then get a
   // list. The map takes the whole width there. Set to true to bring it back.
   const FEED_ON_HOME = false;
-  const sideOf = (view) => FEED_ON_HOME || NAT || view !== 'world' || Boolean(intoSeg(view));
-  // How wide the map will be in a view: the side column takes 340px plus the
-  // 28px gap when there is room for both (see .mapcol and aside in the CSS).
-  function mapWidthFor(view) {
+  const sideFor = (key, view) => FEED_ON_HOME || Boolean(SEGS[key]) || view !== 'world' || Boolean(intoSeg(view));
+  const sideOf = (view) => sideFor(SEG_KEY, view);
+  // How wide the map will be: the side column takes 340px plus the 28px gap
+  // when there is room for both (see .mapcol and aside in the CSS).
+  function mapWidthFor(side) {
     const lay = document.querySelector('.layout');
     if (!lay) return null;
     const w = lay.clientWidth;
-    return sideOf(view) && w >= 620 + 28 + 340 ? w - 28 - 340 : w;
+    return side && w >= 620 + 28 + 340 ? w - 28 - 340 : w;
   }
   const intoSeg = (view) => (typeof view === 'string' && view.startsWith('@') ? SEGS[view.slice(1)] || null : null);
+  /** Part `c` of map `v` (its pixels), in map `W`'s pixels: both projections are linear in lon/lat. */
+  function boxOn(W, v, c = { x: 0, y: 0, w: v.width, h: v.height }) {
+    const lon = (x) => v.west + (x / v.width) * (v.east - v.west);
+    const lat = (y) => v.north - (y / v.height) * (v.north - v.south);
+    const [x0, y0] = state.api.project(W, lon(c.x), lat(c.y));
+    const [x1, y1] = state.api.project(W, lon(c.x + c.w), lat(c.y + c.h));
+    return { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
+  }
   /** A view's area in home-map pixels: the whole home map, or a region's lon/lat box. */
   function boxOf(view) {
     const W = state.api.maps[HOME];
     if (view === 'world') return { x: 0, y: 0, w: W.width, h: W.height };
     const into = intoSeg(view);
     const v = state.api.maps[into ? into.home : mapOf(view)];
-    const c = into ? { x: 0, y: 0, w: v.width, h: v.height } : cropOf(view);
-    // map pixels back to lon/lat (the projection is linear), then to world pixels
-    const lon = (x) => v.west + (x / v.width) * (v.east - v.west);
-    const lat = (y) => v.north - (y / v.height) * (v.north - v.south);
-    const [x0, y0] = state.api.project(W, lon(c.x), lat(c.y));
-    const [x1, y1] = state.api.project(W, lon(c.x + c.w), lat(c.y + c.h));
-    return { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
+    return boxOn(W, v, into ? undefined : cropOf(view));
   }
   /** Grow a box around its centre to a width/height ratio, so it fills the frame. */
   function fit(b, aspect) {
@@ -889,6 +906,8 @@
     return { x: cx - w / 2, y: cy - h / 2, w, h };
   }
   const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
+  // How long the bubbles take to fade before the camera moves.
+  const LEAVE_MS = 160;
 
   // The camera flies over the world map from one view's box to the other's,
   // while the frame changes shape to the new map's proportions.
@@ -896,26 +915,40 @@
     const el = document.querySelector('.map');
     if (!el || reduceMotion()) return Promise.resolve();
     if (!intoSeg(to) && mapOf(from) === mapOf(to)) return flyWithin(el, from, to);
+    const bg = to === 'world' ? null : state.bg?.regions?.[to];
+    return flight(el, {
+      base: state.api.maps[HOME],
+      target: state.api.maps[intoSeg(to)?.home || mapOf(to)],
+      from: boxOf(from), to: boxOf(to),
+      side: sideOf(to),
+      zoomed: to !== 'world' || NAT, // tints the countries in as we fly
+      cls: (name) => (name === intoSeg(to)?.country || bg?.focus?.includes(name) ? 'country focus' : bg?.watch?.includes(name) ? 'country watch' : 'country'),
+    });
+  }
+
+  /**
+   * One flight of the camera over map `base`, from box `from` to box `to`
+   * (base-map pixels), ending on a frame shaped like map `target`. The last
+   * frame stays in state.handoff, so the next render cross-fades from it
+   * instead of drawing the new map in from blank.
+   */
+  function flight(el, { base, target, from, to, side, zoomed, cls }) {
     state.flying = true;
     el.classList.add('leaving');
     return new Promise((done) => setTimeout(() => {
-      const W = state.api.maps[HOME];
-      const target = state.api.maps[intoSeg(to)?.home || mapOf(to)];
       const width = el.clientWidth, h0 = el.clientHeight;
-      const w1 = sideOf(from) === sideOf(to) ? width : mapWidthFor(to) || width; // map grows or shrinks when the side column comes or goes
+      const sideNow = Boolean(document.querySelector('aside'));
+      const w1 = sideNow === side ? width : mapWidthFor(side) || width; // map grows or shrinks when the side column comes or goes
       const h1 = (w1 * target.height) / target.width;
-      const A = fit(boxOf(from), width / h0), B = fit(boxOf(to), w1 / h1);
-      const bg = to === 'world' ? null : state.bg?.regions?.[to];
-      const cls = (name) => (bg?.focus?.includes(name) ? 'country focus' : bg?.watch?.includes(name) ? 'country watch' : 'country');
+      const A = fit(from, width / h0), B = fit(to, w1 / h1);
       el.style.height = `${h0}px`;
-      if (w1 !== width) { el.style.width = `${width}px`; if (!sideOf(to)) document.querySelector('aside')?.remove(); }
-      el.className = 'map flying';
-      el.innerHTML = `<svg viewBox="${A.x} ${A.y} ${A.w} ${A.h}" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${baseShapes(W, cls, false)}</svg>`;
+      if (w1 !== width) { el.style.width = `${width}px`; if (!side) document.querySelector('aside')?.remove(); }
+      el.className = `map flying${zoomed ? ' zoomed' : ''}`;
+      el.innerHTML = `<svg viewBox="${A.x} ${A.y} ${A.w} ${A.h}" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${baseShapes(base, cls, false)}</svg>`;
       const svg = el.firstElementChild;
       el.getBoundingClientRect();
       el.style.height = `${h1}px`;
       if (w1 !== width) el.style.width = `${w1}px`;
-      if (to !== 'world' || NAT) el.classList.add('zoomed'); // tints the countries in as we fly
       const t0 = performance.now(), D = 950;
       const step = (now) => {
         const t = Math.min(1, (now - t0) / D), e = ease(t);
@@ -923,10 +956,10 @@
         const cx = A.x + A.w / 2 + (B.x + B.w / 2 - A.x - A.w / 2) * e;
         const cy = A.y + A.h / 2 + (B.y + B.h / 2 - A.y - A.h / 2) * e;
         svg.setAttribute('viewBox', `${cx - w / 2} ${cy - h / 2} ${w} ${h}`);
-        if (t < 1) requestAnimationFrame(step); else { state.flying = false; done(); }
+        if (t < 1) requestAnimationFrame(step); else { state.flying = false; state.handoff = svg; done(); }
       };
       requestAnimationFrame(step);
-    }, 200));
+    }, LEAVE_MS));
   }
 
   // Region <-> broad topic: the same detailed map, the camera moves in or out.
@@ -949,11 +982,11 @@
         if (t < 1) requestAnimationFrame(step); else { state.flying = false; done(); }
       };
       requestAnimationFrame(step);
-    }, 200));
+    }, LEAVE_MS));
   }
 
   async function go(to, { push = true } = {}) {
-    if (!to || to === state.view || state.flying) return;
+    if (!to || to === state.view || state.flying || state.switching) return;
     if (push) history.pushState({ view: to }, '', urlFor(to));
     const from = state.view;
     state.area = null;
@@ -970,7 +1003,7 @@
   function cartouche() {
     if (state.view === 'world') {
       // A country's politics has a way back out to the world map.
-      return NAT ? `<div class="cartouche"><a class="back" href="index.html${state.demo ? '?demo=1' : ''}" style="display:inline-flex;align-items:center;text-decoration:none" aria-label="Back to the world map (Geopolitics)">← World</a><div><span class="kick">${esc(SEG.label)}</span><strong>${esc(SEG.homeLabel)}</strong><small>${esc(SEG.homeSmall)}</small></div></div>` : '';
+      return NAT ? `<div class="cartouche"><a class="back" href="index.html${state.demo ? '?demo=1' : ''}" data-goseg="" style="display:inline-flex;align-items:center;text-decoration:none" aria-label="Back to the world map (Geopolitics)">← World</a><div><span class="kick">${esc(SEG.label)}</span><strong>${esc(SEG.homeLabel)}</strong><small>${esc(SEG.homeSmall)}</small></div></div>` : '';
     }
     const r = regionOf(state.view);
     const t = topicOf(state.view);
@@ -1148,7 +1181,7 @@
   }
 
   function render() {
-    if (state.flying) return;
+    if (state.flying || state.switching) return;
     const d = state.data;
     const app = document.getElementById('app');
     const active = d.areas.filter((a) => a.count);
@@ -1176,7 +1209,7 @@
         <div class="bar">
           <div><h1>${world ? (NAT ? `What's moving in ${esc(SEG.label)}` : "What's moving around the world") : topic ? esc(topic.label) : `What's moving in ${d.node.id === 'middle-east' ? 'the ' : ''}${esc(d.node.label)}`}</h1><p class="sub">${NAT ? (world ? esc(SEG.homeSub) : `${sub} Colour is where the main stories stand; a moving line joins two that share a story. ${how}`) : world ? `One bubble per tracked region: ${esc(regions().map((r) => r.label).join(', '))}. Click a bubble to zoom in. More regions come with more voices and keywords.` : `${sub} Bubble size is posts and articles; colour is where the main stories stand. ${how}`}</p></div>
           <div class="controls">
-            <nav class="seg segswitch" aria-label="Segment"><a href="index.html${state.demo ? '?demo=1' : ''}"${NAT ? '' : ' aria-current="page"'}>Geopolitics</a>${Object.entries(SEGS).map(([k, g]) => `<a href="index.html?segment=${k}${state.demo ? '&demo=1' : ''}"${SEG_KEY === k ? ' aria-current="page"' : ''}>${esc(g.label)}</a>`).join('')}</nav>
+            <nav class="seg segswitch" aria-label="Segment"><a href="index.html${state.demo ? '?demo=1' : ''}" data-goseg=""${NAT ? '' : ' aria-current="page"'}>Geopolitics</a>${Object.entries(SEGS).map(([k, g]) => `<a href="index.html?segment=${k}${state.demo ? '&demo=1' : ''}" data-goseg="${k}"${SEG_KEY === k ? ' aria-current="page"' : ''}>${esc(g.label)}</a>`).join('')}</nav>
             <div class="seg" role="group" aria-label="Map">${[['world', HOME_LABEL], ...jumps().map((r) => [r.id, r.label])].map(([k, l]) => `<button data-view="${k}" aria-pressed="${k === here}">${esc(l)}</button>`).join('')}</div>
             <div class="seg" role="group" aria-label="Time window">${Object.keys(HOURS).map((w) => `<button data-window="${w}" aria-pressed="${w === state.window}">Last ${w}</button>`).join('')}</div>
           </div>
@@ -1184,7 +1217,7 @@
         <div class="layout">
           <div class="mapcol">
             ${breakingStrip(d)}
-            <div class="map${world && !NAT ? '' : ' zoomed'}${state.api.maps[mapOf(state.view)].city ? ' city' : ''}${state.arrive && !reduceMotion() ? ' arrive' : ''}" tabindex="-1">${mapSvg(d)}${cartouche()}</div>${tourCaption()}
+            <div class="map${world && !NAT ? '' : ' zoomed'}${state.api.maps[mapOf(state.view)].city ? ' city' : ''}${state.arrive && !reduceMotion() ? ` arrive${state.arrive === 'fresh' ? ' fresh' : ''}` : ''}" tabindex="-1">${mapSvg(d)}${cartouche()}</div>${tourCaption()}
             <div class="legend">
               <span><i class="sw c-corroborated"></i>Mostly confirmed</span>
               <span><i class="sw c-reported"></i>Mostly reported once</span>
@@ -1202,6 +1235,7 @@
       </div>`;
 
     state.arrive = false;
+    crossfade(app.querySelector('.map'));
     app.querySelectorAll('[data-view]').forEach((b) => b.addEventListener('click', () => go(b.dataset.view)));
     app.querySelectorAll('[data-pick]').forEach((b) => {
       b.addEventListener('click', () => pickNode(b.dataset.pick));
@@ -1229,6 +1263,13 @@
     });
     app.querySelector('#close')?.addEventListener('click', () => { state.area = null; refresh(); });
     app.querySelectorAll('[data-seg]').forEach((b) => { if (b.tagName === 'BUTTON') b.addEventListener('click', () => toSeg(b.dataset.seg)); });
+    // Segment links stay real links (open in a new tab works), but a plain
+    // click moves the camera there without reloading the page.
+    app.querySelectorAll('a[data-goseg]').forEach((a) => a.addEventListener('click', (e) => {
+      if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      e.preventDefault();
+      switchSeg(a.dataset.goseg || null);
+    }));
     if (focused) app.querySelector(`.bubble[data-area="${CSS.escape(focused)}"]`)?.focus();
     const list = document.getElementById('feedlist');
     if (list) list.scrollTop = feedTop; // live updates keep your place in the list
@@ -1256,13 +1297,113 @@
   }
 
   // From the world map into a country's politics: the camera flies to the
-  // country, then its page opens on the same view and carries on.
-  async function toSeg(key) {
-    if (!SEGS[key]) return;
-    const href = `index.html?segment=${key}&arrive=1${state.demo ? '&demo=1' : ''}`;
-    if (state.view !== 'world') { location.href = href; return; }
-    await fly('world', `@${key}`);
-    location.href = href;
+  // country and its own map takes over, on the same page.
+  const toSeg = (key) => switchSeg(key);
+
+  // The cross-fade after a flight: the camera's last frame (state.handoff)
+  // lies over the freshly drawn map and fades out, so the land never blinks.
+  function crossfade(map) {
+    const old = state.handoff;
+    state.handoff = null;
+    if (!old || !map || reduceMotion()) return;
+    old.classList.add('handoff');
+    old.removeAttribute('style');
+    map.appendChild(old);
+    const drop = () => old.remove();
+    old.addEventListener('animationend', drop, { once: true });
+    setTimeout(drop, 900);
+  }
+
+  // Each segment's data, loaded once and kept: { api, ready, loadedAt }.
+  // Geopolitics is under ''.
+  const segData = {};
+  function segApi(key) {
+    const k = SEGS[key] ? key : '';
+    if (!segData[k]) {
+      const entry = { api: null, loadedAt: 0 };
+      entry.ready = window.itlLive(state.demo, k ? SEGS[k].node : 'geopolitics').then(async (api) => {
+        await api.live.load();
+        entry.api = api;
+        entry.loadedAt = Date.now();
+        return api;
+      });
+      entry.ready.catch(() => { if (segData[k] === entry) delete segData[k]; });
+      segData[k] = entry;
+    }
+    return segData[k].ready;
+  }
+  // Load the other segments quietly once the first one is on screen, so
+  // switching never waits on the network.
+  function preloadSegs() {
+    const keys = ['', ...Object.keys(SEGS)].filter((k) => !segData[k]);
+    const next = () => {
+      const k = keys.shift();
+      if (k === undefined) return;
+      segApi(k).catch(() => {}).then(() => setTimeout(next, 300));
+    };
+    (window.requestIdleCallback || ((f) => setTimeout(f, 1200)))(next, { timeout: 3000 });
+  }
+
+  // Where a view sits on the world map, in world-map pixels: the camera's
+  // start or end point when it flies from one segment to another.
+  function worldBox(key, view) {
+    const maps = state.api.maps, W = maps.world;
+    const home = SEGS[key]?.home;
+    if (key === SEG_KEY && view !== 'world') return boxOn(W, maps[mapOf(view)], cropOf(view));
+    if (home) return boxOn(W, maps[home]);
+    if (key === SEG_KEY) return { x: 0, y: 0, w: W.width, h: W.height };
+    return maps[view] && view !== 'world' ? boxOn(W, maps[view]) : { x: 0, y: 0, w: W.width, h: W.height };
+  }
+
+  /**
+   * Move to another segment (null for Geopolitics) in place: the camera flies
+   * over the world map from here to there while that segment's data, already
+   * loaded in the background, takes over the page. No reload, no loading screen.
+   */
+  async function switchSeg(key, { view = 'world', push = true } = {}) {
+    key = SEGS[key] ? key : null;
+    if (state.flying || state.switching) return;
+    if (key === SEG_KEY) { if (view !== state.view) await go(view, { push }); return; }
+    endTour(false, true);
+    const from = SEG_KEY, ready = segApi(key);
+    const el = document.querySelector('.map');
+    state.area = null;
+    if (el && !reduceMotion()) {
+      const g = SEGS[key];
+      await flight(el, {
+        base: state.api.maps.world,
+        target: state.api.maps[g ? g.home : 'world'],
+        from: worldBox(from, state.view),
+        to: worldBox(key, view),
+        side: sideFor(key, view),
+        zoomed: Boolean(g),
+        cls: (name) => (name === g?.country ? 'country focus' : 'country'),
+      });
+    }
+    state.switching = true;
+    let api;
+    try {
+      if (!segData[key || '']?.api) document.querySelector('.map')?.insertAdjacentHTML('beforeend', `<p class="waitnote" role="status">Opening ${esc(SEGS[key]?.label || 'Geopolitics')}…</p>`);
+      api = await ready;
+    } catch {
+      location.href = `index.html${key ? `?segment=${key}` : ''}${state.demo ? `${key ? '&' : '?'}demo=1` : ''}`;
+      return;
+    }
+    setSeg(key);
+    state.api = api;
+    state.view = view !== 'world' && validView(view) ? view : 'world';
+    state.switching = false;
+    state.arrive = true;
+    if (push) history.pushState({ seg: key, view: state.view }, '', urlFor(state.view));
+    refresh();
+    // The header above the map changes height with the segment: keep the map in view.
+    document.querySelector('.map')?.scrollIntoView({ block: 'nearest' });
+    document.querySelector('.map')?.focus({ preventScroll: true });
+    follow();
+    // Data loaded a while ago in the background: bring it up to date.
+    const entry = segData[key || ''];
+    if (Date.now() - entry.loadedAt > 5 * 60_000) entry.api.live.load().then(() => { entry.loadedAt = Date.now(); if (state.api === entry.api) { follow(); refresh(); } }).catch(() => {});
+    maybeTour();
   }
 
   // "Today in Washington": the day's three biggest stories, one after the
@@ -1309,45 +1450,61 @@
     render();
   }
 
+  // New posts arrive live through Jetstream, for the segment on screen.
+  let sub = null;
+  function follow() {
+    sub?.close();
+    const api = state.api;
+    sub = api.follow({
+      onPost: (post) => {
+        if (!api.live.add(post) || state.api !== api) return;
+        state.fresh.add(post.uri);
+        const v = api.live.view({ now: new Date(), windowHours: HOURS[state.window], region: state.view });
+        const hit = v.feed.find((p) => p.uri === post.uri);
+        if (hit?.area) state.flashes.add(hit.area);
+        refresh();
+      },
+      onStatus: (s) => { state.conn = s.type; if (state.data) render(); },
+    });
+  }
+
+  // The first visit of the day to a country's politics starts its tour by itself.
+  function maybeTour() {
+    if (!NAT || state.view !== 'world' || reduceMotion()) return;
+    let seen = null;
+    const today = new Date().toISOString().slice(0, 10);
+    try { seen = localStorage.getItem(SEG.tourKey); localStorage.setItem(SEG.tourKey, today); } catch {}
+    const g = SEG;
+    if (seen !== today) setTimeout(() => { if (!state.tour && SEG === g && state.view === 'world') startTour(); }, 1800);
+  }
+
   async function start() {
     try {
-      state.api = await window.itlLive(state.demo, SEG_NODE);
       const bgLoad = fetch('backgrounders.json').then((r) => (r.ok ? r.json() : null)).catch(() => null);
-      await state.api.live.load();
+      state.api = await segApi(SEG_KEY);
       state.bg = await bgLoad;
       if (!validView(state.view)) state.view = 'world';
+      history.replaceState({ seg: SEG_KEY, view: state.view }, '', urlFor(state.view));
       refresh();
       // Any click of yours stops a running tour (except its own buttons).
       document.getElementById('app').addEventListener('click', (e) => {
         if (state.tour && e.isTrusted && !e.target.closest('.tourcap, [data-tour]')) endTour(false, true);
       }, true);
-      // The first visit of the day to US politics starts the tour by itself.
-      if (NAT && state.view === 'world' && !reduceMotion()) {
-        let seen = null;
-        const today = new Date().toISOString().slice(0, 10);
-        try { seen = localStorage.getItem(SEG.tourKey); localStorage.setItem(SEG.tourKey, today); } catch {}
-        if (seen !== today) setTimeout(() => { if (!state.tour && state.view === 'world') startTour(); }, 1800);
-      }
-      const follow = () => state.api.follow({
-        onPost: (post) => {
-          if (!state.api.live.add(post)) return;
-          state.fresh.add(post.uri);
-          const v = state.api.live.view({ now: new Date(), windowHours: HOURS[state.window], region: state.view });
-          const hit = v.feed.find((p) => p.uri === post.uri);
-          if (hit?.area) state.flashes.add(hit.area);
-          refresh();
-        },
-        onStatus: (s) => { state.conn = s.type; if (state.data) render(); },
-      });
-      let sub = follow();
+      maybeTour();
+      follow();
+      preloadSegs();
       window.addEventListener('popstate', () => {
-        const v = new URLSearchParams(location.search).get('view') || 'world';
+        const q = new URLSearchParams(location.search);
+        const key = SEGS[q.get('segment')] ? q.get('segment') : null;
+        const v = q.get('view') || 'world';
+        if (key !== SEG_KEY) { switchSeg(key, { view: v, push: false }); return; }
         go(validView(v) ? v : 'world', { push: false });
       });
       setInterval(refresh, 60_000); // keep "x min ago" and the window current
       let rt; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(render, 150); });
       setInterval(async () => { // full reload: engagement counts, missed posts
-        try { await state.api.live.load(); sub?.close(); sub = follow(); refresh(); } catch {}
+        const api = state.api, entry = segData[SEG_KEY || ''];
+        try { await api.live.load(); if (entry) entry.loadedAt = Date.now(); if (state.api === api) { follow(); refresh(); } } catch {}
       }, 10 * 60_000);
     } catch (err) {
       document.getElementById('app').innerHTML = `<p class="loading">Could not load the live map: ${esc(err.message)}</p>`;

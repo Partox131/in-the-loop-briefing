@@ -10,17 +10,17 @@
 // as the fallback (src/snapshot.js). Add ?direct=1 to the URL to skip the
 // server, or ?snapshot=<url> to try another one.
 
-import { BskyClient } from './bsky.js?v=45341712be';
-import { buildBrief } from './brief.js?v=45341712be';
-import { DEMO_VOICES, demoFetch } from './demo.js?v=45341712be';
-import { project } from './geo.js?v=45341712be';
-import { makeHierarchy } from './hierarchy.js?v=45341712be';
-import { subscribePosts } from './jetstream.js?v=45341712be';
-import { makeLive } from './live.js?v=45341712be';
-import { newsPosts } from './news.js?v=45341712be';
-import { SnapshotClient } from './snapshot.js?v=45341712be';
-import { makeVoice } from './voices.js?v=45341712be';
-import { briefView } from './view.js?v=45341712be';
+import { BskyClient } from './bsky.js?v=0e5f91b6d6';
+import { buildBrief } from './brief.js?v=0e5f91b6d6';
+import { DEMO_VOICES, demoFetch } from './demo.js?v=0e5f91b6d6';
+import { project } from './geo.js?v=0e5f91b6d6';
+import { makeHierarchy } from './hierarchy.js?v=0e5f91b6d6';
+import { subscribePosts } from './jetstream.js?v=0e5f91b6d6';
+import { makeLive } from './live.js?v=0e5f91b6d6';
+import { newsPosts } from './news.js?v=0e5f91b6d6';
+import { SnapshotClient } from './snapshot.js?v=0e5f91b6d6';
+import { makeVoice } from './voices.js?v=0e5f91b6d6';
+import { briefView } from './view.js?v=0e5f91b6d6';
 
 const SINCE_HOURS = { '6h': 6, '12h': 12, '24h': 24, '48h': 48, '7d': 168 };
 const CACHE_MS = 120_000;
@@ -93,19 +93,37 @@ export async function init({ base = '.', defaultNode = 'iran-war', search } = {}
   };
 }
 
+// The live map switches between its segments (Geopolitics, US and Canadian
+// politics) without reloading the page, so each segment's map shares one copy
+// of the config files, maps and data client: the snapshot is fetched once
+// (the client caches it) whichever segment asks first.
+const sharedLive = new Map();
+function liveBase(base, demo, search) {
+  const key = `${base}|${demo}|${search ?? ''}`;
+  if (!sharedLive.has(key)) {
+    const ready = Promise.all([
+      getJson(`${base}/topics.hierarchy.example.json`),
+      getJson(`${base}/voices.example.json`),
+      getJson(`${base}/maps.json`),
+    ]).then(([hierarchySpec, voicesSpec, maps]) => ({
+      hierarchy: makeHierarchy(hierarchySpec),
+      voices: (Array.isArray(voicesSpec) ? voicesSpec : voicesSpec.voices).map(makeVoice),
+      maps,
+      client: demo ? new BskyClient({ fetchImpl: demoFetch() }) : makeClient({ search }),
+    }));
+    ready.catch(() => sharedLive.delete(key));
+    sharedLive.set(key, ready);
+  }
+  return sharedLive.get(key);
+}
+
 /**
  * The live map page (public/live.html). Loads the last 24 hours once, then
  * follows the voices' new posts through Jetstream (skipped in demo mode).
+ * Called once per segment; the calls share their config files and client.
  */
 export async function initLive({ base = '.', node = 'geopolitics', demo = false, search } = {}) {
-  const [hierarchySpec, voicesSpec, maps] = await Promise.all([
-    getJson(`${base}/topics.hierarchy.example.json`),
-    getJson(`${base}/voices.example.json`),
-    getJson(`${base}/maps.json`),
-  ]);
-  const hierarchy = makeHierarchy(hierarchySpec);
-  const voices = (Array.isArray(voicesSpec) ? voicesSpec : voicesSpec.voices).map(makeVoice);
-  const client = demo ? new BskyClient({ fetchImpl: demoFetch() }) : makeClient({ search });
+  const { hierarchy, voices, maps, client } = await liveBase(base, demo, search);
   const live = makeLive({
     client,
     hierarchy,
