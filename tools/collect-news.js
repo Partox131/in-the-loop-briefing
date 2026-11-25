@@ -16,8 +16,8 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { makeHierarchy } from '../src/hierarchy.js?v=486381c70d';
-import { makeOutlets, mergeArticles, parseFeed, parseGdelt, parseTelegram, telegramOutlets } from '../src/news.js?v=486381c70d';
+import { makeHierarchy } from '../src/hierarchy.js?v=45341712be';
+import { makeOutlets, mergeArticles, parseFeed, parseGdelt, parseTelegram, telegramOutlets } from '../src/news.js?v=45341712be';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const UA = 'InTheLoopNewsCollector/0.1 (+https://partox131.github.io/in-the-loop-briefing/)';
@@ -128,7 +128,7 @@ export async function collectNews({ spec, hierarchy, node = 'politics', previous
     // A feed item without a date: first seen now (kept stable by the merge with previous runs).
     .map((a) => ({ ...a, published: a.published || now.toISOString() }))
     .filter((a) => Date.parse(a.published) <= now.getTime() + 10 * 60_000)
-    .filter((a) => hierarchy.classify({ text: `${a.title}. ${a.summary || ''}`, tags: [], langs: ['en'] }, node).length > 0);
+    .filter((a) => hierarchy.classify({ text: `${a.title}. ${a.summary || ''}`, tags: [], langs: ['en'] }, node, outlets.forUrl(a.url)).length > 0);
   const kept = mergeArticles(previous?.articles || [], fresh)
     .filter((a) => outlets.forUrl(a.url) && Date.parse(a.published) >= cutoff)
     .sort((a, b) => Date.parse(b.published) - Date.parse(a.published))

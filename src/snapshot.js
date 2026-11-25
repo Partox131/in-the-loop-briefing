@@ -114,7 +114,9 @@ export class SnapshotClient {
           if (!index.has(p.did)) index.set(p.did, []);
           index.get(p.did).push(p);
         }
-        this.cached = { at: this.now().getTime(), snap, index };
+        // The accounts the server follows: a voice added since its last deploy isn't one.
+        const known = new Set((snap?.profiles || []).map((p) => p.did));
+        this.cached = { at: this.now().getTime(), snap, index, known };
         this.pending = null;
         return snap;
       })();
@@ -130,6 +132,9 @@ export class SnapshotClient {
 
   async authorFeed(actor, { since, max = 50 } = {}) {
     if (await this.usable(since)) {
+      // A voice the server doesn't follow yet (added after its last deploy):
+      // read that one account straight from Bluesky.
+      if (this.cached.known.size && !this.cached.known.has(actor) && !this.cached.index.has(actor)) return this.fallback.authorFeed(actor, { since, max });
       this.mode = 'server';
       const list = this.cached.index.get(actor) || [];
       return list.filter((p) => !since || new Date(p.createdAt) >= since).slice(0, max);

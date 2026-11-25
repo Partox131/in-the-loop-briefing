@@ -501,6 +501,210 @@
     "include": ["governor sues", "governors sue", "states sue", "state attorneys general", "attorneys general", "multistate lawsuit", "coalition of states", "governor signs", "governor vetoes"],
     "place": { "lon": -112.0, "lat": 44.0 }
   },
+  "ca-politics": {
+    "label": "Canadian politics",
+    "about": "What Ottawa and the provinces are doing: the Prime Minister and cabinet, the House of Commons, the Senate, the courts, federal agencies, elections and the premiers.",
+    "parent": "politics",
+    "segment": true,
+    "ownSources": true,
+    "gate": ["canada", "canada's", "canadian", "canadians", "ottawa", "#cdnpoli", "#canpoli", "#onpoli", "#abpoli", "#bcpoli", "#qcpoli", "#skpoli", "#mbpoli", "#nspoli", "parliament hill", "carney", "poilievre", "bloc québécois", "bloc quebecois", "ndp", "elections canada", "bank of canada", "supreme court of canada", "rcmp", "csis", "cusma", "ontario", "quebec", "québec", "alberta", "british columbia", "b.c.", "manitoba", "saskatchewan", "nova scotia", "new brunswick", "newfoundland", "prince edward island", "p.e.i.", "yukon", "nunavut", "northwest territories", "queen's park", "doug ford", "danielle smith", "david eby", "wab kinew", "scott moe", "tim houston"],
+    "map": "canada"
+  },
+  "ottawa": {
+    "label": "Ottawa",
+    "icon": "peace-tower",
+    "about": "The Prime Minister's Office, Parliament, the Senate, the Supreme Court and the Bank of Canada, all along Wellington Street.",
+    "parent": "ca-politics",
+    "map": "ottawa",
+    "place": { "lon": -75.6972, "lat": 45.4215 }
+  },
+  "pm-cabinet": {
+    "label": "PM and cabinet",
+    "icon": "pmo",
+    "about": "Prime Minister Mark Carney, his ministers and what the federal government decides.",
+    "parent": "ottawa",
+    "include": ["carney", "prime minister carney", "prime minister's office", "pmo", "privy council", "cabinet", "cabinet shuffle", "federal minister", "federal ministers", "federal government", "liberal government", "carney government", "carney's government", "the liberals", "governor general"],
+    "exclude": ["u.s. cabinet", "trump's cabinet", "trump cabinet", "white house"],
+    "place": { "lon": -75.6977, "lat": 45.4224 }
+  },
+  "ca-budget": {
+    "label": "Budget and spending",
+    "about": "The federal budget, the deficit and big spending decisions.",
+    "parent": "pm-cabinet",
+    "include": ["federal budget", "budget 2026", "budget 2027", "fall economic statement", "economic statement", "the deficit", "federal deficit", "fiscal update", "spending cuts", "finance minister", "champagne", "comprehensive expenditure review"],
+    "place": { "lon": -75.6962, "lat": 45.4218 }
+  },
+  "ca-foreign": {
+    "label": "Defence and foreign policy",
+    "about": "Canada's military spending, NATO, and dealings with other countries outside the US.",
+    "parent": "pm-cabinet",
+    "include": ["defence minister", "national defence", "defence spending", "canadian armed forces", "canadian forces", "foreign affairs minister", "global affairs canada", "anand", "mcguinty", "canada-china", "canada-india", "canada-eu"],
+    "place": { "lon": -75.6992, "lat": 45.4219 }
+  },
+  "commons": {
+    "label": "House of Commons",
+    "icon": "peace-tower",
+    "about": "MPs, question period, confidence votes and the bills going through the House.",
+    "parent": "ottawa",
+    "include": ["house of commons", "the commons", "question period", "member of parliament", "mps", "mp", "parliament", "opposition leader", "poilievre", "conservative leader", "conservatives", "tories", "ndp", "bloc québécois", "bloc quebecois", "liberal caucus", "liberal mp", "conservative mp", "floor-crossing", "crossed the floor", "prorogue*", "speaker of the house", "commons committee"],
+    "exclude": ["westminster", "uk parliament", "british parliament", "starmer", "reform uk", "kemi badenoch", "labour mp", "tory mp", "senate"],
+    "place": { "lon": -75.7009, "lat": 45.4236 }
+  },
+  "ca-bills": {
+    "label": "Bills in Parliament",
+    "about": "Government bills on their way to becoming law.",
+    "parent": "commons",
+    "include": ["bill c-*", "bill s-*", "legislation", "first reading", "second reading", "third reading", "royal assent", "tabled a bill", "tables bill", "tabled legislation", "passes bill", "passed the bill"],
+    "exclude": ["u.s. house", "congress"],
+    "place": { "lon": -75.7022, "lat": 45.4246 },
+    "stages": [
+      { "label": "Tabled", "terms": ["tabled", "tables", "introduced", "first reading"] },
+      { "label": "Second reading", "terms": ["second reading", "debate on the bill", "debating the bill"] },
+      { "label": "Committee", "terms": ["committee", "amendments", "clause-by-clause"] },
+      { "label": "Third reading", "terms": ["third reading", "passed the house", "passes the house", "passes in the commons", "passed the commons"] },
+      { "label": "Senate", "terms": ["the senate", "senators"] },
+      { "label": "Royal Assent", "terms": ["royal assent", "becomes law", "now law"] }
+    ]
+  },
+  "confidence": {
+    "label": "Confidence and elections talk",
+    "about": "Votes that could bring down the government, and talk of a snap election.",
+    "parent": "commons",
+    "include": ["confidence vote", "non-confidence", "no-confidence", "confidence motion", "bring down the government", "topple the government", "snap election", "minority government", "majority government", "supply and confidence"],
+    "place": { "lon": -75.6996, "lat": 45.4247 }
+  },
+  "ca-senate": {
+    "label": "Senate",
+    "icon": "senate",
+    "about": "Canada's appointed upper house: it studies, changes and sometimes slows bills.",
+    "parent": "ottawa",
+    "include": ["senate", "senator", "senators", "red chamber", "upper chamber", "sober second thought"],
+    "exclude": ["u.s. senate", "us senate", "senate republicans", "senate democrats", "senate majority leader", "thune", "schumer", "senate gop", "filibuster", "french senate", "australian senate"],
+    "place": { "lon": -75.6934, "lat": 45.4246 }
+  },
+  "ca-courts": {
+    "label": "Courts",
+    "icon": "supreme-court",
+    "about": "The Supreme Court of Canada, Charter cases, and judges ruling on government decisions.",
+    "parent": "ottawa",
+    "include": ["supreme court of canada", "scc", "federal court", "federal court of appeal", "court of appeal", "charter challenge", "charter rights", "charter of rights", "notwithstanding clause", "section 33", "constitutional challenge", "the top court", "canada's top court"],
+    "exclude": ["u.s. supreme court", "us supreme court", "scotus"],
+    "place": { "lon": -75.7062, "lat": 45.4219 }
+  },
+  "notwithstanding": {
+    "label": "Notwithstanding clause",
+    "about": "Provinces overriding Charter rights with section 33, and the court fights over it.",
+    "parent": "ca-courts",
+    "include": ["notwithstanding clause", "section 33", "notwithstanding"],
+    "place": { "lon": -75.7072, "lat": 45.4210 }
+  },
+  "ca-agencies": {
+    "label": "Agencies and the Bank",
+    "icon": "ca-federal",
+    "about": "The Bank of Canada, the RCMP and CSIS, the public service and the federal regulators.",
+    "parent": "ottawa",
+    "include": ["bank of canada", "macklem", "rcmp", "csis", "canada revenue agency", "cra", "public service", "public servants", "statistics canada", "statcan", "competition bureau", "crtc", "ircc", "immigration levels", "canada post", "auditor general", "parliamentary budget officer", "pbo", "ethics commissioner", "foreign interference"],
+    "place": { "lon": -75.7036, "lat": 45.4208 }
+  },
+  "boc-rates": {
+    "label": "Interest rates",
+    "about": "The Bank of Canada's rate decisions and what they mean for mortgages and prices.",
+    "parent": "ca-agencies",
+    "include": ["bank of canada", "macklem", "interest rate", "interest rates", "rate cut", "rate cuts", "rate hike", "policy rate", "overnight rate"],
+    "place": { "lon": -75.7045, "lat": 45.4199 }
+  },
+  "ca-security": {
+    "label": "RCMP, CSIS and foreign interference",
+    "about": "Policing, intelligence and the foreign interference inquiry.",
+    "parent": "ca-agencies",
+    "include": ["rcmp", "csis", "foreign interference", "hogue"],
+    "place": { "lon": -75.7025, "lat": 45.4200 }
+  },
+  "ca-elections": {
+    "label": "Elections and polls",
+    "icon": "ballot-box",
+    "about": "By-elections, the polls and seat projections, and how the parties stand.",
+    "parent": "ca-politics",
+    "include": ["poll", "polls", "polling", "pollster", "abacus", "abacus data", "léger", "leger", "nanos", "angus reid", "ekos", "338canada", "seat projection", "by-election", "byelection", "by-elections", "riding", "ridings", "elections canada", "federal election", "next election", "leadership race", "leadership review"],
+    "exclude": ["approval rating", "midterm", "midterms", "republican", "republicans", "democrat", "democrats", "u.s. poll"],
+    "place": { "lon": -88.0, "lat": 49.6 }
+  },
+  "provinces": {
+    "label": "Provinces",
+    "icon": "statehouse",
+    "about": "The premiers and their legislatures, and their fights with Ottawa.",
+    "parent": "ca-politics",
+    "include": ["premier", "premiers", "provincial", "province", "provinces", "legislature", "council of the federation"],
+    "exclude": ["premier league", "chinese premier", "premier li", "li qiang"],
+    "place": { "lon": -97.1, "lat": 52.2 }
+  },
+  "ontario": {
+    "label": "Ontario",
+    "about": "Premier Doug Ford's government at Queen's Park.",
+    "parent": "provinces",
+    "include": ["ontario", "queen's park", "doug ford", "ford government", "#onpoli"],
+    "exclude": ["ontario, california", "lake ontario"],
+    "place": { "lon": -79.39, "lat": 43.66 }
+  },
+  "quebec": {
+    "label": "Quebec",
+    "about": "Quebec's National Assembly, sovereignty and language politics.",
+    "parent": "provinces",
+    "include": ["quebec", "québec", "national assembly", "caq", "parti québécois", "parti quebecois", "sovereignty", "sovereigntist", "#qcpoli", "bill 21", "bill 96"],
+    "place": { "lon": -71.21, "lat": 46.81 }
+  },
+  "alberta": {
+    "label": "Alberta",
+    "about": "Premier Danielle Smith's government, oil and gas, and talk of separation.",
+    "parent": "provinces",
+    "include": ["alberta", "danielle smith", "ucp", "#abpoli", "alberta separatis*", "alberta independence", "edmonton"],
+    "place": { "lon": -113.49, "lat": 53.54 }
+  },
+  "bc": {
+    "label": "British Columbia",
+    "about": "Premier David Eby's government in Victoria.",
+    "parent": "provinces",
+    "include": ["british columbia", "b.c.", "david eby", "eby", "#bcpoli", "victoria legislature"],
+    "place": { "lon": -123.37, "lat": 48.42 }
+  },
+  "prairies": {
+    "label": "Manitoba and Saskatchewan",
+    "about": "Premiers Wab Kinew and Scott Moe.",
+    "parent": "provinces",
+    "include": ["manitoba", "saskatchewan", "wab kinew", "kinew", "scott moe", "#mbpoli", "#skpoli"],
+    "place": { "lon": -101.5, "lat": 50.0 }
+  },
+  "atlantic": {
+    "label": "Atlantic Canada",
+    "about": "Nova Scotia, New Brunswick, Prince Edward Island, and Newfoundland and Labrador.",
+    "parent": "provinces",
+    "include": ["nova scotia", "new brunswick", "prince edward island", "p.e.i.", "newfoundland", "labrador", "tim houston", "#nspoli", "#nbpoli"],
+    "place": { "lon": -63.57, "lat": 44.65 }
+  },
+  "canada-us": {
+    "label": "Canada and the US",
+    "about": "Tariffs, the trade agreement review and Ottawa's dealings with Washington.",
+    "parent": "ca-politics",
+    "include": ["tariff", "tariffs", "trade war", "cusma", "usmca", "trade deal", "trade talks", "trade agreement", "trump", "washington", "51st state", "elbows up", "counter-tariffs", "steel", "aluminum", "softwood"],
+    "require": ["canada", "canadian", "canadians", "ottawa", "carney", "cusma", "elbows up", "51st state", "premier", "premiers", "ontario", "alberta", "quebec", "b.c."],
+    "place": { "lon": -83.03, "lat": 42.3 }
+  },
+  "ca-tariffs": {
+    "label": "Tariffs",
+    "about": "US tariffs on Canadian goods and Canada's answers.",
+    "parent": "canada-us",
+    "include": ["tariff", "tariffs", "counter-tariffs", "steel", "aluminum", "softwood", "lumber", "autos", "auto sector"],
+    "require": ["canada", "canadian", "canadians", "ottawa", "carney", "premier", "premiers", "ontario", "alberta", "quebec", "b.c."],
+    "place": { "lon": -86.5, "lat": 44.2 }
+  },
+  "cusma-review": {
+    "label": "Trade agreement review",
+    "about": "The 2026 review of CUSMA (USMCA), the North American trade deal.",
+    "parent": "canada-us",
+    "include": ["cusma", "usmca", "trade agreement", "trade deal", "trade talks", "joint review"],
+    "require": ["canada", "canadian", "ottawa", "carney", "cusma", "leblanc"],
+    "place": { "lon": -79.0, "lat": 42.1 }
+  },
   "economy": { "label": "Economy" },
   "energy": { "label": "Energy", "parent": "economy" },
   "oil": {

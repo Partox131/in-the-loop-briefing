@@ -99,6 +99,26 @@
     { "handle": "daveweigel.bsky.social", "name": "Dave Weigel", "tier": 2, "affiliation": "Semafor", "region": "US", "lean": "centre", "topics": ["us-politics"] },
     { "handle": "chrisgeidner.bsky.social", "name": "Chris Geidner", "tier": 2, "affiliation": "Law Dork", "region": "US", "lean": "centre-left", "topics": ["us-politics"] },
     { "handle": "stevevladeck.bsky.social", "name": "Steve Vladeck", "tier": 3, "affiliation": "One First (Georgetown Law)", "region": "US", "lean": "centre", "topics": ["us-politics"] },
-    { "handle": "gelliottmorris.com", "name": "G. Elliott Morris", "tier": 3, "affiliation": "Strength In Numbers", "region": "US", "lean": "centre-left", "topics": ["us-politics"] }
+    { "handle": "gelliottmorris.com", "name": "G. Elliott Morris", "tier": 3, "affiliation": "Strength In Numbers", "region": "US", "lean": "centre-left", "topics": ["us-politics"] },
+    {"handle": "theglobeandmail.com", "name": "The Globe and Mail", "tier": 1, "affiliation": "The Globe and Mail", "region": "Canada", "lean": "centre", "topics": ["ca-politics"]},
+    {"handle": "hilltimes.com", "name": "The Hill Times", "tier": 1, "affiliation": "The Hill Times", "region": "Canada", "lean": "centre", "topics": ["ca-politics"]},
+    {"handle": "globalnews.ca", "name": "Global News", "tier": 1, "affiliation": "Global News", "region": "Canada", "lean": "centre", "topics": ["ca-politics"]},
+    {"handle": "ipolitics.bsky.social", "name": "iPolitics", "tier": 1, "affiliation": "iPolitics", "region": "Canada", "lean": "centre", "topics": ["ca-politics"]},
+    {"handle": "cpac.ca", "name": "CPAC", "tier": 1, "affiliation": "CPAC", "region": "Canada", "lean": "centre", "topics": ["ca-politics"]},
+    {"handle": "macleans.bsky.social", "name": "Maclean's", "tier": 1, "affiliation": "Maclean's", "region": "Canada", "lean": "centre", "topics": ["ca-politics"]},
+    {"handle": "thewalrus.ca", "name": "The Walrus", "tier": 1, "affiliation": "The Walrus", "region": "Canada", "lean": "centre-left", "topics": ["ca-politics"]},
+    {"handle": "nationalobserver.com", "name": "Canada's National Observer", "tier": 1, "affiliation": "National Observer", "region": "Canada", "lean": "centre-left", "topics": ["ca-politics"]},
+    {"handle": "thetyee.ca", "name": "The Tyee", "tier": 1, "affiliation": "The Tyee", "region": "Canada", "lean": "left", "topics": ["ca-politics"]},
+    {"handle": "stevenchase.bsky.social", "name": "Steven Chase", "tier": 2, "affiliation": "The Globe and Mail", "region": "Canada", "lean": "centre", "topics": ["ca-politics"]},
+    {"handle": "sproudfoot.bsky.social", "name": "Shannon Proudfoot", "tier": 2, "affiliation": "The Globe and Mail", "region": "Canada", "lean": "centre", "topics": ["ca-politics"]},
+    {"handle": "lizt1.bsky.social", "name": "Elizabeth Thompson", "tier": 2, "affiliation": "CBC News", "region": "Canada", "lean": "centre", "topics": ["ca-politics"]},
+    {"handle": "spaikin.bsky.social", "name": "Steve Paikin", "tier": 2, "affiliation": "The Paikin Podcast", "region": "Canada", "lean": "centre", "topics": ["ca-politics"]},
+    {"handle": "maxfawcett.bsky.social", "name": "Max Fawcett", "tier": 2, "affiliation": "National Observer", "region": "Canada", "lean": "left", "topics": ["ca-politics"]},
+    {"handle": "davidcoletto.bsky.social", "name": "David Coletto", "tier": 3, "affiliation": "Abacus Data", "region": "Canada", "lean": "centre", "topics": ["ca-politics"]},
+    {"handle": "ericgrenier.bsky.social", "name": "Éric Grenier", "tier": 3, "affiliation": "The Writ", "region": "Canada", "lean": "centre", "topics": ["ca-politics"]},
+    {"handle": "338canada.bsky.social", "name": "338Canada", "tier": 3, "affiliation": "338Canada", "region": "Canada", "lean": "centre", "topics": ["ca-politics"]},
+    {"handle": "emmettmacfarlane.com", "name": "Emmett Macfarlane", "tier": 3, "affiliation": "University of Waterloo", "region": "Canada", "lean": "centre", "topics": ["ca-politics"]},
+    {"handle": "policyoptions.irpp.org", "name": "Policy Options", "tier": 3, "affiliation": "IRPP", "region": "Canada", "lean": "centre", "topics": ["ca-politics"]},
+    {"handle": "e.electionscanada.ca", "name": "Elections Canada", "tier": 4, "affiliation": "Elections Canada", "region": "Canada", "lean": "centre", "topics": ["ca-politics"]}
   ]
 }

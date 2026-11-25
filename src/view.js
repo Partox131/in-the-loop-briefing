@@ -1,8 +1,8 @@
 // Turn a brief (see brief.js) into the JSON the briefing web page renders.
 // Kept separate from the server so it's easy to test and to reuse.
 
-import { breakingCount, isTopic, segmentOf, stageTrack, trail } from './live.js?v=486381c70d';
-import { TIER_NAME } from './voices.js?v=486381c70d';
+import { breakingCount, isTopic, segmentOf, stageTrack, trail } from './live.js?v=45341712be';
+import { TIER_NAME } from './voices.js?v=45341712be';
 
 const HOUR = 3_600_000;
 
@@ -123,7 +123,7 @@ export function briefView(brief, h, { now = new Date() } = {}) {
     track: stageTrack(h.get(id), brief.posts),
     // The live map view to go back to, and the bubble to pick there.
     map: !kind
-      ? (seg === 'us' ? { view: 'world', area: null, segment: seg } : null)
+      ? (seg && seg !== 'geo' ? { view: 'world', area: null, segment: seg } : null)
       : { ...(kind === 'story' ? { view: onMap.at(-2).id, area: id } : { view: h.get(id).place ? id : 'world', area: null }), segment: seg },
     // "What changed", built from the data (no AI).
     recap: {

@@ -12,6 +12,10 @@ export const MAP_VIEWS = {
   // US politics: the lower 48 states (home), and central Washington, D.C.
   usa: { label: 'United States', west: -126, east: -65, south: 23.5, north: 50, width: 1000 },
   dc: { label: 'Washington, D.C.', west: -77.062, east: -76.988, south: 38.878, north: 38.913, width: 1000 },
+  // Canadian politics: the southern band where most Canadians live (home),
+  // and downtown Ottawa along Wellington Street.
+  canada: { label: 'Canada', west: -141, east: -52, south: 41.5, north: 63, width: 1000 },
+  ottawa: { label: 'Ottawa', west: -75.716, east: -75.686, south: 45.4165, north: 45.4285, width: 1000 },
 };
 
 /** Horizontal squash so shapes look right at the view's middle latitude. */
