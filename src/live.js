@@ -6,11 +6,11 @@
 // up through Jetstream: a WebSocket of new posts filtered to the voices'
 // accounts, which works straight from the browser. Read-only, no login.
 
-import { buildBrief } from './brief.js?v=486381c70d';
-import { KEEP_PER_VOICE } from './snapshot.js?v=486381c70d';
-import { rankPosts } from './rank.js?v=486381c70d';
-import { buildStorylines } from './storylines.js?v=486381c70d';
-import { byDid } from './voices.js?v=486381c70d';
+import { buildBrief } from './brief.js?v=45341712be';
+import { KEEP_PER_VOICE } from './snapshot.js?v=45341712be';
+import { rankPosts } from './rank.js?v=45341712be';
+import { buildStorylines } from './storylines.js?v=45341712be';
+import { byDid } from './voices.js?v=45341712be';
 
 const HOUR = 3_600_000;
 
@@ -93,9 +93,9 @@ export function isTopic(h, id) {
  * (Geopolitics on the world map, US politics on its arenas).
  * The key is what the page URL carries (?segment=us).
  */
-export const SEGMENTS = { geo: 'geopolitics', us: 'us-politics' };
+export const SEGMENTS = { geo: 'geopolitics', us: 'us-politics', ca: 'ca-politics' };
 
-/** Which segment a node belongs to ("geo" or "us"), or null. */
+/** Which segment a node belongs to ("geo", "us" or "ca"), or null. */
 export function segmentOf(h, id) {
   if (!h.nodes.has(id)) return null;
   const up = new Set([id, ...h.ancestors(id)]);
@@ -506,7 +506,7 @@ export function makeLive({ client, hierarchy: h, voices, node = 'geopolitics', l
     add(post) {
       const voice = voiceIndex.get(post.did);
       if (!voice || posts.some((p) => p.uri === post.uri)) return false;
-      const hits = h.classify(post, node);
+      const hits = h.classify(post, node, voice);
       if (!hits.length) return false;
       const [ranked] = rankPosts([{ ...post, handle: post.handle || voice.handle, displayName: post.displayName || voice.name }], {
         voices: voiceIndex,

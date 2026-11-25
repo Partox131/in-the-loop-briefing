@@ -12,12 +12,12 @@
 //                                                      ▼
 //                     breadth quota (fewer items per child higher up)
 
-import { ago, bold, cyan, dim, formatPost, green, magenta, yellow } from './format.js?v=486381c70d';
-import { applyQuota, rankPosts } from './rank.js?v=486381c70d';
-import { searchTopic } from './search.js?v=486381c70d';
-import { KEEP_PER_VOICE } from './snapshot.js?v=486381c70d';
-import { buildStorylines } from './storylines.js?v=486381c70d';
-import { byDid, resolveVoices, TIER_NAME, voicesFor } from './voices.js?v=486381c70d';
+import { ago, bold, cyan, dim, formatPost, green, magenta, yellow } from './format.js?v=45341712be';
+import { applyQuota, rankPosts } from './rank.js?v=45341712be';
+import { searchTopic } from './search.js?v=45341712be';
+import { KEEP_PER_VOICE } from './snapshot.js?v=45341712be';
+import { buildStorylines } from './storylines.js?v=45341712be';
+import { byDid, resolveVoices, TIER_NAME, voicesFor } from './voices.js?v=45341712be';
 
 /**
  * @param {object} o
@@ -75,7 +75,7 @@ export async function buildBrief({ client, hierarchy: h, node, voices, since, no
   const onTopic = [];
   for (const p of collected.values()) {
     if (new Date(p.createdAt) < since) continue;
-    const hits = h.classify(p, node);
+    const hits = h.classify(p, node, voiceIndex.get(p.did));
     if (!hits.length) continue; // e.g. a correspondent posting about something else
     const deepest = hits[0].id;
     onTopic.push({

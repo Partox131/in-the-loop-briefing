@@ -1028,6 +1028,201 @@
       "feeds": [
         "https://www.scotusblog.com/feed/"
       ]
+    },
+    {
+      "domain": "theglobeandmail.com",
+      "name": "The Globe and Mail",
+      "affiliation": "The Globe and Mail",
+      "region": "Canada",
+      "topics": [
+        "ca-politics"
+      ],
+      "feeds": [
+        "https://www.theglobeandmail.com/arc/outboundfeeds/rss/category/politics/"
+      ],
+      "lean": "centre"
+    },
+    {
+      "domain": "nationalpost.com",
+      "name": "National Post",
+      "affiliation": "National Post",
+      "region": "Canada",
+      "topics": [
+        "ca-politics"
+      ],
+      "feeds": [
+        "https://nationalpost.com/category/news/politics/feed"
+      ],
+      "lean": "centre-right"
+    },
+    {
+      "domain": "torontosun.com",
+      "name": "Toronto Sun",
+      "affiliation": "Toronto Sun",
+      "region": "Canada",
+      "topics": [
+        "ca-politics"
+      ],
+      "feeds": [
+        "https://torontosun.com/category/news/national/feed"
+      ],
+      "lean": "right"
+    },
+    {
+      "domain": "thestar.com",
+      "name": "Toronto Star",
+      "affiliation": "Toronto Star",
+      "region": "Canada",
+      "topics": [
+        "ca-politics"
+      ],
+      "feeds": [
+        "https://www.thestar.com/search/?f=rss&t=article&c=politics*&l=50&s=start_time&sd=desc"
+      ],
+      "lean": "centre-left"
+    },
+    {
+      "domain": "ctvnews.ca",
+      "name": "CTV News",
+      "affiliation": "CTV News",
+      "region": "Canada",
+      "topics": [
+        "ca-politics"
+      ],
+      "feeds": [
+        "https://www.ctvnews.ca/arc/outboundfeeds/rss/category/politics/"
+      ],
+      "lean": "centre"
+    },
+    {
+      "domain": "globalnews.ca",
+      "name": "Global News",
+      "affiliation": "Global News",
+      "region": "Canada",
+      "topics": [
+        "ca-politics"
+      ],
+      "feeds": [
+        "https://globalnews.ca/politics/feed/"
+      ],
+      "lean": "centre"
+    },
+    {
+      "domain": "hilltimes.com",
+      "name": "The Hill Times",
+      "affiliation": "The Hill Times",
+      "region": "Canada",
+      "topics": [
+        "ca-politics"
+      ],
+      "feeds": [
+        "https://www.hilltimes.com/feed/"
+      ],
+      "lean": "centre"
+    },
+    {
+      "domain": "ipolitics.ca",
+      "name": "iPolitics",
+      "affiliation": "iPolitics",
+      "region": "Canada",
+      "topics": [
+        "ca-politics"
+      ],
+      "feeds": [
+        "https://ipolitics.ca/feed/"
+      ],
+      "lean": "centre"
+    },
+    {
+      "domain": "macleans.ca",
+      "name": "Maclean's",
+      "affiliation": "Maclean's",
+      "region": "Canada",
+      "topics": [
+        "ca-politics"
+      ],
+      "feeds": [
+        "https://macleans.ca/politics/feed/"
+      ],
+      "lean": "centre"
+    },
+    {
+      "domain": "thehub.ca",
+      "name": "The Hub",
+      "affiliation": "The Hub",
+      "region": "Canada",
+      "topics": [
+        "ca-politics"
+      ],
+      "feeds": [
+        "https://thehub.ca/feed/"
+      ],
+      "lean": "centre-right"
+    },
+    {
+      "domain": "readtheline.ca",
+      "name": "The Line",
+      "affiliation": "The Line",
+      "region": "Canada",
+      "topics": [
+        "ca-politics"
+      ],
+      "feeds": [
+        "https://www.readtheline.ca/feed"
+      ],
+      "lean": "centre-right"
+    },
+    {
+      "domain": "westernstandard.news",
+      "name": "Western Standard",
+      "affiliation": "Western Standard",
+      "region": "Canada",
+      "topics": [
+        "ca-politics"
+      ],
+      "feeds": [
+        "https://www.westernstandard.news/feed"
+      ],
+      "lean": "right"
+    },
+    {
+      "domain": "nationalobserver.com",
+      "name": "Canada's National Observer",
+      "affiliation": "National Observer",
+      "region": "Canada",
+      "topics": [
+        "ca-politics"
+      ],
+      "feeds": [
+        "https://www.nationalobserver.com/front/rss"
+      ],
+      "lean": "centre-left"
+    },
+    {
+      "domain": "thetyee.ca",
+      "name": "The Tyee",
+      "affiliation": "The Tyee",
+      "region": "Canada",
+      "topics": [
+        "ca-politics"
+      ],
+      "feeds": [
+        "https://thetyee.ca/rss2.xml"
+      ],
+      "lean": "left"
+    },
+    {
+      "domain": "policyoptions.irpp.org",
+      "name": "Policy Options",
+      "affiliation": "IRPP",
+      "region": "Canada",
+      "topics": [
+        "ca-politics"
+      ],
+      "feeds": [
+        "https://policyoptions.irpp.org/feed/"
+      ],
+      "lean": "centre"
     }
   ],
   "telegram": {

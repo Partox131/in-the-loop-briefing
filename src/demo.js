@@ -5,7 +5,7 @@
 // The data goes through the real pipeline (classify, rank, storylines), so
 // the demo also shows what the code does with it.
 
-import { makeVoice } from './voices.js?v=486381c70d';
+import { makeVoice } from './voices.js?v=45341712be';
 
 const MIN = 60_000;
 
@@ -23,6 +23,11 @@ export const DEMO_VOICES = [
   { handle: 'left-mag.example.com', name: 'Left-leaning magazine', tier: 1, affiliation: 'Left Mag', region: 'US', lean: 'left', topics: ['us-politics'] },
   { handle: 'right-paper.example.com', name: 'Right-leaning paper', tier: 1, affiliation: 'Right Paper', region: 'US', lean: 'right', topics: ['us-politics'] },
   { handle: 'court-reporter.example.com', name: 'Courts reporter', tier: 2, affiliation: 'Legal newsletter', region: 'US', lean: 'centre-left', topics: ['courts'] },
+  // Canadian politics: national papers left and right of centre, and a pollster.
+  { handle: 'ca-paper.example.com', name: 'Canadian national paper', tier: 1, affiliation: 'CA Paper', region: 'Canada', lean: 'centre', topics: ['ca-politics'] },
+  { handle: 'ca-left.example.com', name: 'Left-leaning Canadian outlet', tier: 1, affiliation: 'CA Left', region: 'Canada', lean: 'centre-left', topics: ['ca-politics'] },
+  { handle: 'ca-right.example.com', name: 'Right-leaning Canadian paper', tier: 1, affiliation: 'CA Right', region: 'Canada', lean: 'centre-right', topics: ['ca-politics'] },
+  { handle: 'ca-pollster.example.com', name: 'Canadian pollster', tier: 3, affiliation: 'CA Polls', region: 'Canada', lean: 'centre', topics: ['ca-politics'] },
 ].map(makeVoice);
 
 const did = (handle) => `did:plc:demo-${handle.split('.')[0]}`;
@@ -49,6 +54,7 @@ function demoFeeds(now) {
   // Three outlets within the hour: shows as breaking news in the demo.
   const tanker = 'https://wire-a.example.com/world/hormuz-tanker';
   const shutdown = 'https://us-wire.example.com/politics/stopgap-vote';
+  const billC12 = 'https://ca-paper.example.com/politics/bill-c12-senate';
   return {
     'us-wire.example.com': [
       pv('us-wire.example.com', 'u1', 95, 'Senate passes stopgap spending bill, sending it to the House two days before a government shutdown deadline.', { ...o, likes: 1300, reposts: 420, link: shutdown }),
@@ -65,6 +71,23 @@ function demoFeeds(now) {
       pv('right-paper.example.com', 'r1', 70, 'Speaker Johnson says the House will vote on the Senate stopgap spending bill Thursday to avoid a shutdown.', { ...o, likes: 700, reposts: 180, link: shutdown }),
       pv('right-paper.example.com', 'r3', 180, 'Senate confirms the president\'s nominee for Fed chair after a tense confirmation hearing.', { ...o, likes: 450, reposts: 95 }),
       pv('right-paper.example.com', 'r2', 400, 'White House signs executive order on federal hiring, the third this week.', { ...o, likes: 350, reposts: 60 }),
+    ],
+    'ca-paper.example.com': [
+      pv('ca-paper.example.com', 'k1', 60, 'Senate passes Bill C-12 at third reading with two amendments, sending it back to the House of Commons.', { ...o, likes: 600, reposts: 150, link: billC12 }),
+      pv('ca-paper.example.com', 'k2', 140, 'Bank of Canada holds its policy rate, Macklem says tariffs still weigh on growth.', { ...o, likes: 420, reposts: 90 }),
+      pv('ca-paper.example.com', 'k3', 300, 'Carney says Ottawa will answer new US steel tariffs with counter-tariffs if talks fail.', { ...o, likes: 900, reposts: 260 }),
+      pv('ca-paper.example.com', 'k4', 520, 'Doug Ford government tables its fall economic statement at Queen\'s Park.', { ...o, likes: 200, reposts: 40 }),
+    ],
+    'ca-left.example.com': [
+      pv('ca-left.example.com', 'm1', 90, 'Bill C-12 heads back to the Commons after the Senate amendments; the Bloc says it will oppose them.', { ...o, likes: 300, reposts: 70, link: billC12 }),
+      pv('ca-left.example.com', 'm2', 360, 'Alberta independence referendum petition passes the signature threshold, Elections Alberta says.', { ...o, likes: 700, reposts: 210 }),
+    ],
+    'ca-right.example.com': [
+      pv('ca-right.example.com', 'n1', 75, 'Poilievre presses the Liberals in question period over the Senate changes to Bill C-12.', { ...o, likes: 500, reposts: 120 }),
+      pv('ca-right.example.com', 'n2', 280, 'Premiers say Ottawa must protect steel and aluminum jobs from the new US tariffs.', { ...o, likes: 400, reposts: 100 }),
+    ],
+    'ca-pollster.example.com': [
+      pv('ca-pollster.example.com', 'q1', 200, 'New poll: Liberals 39, Conservatives 37, NDP 11. Seat projection shows a near tie.', { ...o, likes: 350, reposts: 110 }),
     ],
     'court-reporter.example.com': [
       pv('court-reporter.example.com', 'c1', 240, 'Supreme Court agrees to hear the tariffs case on an expedited schedule; oral arguments set for January.', { ...o, likes: 1100, reposts: 380 }),

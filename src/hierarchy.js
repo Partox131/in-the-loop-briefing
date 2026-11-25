@@ -6,7 +6,7 @@
 // it, but higher nodes use a longer time window and only surface the top few
 // items per child. See docs/design/topic-tracking.md.
 
-import { compileMatcher, compileTerm, makeTopic } from './topic.js?v=486381c70d';
+import { compileMatcher, compileTerm, makeTopic } from './topic.js?v=45341712be';
 
 /**
  * @typedef {Object} TopicNode
@@ -38,7 +38,9 @@ export function makeHierarchy(spec) {
     const stages = (n.stages || []).map((x) => ({ label: x.label, test: (x.terms || [x.label]).map(compileTerm) }));
     // icon: a small 3D model drawn instead of a plain bubble (the White House…), see public/live.html SCULPTURES.
     // about: one hand-written line saying what a topic or story is (shown on the map and story page).
-    nodes.set(id, { id, label: n.label || id, about: n.about || '', spots, stages, parents, topic, gate, lenses: n.lenses || {}, place: n.place || null, map: n.map || null, icon: n.icon || null });
+    // ownSources: a segment whose sources only cover it (Canadian outlets): their
+    // posts pass its gate without naming Canada, and stay out of other segments.
+    nodes.set(id, { id, label: n.label || id, about: n.about || '', spots, stages, parents, topic, gate, ownSources: Boolean(n.ownSources), lenses: n.lenses || {}, place: n.place || null, map: n.map || null, icon: n.icon || null });
   }
   const children = new Map([...nodes.keys()].map((id) => [id, []]));
   for (const n of nodes.values()) {
@@ -97,8 +99,12 @@ export function makeHierarchy(spec) {
    * between them (or above `root`) must also pass its gate. A gate does not
    * apply when reading from another branch: Hormuz under Oil is not gated by
    * Geopolitics.
+   *
+   * `source` is who posted it (a voice or outlet, with `topics`): a segment's
+   * own sources (see `ownSources`) pass its gate, and their posts only land
+   * in that segment.
    */
-  const classify = (post, root) => {
+  const classify = (post, root, source) => {
     const hits = new Map();
     for (const [id, m] of matchers) {
       const r = m(post);
@@ -110,14 +116,30 @@ export function makeHierarchy(spec) {
       .filter((id) => !descendants(id).some((d) => hits.has(d)))
       .sort((a, b) => Number(children.get(a).length > 0) - Number(children.get(b).length > 0))
       .map((id) => ({ id, terms: hits.get(id) }));
+    const own = source ? ownerOf(source) : null;
+    if (own) out = out.filter((m) => under(m.id, own));
     if (root === undefined) return out;
     out = out.filter((m) => under(m.id, root));
     const gates = gated.filter((g) => under(root, g) || under(g, root));
     if (!gates.length || !out.length) return out;
     const text = (post.text || '').toLowerCase();
     const tags = new Set((post.tags || []).map((t) => t.toLowerCase()));
-    return out.filter((m) => gates.every((g) => !under(m.id, g) || get(g).gate.some((test) => test(text, tags))));
+    return out.filter((m) => gates.every((g) => !under(m.id, g) || ownedBy(source, g) || get(g).gate.some((test) => test(text, tags))));
   };
+
+  /**
+   * Is this source (a voice or outlet, with its `topics`) one of a segment's
+   * own sources? Only for segments marked `ownSources`, and only when every
+   * topic the source covers sits in that segment: the Globe's Canadian
+   * politics feed, not Reuters.
+   */
+  const ownedBy = (source, g) => {
+    if (!get(g).ownSources) return false;
+    const ts = source?.topics || [];
+    return ts.length > 0 && ts.every((t) => nodes.has(t) && under(t, g));
+  };
+  /** The `ownSources` segment a source belongs to, or null. */
+  const ownerOf = (source) => [...nodes.values()].find((n) => n.ownSources && ownedBy(source, n.id))?.id || null;
 
   /** All include terms of a node and its descendants, for search backfill. */
   const searchTopics = (id) =>
@@ -144,5 +166,5 @@ export function makeHierarchy(spec) {
     return [...out];
   };
 
-  return { nodes, get, children: (id) => children.get(id), descendants, ancestors, height, path, classify, searchTopics, breadth, lensesFor };
+  return { nodes, get, children: (id) => children.get(id), descendants, ancestors, height, path, classify, ownerOf, searchTopics, breadth, lensesFor };
 }

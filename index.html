@@ -328,16 +328,37 @@
 </head>
 <body>
 <div id="app"><p class="loading">Loading the live map…</p></div>
-<script>window.itlSearch = location.search; window.itlLive = (demo, node) => import('./src/static.js?v=486381c70d').then((m) => m.initLive({ demo, node, search: window.itlSearch }));</script>
+<script>window.itlSearch = location.search; window.itlLive = (demo, node) => import('./src/static.js?v=45341712be').then((m) => m.initLive({ demo, node, search: window.itlSearch }));</script>
 <script>
 (() => {
   const params = new URLSearchParams(location.search);
-  // Main segment: Geopolitics (the world map) or US politics (?segment=us).
-  const US = params.get('segment') === 'us';
-  const SEG_NODE = US ? 'us-politics' : 'geopolitics';
-  // The home view's map: the world, or the lower 48 for US politics.
-  const HOME = US ? 'usa' : 'world';
-  const HOME_LABEL = US ? 'United States' : 'World';
+  // Main segments: Geopolitics (the world map), and countries whose politics
+  // have their own section and maps: US politics (?segment=us) and Canadian
+  // politics (?segment=ca). On the world map each of those countries is
+  // raised off the map as a slab that flies into its section.
+  const SEGS = {
+    us: {
+      node: 'us-politics', home: 'usa', homeLabel: 'United States', label: 'US politics', short: 'US', country: 'United States of America',
+      capital: 'Washington', model: 'capitol', modelAt: [-98, 38.2], tourKey: 'itl-us-tour',
+      blurb: "Its own map: Washington's arenas on their real buildings, the elections and the states.",
+      homeSmall: 'Washington, the elections and the states. Pick a bubble to zoom in.',
+      homeSub: 'Washington, the elections and the states, from tracked voices and outlets across the spectrum. Bubble size is posts and articles; colour is where the main stories stand; a moving line joins two places that share a story. Zoom into Washington to see each arena on its real building.',
+    },
+    ca: {
+      node: 'ca-politics', home: 'canada', homeLabel: 'Canada', label: 'Canadian politics', short: 'Canada', country: 'Canada',
+      capital: 'Ottawa', model: 'peace-tower', modelAt: [-106, 63], tourKey: 'itl-ca-tour',
+      blurb: 'Its own map: Ottawa\'s arenas along Wellington Street, the provinces, the polls, and Canada and the US.',
+      homeSmall: 'Ottawa, the provinces, the polls, and Canada and the US. Pick a bubble to zoom in.',
+      homeSub: 'Ottawa, the provinces, the polls, and Canada and the US, from tracked voices and outlets across the spectrum, in English for now. Bubble size is posts and articles; colour is where the main stories stand; a moving line joins two places that share a story. Zoom into Ottawa to see each arena on its real building.',
+    },
+  };
+  const SEG_KEY = SEGS[params.get('segment')] ? params.get('segment') : null;
+  const SEG = SEG_KEY ? SEGS[SEG_KEY] : null;
+  const NAT = Boolean(SEG); // a country's politics: own maps, arenas, lean labels
+  const SEG_NODE = NAT ? SEG.node : 'geopolitics';
+  // The home view's map: the world, or the country's own map.
+  const HOME = NAT ? SEG.home : 'world';
+  const HOME_LABEL = NAT ? SEG.homeLabel : 'World';
   const state = {
     view: params.get('view') || 'world', // "world" or a region id; checked once regions load
     window: ['1h', '6h', '24h'].includes(params.get('window')) ? params.get('window') : '6h',
@@ -389,6 +410,8 @@
   const cols = (xs, y0, y1, w) => xs.map((x) => `<rect x="${x}" y="${y0}" width="${w}" height="${y1 - y0}" fill="url(#scC)"/>`).join('');
   const wins = (xs, ys, w, h) => ys.map((y) => xs.map((x) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx=".6" fill="url(#scW)"/>`).join('')).join('');
   const flag = (x, y) => `<line x1="${x}" y1="${y}" x2="${x}" y2="${y - 15}" stroke="#6B7390" stroke-width=".8"/><rect x="${x + .4}" y="${y - 15}" width="10" height="6" fill="#C8102E"/><rect x="${x + .4}" y="${y - 13}" width="10" height="1" fill="#fff"/><rect x="${x + .4}" y="${y - 11}" width="10" height="1" fill="#fff"/><rect x="${x + .4}" y="${y - 15}" width="4.4" height="3.2" fill="#24369A"/>`;
+  // Canada's flag: red, white with a small maple leaf, red.
+  const cflag = (x, y) => `<line x1="${x}" y1="${y}" x2="${x}" y2="${y - 15}" stroke="#6B7390" stroke-width=".8"/><rect x="${x + .4}" y="${y - 15}" width="10" height="5.4" fill="#fff"/><rect x="${x + .4}" y="${y - 15}" width="2.5" height="5.4" fill="#D52B1E"/><rect x="${x + 7.9}" y="${y - 15}" width="2.5" height="5.4" fill="#D52B1E"/><path d="M${x + 5.4} ${y - 14.2} l.7 1.3 .9-.4-.3 1.6 .8-.2-.2.7-1.4.6v.8h-1v-.8l-1.4-.6-.2-.7.8.2-.3-1.6.9.4z" fill="#D52B1E"/>`;
   const SCULPTURES = {
     'white-house': { w: 120, h: 92, base: [60, 84], body: `
       <polygon points="10,79 100,79 110,73 110,77 100,83 10,83" fill="url(#scS)" ${E}/>
@@ -482,7 +505,58 @@
       <polygon points="40,50.6 51,45 62,50.6" fill="#E2E5EE"/>
       ${cols([38, 44, 50, 56, 62], 55.5, 88, 3)}
       <rect x="8" y="88" width="86" height="3" fill="url(#scS)" ${E}/>` },
+    // Canadian politics: Parliament's Centre Block with the Peace Tower, its copper roofs gone green.
+    'peace-tower': { w: 140, h: 124, base: [70, 115], body: `
+      <polygon points="10,78 130,78 136,74 16,74" fill="url(#scT)" ${E}/>
+      <polygon points="130,78 136,74 136,108 130,112" fill="url(#scS)" ${E}/>
+      <rect x="10" y="78" width="120" height="34" fill="url(#scF)" ${E}/>
+      <polygon points="12,78 50,78 45,68 17,68" fill="url(#scCu)" ${E}/>
+      <polygon points="90,78 128,78 123,68 95,68" fill="url(#scCu)" ${E}/>
+      <polygon points="22,68 25,61 28,68" fill="url(#scCu)" ${E}/><polygon points="34,68 37,61 40,68" fill="url(#scCu)" ${E}/>
+      <polygon points="100,68 103,61 106,68" fill="url(#scCu)" ${E}/><polygon points="112,68 115,61 118,68" fill="url(#scCu)" ${E}/>
+      ${[16, 23, 30, 37, 44, 92, 99, 106, 113, 120].map((x) => `<path d="M${x} 95 v-7 q1.8-2.6 3.6 0 v7 z M${x} 106 v-6 q1.8-2.6 3.6 0 v6 z" fill="url(#scW)"/>`).join('')}
+      <polygon points="82,30 87,27 87,108 82,112" fill="url(#scS)" ${E}/>
+      <rect x="58" y="30" width="24" height="82" fill="url(#scF)" ${E}/>
+      <rect x="56" y="28" width="28" height="4" fill="#F1F3F8" ${E}/>
+      <rect x="56" y="24" width="3" height="6" fill="url(#scF)" ${E}/><rect x="81" y="24" width="3" height="6" fill="url(#scF)" ${E}/>
+      <circle cx="70" cy="40" r="5.2" fill="#F7F3E6" ${E}/>
+      <path d="M70 40 V36.6 M70 40 L72.6 41.4" stroke="#4A5070" stroke-width=".8" stroke-linecap="round"/>
+      ${[62, 67.8, 73.6].map((x) => `<path d="M${x} 64 v-11 q2.2-3 4.4 0 v11 z" fill="url(#scW)"/>`).join('')}
+      <rect x="60" y="70" width="20" height="2" fill="#E2E5EE"/>
+      <path d="M64.5 112 v-10 q5.5-6 11 0 v10 z" fill="#7E88A6"/>
+      <polygon points="56,28 84,28 70,3" fill="url(#scCu)" ${E}/>
+      <polygon points="84,28 88,25.5 70,3" fill="#3E7466" ${E}/>
+      ${cflag(70, 4)}
+      <rect x="6" y="112" width="132" height="3" fill="url(#scS)" ${E}/>` },
+    // The Office of the Prime Minister and Privy Council, 80 Wellington: limestone under a copper roof.
+    pmo: { w: 112, h: 84, base: [56, 78], body: `
+      <polygon points="12,40 92,40 100,35 20,35" fill="url(#scT)" ${E}/>
+      <polygon points="92,40 100,35 100,70 92,75" fill="url(#scS)" ${E}/>
+      <rect x="12" y="40" width="80" height="35" fill="url(#scF)" ${E}/>
+      ${wins([17, 25, 33, 63, 71, 79, 85], [46, 58], 3.6, 7)}
+      ${cols([43, 49, 55], 44, 75, 3)}
+      <rect x="40" y="40" width="22" height="4" fill="#F1F3F8" ${E}/>
+      <polygon points="10,40 94,40 88,28 16,28" fill="url(#scCu)" ${E}/>
+      <polygon points="94,40 101,35.5 95,24.5 88,28" fill="#3E7466" ${E}/>
+      ${[24, 40, 64, 80].map((x) => `<rect x="${x}" y="31" width="5" height="6" rx="1" fill="#E4E7F0" ${E}/>`).join('')}
+      ${cflag(52, 28)}
+      <rect x="8" y="75" width="92" height="3" fill="url(#scS)" ${E}/>` },
+    // The Senate of Canada Building, once Ottawa's Union Station: a tall columned hall.
+    senate: { w: 132, h: 92, base: [66, 86], body: `
+      <polygon points="8,40 114,40 122,35 16,35" fill="url(#scT)" ${E}/>
+      <polygon points="114,40 122,35 122,78 114,83" fill="url(#scS)" ${E}/>
+      <rect x="8" y="40" width="106" height="43" fill="url(#scF)" ${E}/>
+      ${[14, 24, 92, 102].map((x) => `<path d="M${x} 76 v-22 q3.5-5 7 0 v22 z" fill="url(#scW)"/>`).join('')}
+      <rect x="37" y="44" width="48" height="39" fill="#D9DDE8"/>
+      ${[42, 52, 62, 72].map((x) => `<path d="M${x} 74 v-22 q2.6-4 5.2 0 v22 z" fill="url(#scW)"/>`).join('')}
+      ${cols([37, 47.6, 58.2, 68.8, 79.4], 42, 83, 4.6)}
+      <rect x="33" y="34" width="56" height="8" fill="#F1F3F8" ${E}/>
+      <rect x="36" y="27" width="50" height="7" fill="url(#scF)" ${E}/>
+      ${cflag(61, 27)}
+      <rect x="4" y="83" width="122" height="3" fill="url(#scS)" ${E}/>` },
   };
+  // Ottawa's federal buildings fly the Canadian flag.
+  SCULPTURES['ca-federal'] = { ...SCULPTURES['federal-building'], body: SCULPTURES['federal-building'].body.replace(flag(70, 26), cflag(70, 26)) };
   const SCULPT_DEFS = `<defs>
     <linearGradient id="scF" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#E4E7F0"/></linearGradient>
     <linearGradient id="scS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#CDD2E1"/><stop offset="1" stop-color="#AEB5CA"/></linearGradient>
@@ -491,6 +565,7 @@
     <linearGradient id="scW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7E88A6"/><stop offset="1" stop-color="#A9B1C8"/></linearGradient>
     <radialGradient id="scD" cx=".35" cy=".3" r=".85"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".55" stop-color="#E3E6EF"/><stop offset="1" stop-color="#A9B0C6"/></radialGradient>
     <radialGradient id="scG" cx=".35" cy=".3" r=".85"><stop offset="0" stop-color="#FFF4CC"/><stop offset=".5" stop-color="#E8C35A"/><stop offset="1" stop-color="#A97A1E"/></radialGradient>
+    <linearGradient id="scCu" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#B9E2D3"/><stop offset=".5" stop-color="#6FAF98"/><stop offset="1" stop-color="#3E7466"/></linearGradient>
     <radialGradient id="scSh"><stop offset="0" stop-color="#0A0B1C" stop-opacity=".38"/><stop offset="1" stop-color="#0A0B1C" stop-opacity="0"/></radialGradient>
     ${Object.entries(SCULPTURES).map(([id, m]) => `<g id="sc-${id}"><ellipse cx="${m.base[0]}" cy="${m.base[1]}" rx="${m.w * 0.47}" ry="${m.w * 0.05}" fill="url(#scSh)"/>${m.body}</g>`).join('')}
   </defs>`;
@@ -508,7 +583,7 @@
 
   function urlFor(view) {
     const q = new URLSearchParams();
-    if (US) q.set('segment', 'us');
+    if (NAT) q.set('segment', SEG_KEY);
     if (view !== 'world') q.set('view', view);
     if (state.window !== '6h') q.set('window', state.window);
     if (state.area) q.set('area', state.area);
@@ -604,7 +679,7 @@
     const cls = (name) => (bg?.focus?.includes(name) ? 'country focus' : bg?.watch?.includes(name) ? 'country watch' : 'country');
     const countries = baseShapes(m, cls, true);
     const frames = mapId === 'world' ? regions().map((r) => lift(r, m, d) || (() => { const b = boxOf(r.id); return `<rect class="frame" data-frame="${esc(r.id)}" x="${b.x.toFixed(1)}" y="${b.y.toFixed(1)}" width="${b.w.toFixed(1)}" height="${b.h.toFixed(1)}" rx="6"/>`; })()).join('') : '';
-    const extras = mapId === 'world' ? frames + portal() : m.city ? cityLabels(m, k, s) : graticule(m) + (bg?.labels || []).map((l) => {
+    const extras = mapId === 'world' ? frames + portals() : m.city ? cityLabels(m, k, s) : graticule(m) + (bg?.labels || []).map((l) => {
       const [x, y] = state.api.project(m, l.lon, l.lat);
       return `<text class="clabel" x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="middle" style="font-size:${(l.size || 15) * Math.min(k, 1.6 * s)}px">${esc(l.text.toUpperCase())}</text>`;
     }).join('');
@@ -632,7 +707,7 @@
       const ly = n.y + n.r + 16 * k;
       const meta = a.count ? `<text class="meta" style="font-size:${13 * k}px" x="${x}" y="${(ly + 15 * k).toFixed(1)}" text-anchor="middle">${plural(a.count, 'item')}${a.pace == null ? '' : ` · ${esc(paceText(a))}`}</text>` : '';
       // A broad topic says it opens up into stories.
-      const more = a.topic || (a.region && a.stories) ? `<text class="more" style="font-size:${12 * k}px" x="${x}" y="${(ly + (a.count ? 30 : 15) * k).toFixed(1)}" text-anchor="middle">${a.topic ? plural(a.stories, 'story') : plural(a.stories, US ? 'arena' : 'topic')} ›</text>` : '';
+      const more = a.topic || (a.region && a.stories) ? `<text class="more" style="font-size:${12 * k}px" x="${x}" y="${(ly + (a.count ? 30 : 15) * k).toFixed(1)}" text-anchor="middle">${a.topic ? plural(a.stories, 'story') : plural(a.stories, NAT ? 'arena' : 'topic')} ›</text>` : '';
       // An ongoing fight: how far it has got (filled dots), and the step's name.
       const trk = a.track ? `<text class="trk" style="font-size:${12 * k}px" x="${x}" y="${(ly + (a.count ? 30 : 15) * k).toFixed(1)}" text-anchor="middle"><tspan class="on">${'●'.repeat(a.track.at + 1)}</tspan><tspan class="off">${'●'.repeat(a.track.stages.length - a.track.at - 1)}</tspan> ${esc(a.track.label)}</text>` : '';
       return `<g class="bubble${a.count ? '' : ' quiet'}${state.area === a.id ? ' sel' : ''}" data-area="${esc(a.id)}" style="--i:${order.length - 1 - i}" tabindex="0" role="button" aria-label="${esc(label)}">
@@ -641,12 +716,12 @@
       </g>`;
     }).join('');
     state.flashes.clear();
-    const what = mapId === 'world' ? 'region' : topicOf(state.view) ? 'story' : US ? 'arena' : 'topic';
+    const what = mapId === 'world' ? 'region' : topicOf(state.view) ? 'story' : NAT ? 'arena' : 'topic';
     // In a topic, its own model stands in the middle of its stories (the Capitol among Congress's fights).
     const t = topicOf(state.view), tIcon = t && state.api.live.iconOf(t.id), tAt = tIcon && state.api.live.placeOf(t.id);
     const backdrop = tAt && SCULPTURES[tIcon] ? (() => { const [x, y] = state.api.project(m, tAt.lon, tAt.lat); return sculpture(tIcon, x, y, 115 * s, 'sc backdrop'); })() : '';
     const landmarks = m.city ? m.city.monuments.filter((x) => /Monument/.test(x.name)).map((x) => sculpture('monument', x.xy[0], x.xy[1], 150 * s, 'sc landmark')).join('') : '';
-    return `<svg viewBox="${box.x.toFixed(1)} ${box.y.toFixed(1)} ${box.w.toFixed(1)} ${box.h.toFixed(1)}" style="--s:${s.toFixed(3)}" role="group" aria-label="Map of ${esc(topicOf(state.view)?.label || m.label)} with one bubble per ${what}">${US || mapId === 'world' ? SCULPT_DEFS : ''}${mapId === 'world' ? '<defs><linearGradient id="slabG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".6" stop-color="#E6EAFB"/><stop offset="1" stop-color="#C9D1F5"/></linearGradient></defs>' : ''}${countries}${extras}${landmarks}${backdrop}${dots}${leaders}${arcs(d.links, nodes, s, k)}${bubbles}</svg>`;
+    return `<svg viewBox="${box.x.toFixed(1)} ${box.y.toFixed(1)} ${box.w.toFixed(1)} ${box.h.toFixed(1)}" style="--s:${s.toFixed(3)}" role="group" aria-label="Map of ${esc(topicOf(state.view)?.label || m.label)} with one bubble per ${what}">${NAT || mapId === 'world' ? SCULPT_DEFS : ''}${mapId === 'world' ? '<defs><linearGradient id="slabG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".6" stop-color="#E6EAFB"/><stop offset="1" stop-color="#C9D1F5"/></linearGradient></defs>' : ''}${countries}${extras}${landmarks}${backdrop}${dots}${leaders}${arcs(d.links, nodes, s, k)}${bubbles}</svg>`;
   }
 
   // A place drawn as a model: a glow on the ground in its status colour
@@ -662,7 +737,7 @@
     const flash = state.flashes.has(a.id) ? ell('flash') : '';
     const ly = n.y + ry + 16 * k;
     const meta = a.count ? `<text class="meta" style="font-size:${13 * k}px" x="${x}" y="${(ly + 15 * k).toFixed(1)}" text-anchor="middle">${plural(a.count, 'item')}${a.pace == null ? '' : ` · ${esc(paceText(a))}`}</text>` : '';
-    const more = a.topic || (a.region && a.stories) ? `<text class="more" style="font-size:${12 * k}px" x="${x}" y="${(ly + (a.count ? 30 : 15) * k).toFixed(1)}" text-anchor="middle">${a.topic ? plural(a.stories, 'story') : plural(a.stories, US ? 'arena' : 'topic')} ›</text>` : '';
+    const more = a.topic || (a.region && a.stories) ? `<text class="more" style="font-size:${12 * k}px" x="${x}" y="${(ly + (a.count ? 30 : 15) * k).toFixed(1)}" text-anchor="middle">${a.topic ? plural(a.stories, 'story') : plural(a.stories, NAT ? 'arena' : 'topic')} ›</text>` : '';
     const btag = a.breaking ? `<text class="btag" style="font-size:${11 * k}px" x="${x}" y="${(n.y - n.up - 6 * k).toFixed(1)}" text-anchor="middle">BREAKING</text>` : '';
     return `<g class="bubble sculpt${a.count ? '' : ' quiet'}${state.area === a.id ? ' sel' : ''}" data-area="${esc(a.id)}" style="--i:${total - 1 - i}" tabindex="0" role="button" aria-label="${esc(label)}">
       ${ring}${ell('disc', ` style="fill:color-mix(in srgb, ${c} ${a.count ? 32 : 12}%, transparent);stroke:${c}${a.count ? '' : ';stroke-dasharray:3 3'}"`)}${flash}
@@ -711,7 +786,6 @@
     return `<g class="arcs">${out}</g>`;
   }
 
-  // On the world map: the United States opens US politics (its own map).
   // On the world map, pointing at a region lifts the countries at its heart
   // and around it (backgrounders.json "focus" and "watch") off the map,
   // tinted in the region's status colour, like the raised United States.
@@ -729,27 +803,33 @@
     return `<g class="lift" data-frame="${esc(r.id)}" style="--lc:${c}" aria-hidden="true"><path class="liftshadow" d="${all}" transform="translate(2 7)"/><g class="liftside">${sides}</g><g class="lifttop"><path class="liftface" d="${all}"/></g></g>`;
   }
 
-  // US politics is its own section, so on the world map the United States
-  // itself lifts off the map: a raised marble slab with its state lines and
-  // the Capitol standing on it. It rises a little higher under the pointer.
-  function portal() {
-    if (US || !state.api.maps.usa) return '';
-    const W = state.api.maps.world, U = state.api.maps.usa;
-    const usa = W.countries.find((c) => c.name === 'United States of America');
-    if (!usa) return '';
-    // The US map's pixels to world-map pixels: both projections are linear in lon/lat.
+  // A country's politics is its own section, so on the world map the country
+  // itself lifts off the map: a raised marble slab with its state or province
+  // lines and a landmark standing on it (the Capitol, the Peace Tower). Each
+  // rises a little higher under the pointer. Canada goes first, so the US
+  // slab's edge sits over the shared border.
+  function portals() {
+    if (NAT) return '';
+    return ['ca', 'us'].map(portal).join('');
+  }
+  function portal(key) {
+    const g = SEGS[key];
+    const W = state.api.maps.world, U = state.api.maps[g.home];
+    const land = U && W.countries.find((c) => c.name === g.country);
+    if (!land) return '';
+    // The country map's pixels to world-map pixels: both projections are linear in lon/lat.
     const [ax, ay] = state.api.project(W, U.west, U.north), [bx, by] = state.api.project(W, U.east, U.south);
     const fx = (bx - ax) / U.width, fy = (by - ay) / U.height;
-    const states = (U.states || []).map((c) => c.d).join('');
-    const [cx, cy] = state.api.project(W, -98, 38.2);
-    const depth = [5, 4, 3, 2, 1].map((d) => `<path class="slabside" d="${usa.d}" transform="translate(0 ${d})"/>`).join('');
-    return `<g class="portal" tabindex="0" role="button" aria-label="Open US politics: zoom into the United States">
-      <path class="slabshadow" d="${usa.d}" transform="translate(3 9)"/>
+    const lines = (U.states || []).map((c) => c.d).join('');
+    const [cx, cy] = state.api.project(W, ...g.modelAt);
+    const depth = [5, 4, 3, 2, 1].map((d) => `<path class="slabside" d="${land.d}" transform="translate(0 ${d})"/>`).join('');
+    return `<g class="portal" data-seg="${key}" tabindex="0" role="button" aria-label="Open ${esc(g.label)}: zoom into ${key === 'us' ? 'the ' : ''}${esc(g.homeLabel)}">
+      <path class="slabshadow" d="${land.d}" transform="translate(3 9)"/>
       ${depth}
-      <g class="slabtop"><path class="slabface" d="${usa.d}"/>
-        <path class="slabstates" d="${states}" transform="matrix(${fx.toFixed(5)} 0 0 ${fy.toFixed(5)} ${ax.toFixed(2)} ${ay.toFixed(2)})"/>
-        ${sculpture('capitol', cx, cy, 44)}
-        <text class="pname" x="${cx.toFixed(1)}" y="${(cy + 15).toFixed(1)}" text-anchor="middle">US politics</text>
+      <g class="slabtop"><path class="slabface" d="${land.d}"/>
+        <path class="slabstates" d="${lines}" transform="matrix(${fx.toFixed(5)} 0 0 ${fy.toFixed(5)} ${ax.toFixed(2)} ${ay.toFixed(2)})"/>
+        ${sculpture(g.model, cx, cy, 44)}
+        <text class="pname" x="${cx.toFixed(1)}" y="${(cy + 15).toFixed(1)}" text-anchor="middle">${esc(g.label)}</text>
         <text class="pgo" x="${cx.toFixed(1)}" y="${(cy + 28).toFixed(1)}" text-anchor="middle">Zoom in ›</text>
       </g>
     </g>`;
@@ -764,12 +844,15 @@
     return `<path class="grat" d="${d}"/>`;
   }
 
+  /** "@us", "@ca": the flight from the world map into a country's section. */
+  const intoSeg = (view) => (typeof view === 'string' && view.startsWith('@') ? SEGS[view.slice(1)] || null : null);
   /** A view's area in home-map pixels: the whole home map, or a region's lon/lat box. */
   function boxOf(view) {
     const W = state.api.maps[HOME];
     if (view === 'world') return { x: 0, y: 0, w: W.width, h: W.height };
-    const v = state.api.maps[view === '@us' ? 'usa' : mapOf(view)];
-    const c = view === '@us' ? { x: 0, y: 0, w: v.width, h: v.height } : cropOf(view);
+    const into = intoSeg(view);
+    const v = state.api.maps[into ? into.home : mapOf(view)];
+    const c = into ? { x: 0, y: 0, w: v.width, h: v.height } : cropOf(view);
     // map pixels back to lon/lat (the projection is linear), then to world pixels
     const lon = (x) => v.west + (x / v.width) * (v.east - v.west);
     const lat = (y) => v.north - (y / v.height) * (v.north - v.south);
@@ -791,12 +874,12 @@
   function fly(from, to) {
     const el = document.querySelector('.map');
     if (!el || reduceMotion()) return Promise.resolve();
-    if (to !== '@us' && mapOf(from) === mapOf(to)) return flyWithin(el, from, to);
+    if (!intoSeg(to) && mapOf(from) === mapOf(to)) return flyWithin(el, from, to);
     state.flying = true;
     el.classList.add('leaving');
     return new Promise((done) => setTimeout(() => {
       const W = state.api.maps[HOME];
-      const target = state.api.maps[to === '@us' ? 'usa' : mapOf(to)];
+      const target = state.api.maps[intoSeg(to)?.home || mapOf(to)];
       const width = el.clientWidth, h0 = el.clientHeight;
       const h1 = (width * target.height) / target.width;
       const A = fit(boxOf(from), width / h0), B = fit(boxOf(to), width / h1);
@@ -808,7 +891,7 @@
       const svg = el.firstElementChild;
       el.getBoundingClientRect();
       el.style.height = `${h1}px`;
-      if (to !== 'world' || US) el.classList.add('zoomed'); // tints the countries in as we fly
+      if (to !== 'world' || NAT) el.classList.add('zoomed'); // tints the countries in as we fly
       const t0 = performance.now(), D = 950;
       const step = (now) => {
         const t = Math.min(1, (now - t0) / D), e = ease(t);
@@ -862,8 +945,8 @@
 
   function cartouche() {
     if (state.view === 'world') {
-      // US politics has a way back out to the world map.
-      return US ? `<div class="cartouche"><a class="back" href="index.html${state.demo ? '?demo=1' : ''}" style="display:inline-flex;align-items:center;text-decoration:none" aria-label="Back to the world map (Geopolitics)">← World</a><div><span class="kick">US politics</span><strong>United States</strong><small>Washington, the elections and the states. Pick a bubble to zoom in.</small></div></div>` : '';
+      // A country's politics has a way back out to the world map.
+      return NAT ? `<div class="cartouche"><a class="back" href="index.html${state.demo ? '?demo=1' : ''}" style="display:inline-flex;align-items:center;text-decoration:none" aria-label="Back to the world map (Geopolitics)">← World</a><div><span class="kick">${esc(SEG.label)}</span><strong>${esc(SEG.homeLabel)}</strong><small>${esc(SEG.homeSmall)}</small></div></div>` : '';
     }
     const r = regionOf(state.view);
     const t = topicOf(state.view);
@@ -872,8 +955,8 @@
       return `<div class="cartouche"><button class="back" data-view="${esc(up.id)}" aria-label="Zoom out to ${esc(up.label)}">← ${esc(up.label)}</button><div><span class="kick">Topic · ${plural(t.stories.length, 'story')}</span><strong>${esc(t.label)}</strong>${state.data?.node?.about ? `<small>${esc(state.data.node.about)}</small>` : ''}</div></div>`;
     }
     const bg = state.bg?.regions?.[state.view];
-    const kicker = bg?.kicker || (US ? state.data?.node?.about : '');
-    return `<div class="cartouche"><button class="back" data-view="world" aria-label="Zoom out to the ${US ? 'US' : 'world'} map">← ${HOME_LABEL}</button><div><span class="kick">Zoomed in</span><strong>${esc(r?.label || '')}</strong>${kicker ? `<small>${esc(kicker)}</small>` : ''}</div></div>`;
+    const kicker = bg?.kicker || (NAT ? state.data?.node?.about : '');
+    return `<div class="cartouche"><button class="back" data-view="world" aria-label="Zoom out to the ${NAT ? esc(SEG.short) : 'world'} map">← ${HOME_LABEL}</button><div><span class="kick">Zoomed in</span><strong>${esc(r?.label || '')}</strong>${kicker ? `<small>${esc(kicker)}</small>` : ''}</div></div>`;
   }
 
   const dateText = (iso) => {
@@ -922,7 +1005,7 @@
   function summaryPanel(d) {
     const s = d.summary;
     if (!s) return '';
-    const head = `<p class="eyebrow">Last ${s.hours} hours · updates live</p><h2 id="sumh">${d.node.topic ? `What happened: ${esc(d.node.label)}` : `What happened in ${d.node.id === 'middle-east' ? 'the ' : ''}${esc(d.node.label)}`}</h2>${US && state.view === 'world' && s.top.some((x) => x.topicId) ? '<button class="tourbtn" data-tour style="margin-top:10px">▶ Take the tour: today in Washington</button>' : ''}`;
+    const head = `<p class="eyebrow">Last ${s.hours} hours · updates live</p><h2 id="sumh">${d.node.topic ? `What happened: ${esc(d.node.label)}` : `What happened in ${d.node.id === 'middle-east' ? 'the ' : ''}${esc(d.node.label)}`}</h2>${NAT && state.view === 'world' && s.top.some((x) => x.topicId) ? `<button class="tourbtn" data-tour style="margin-top:10px">▶ Take the tour: today in ${esc(SEG.capital)}</button>` : ''}`;
     if (!s.posts) return `<section class="panel sum" aria-labelledby="sumh">${head}<p class="muted">Nothing from tracked voices or outlets in the last ${s.hours} hours.</p></section>`;
     const by = (x) => {
       const n = x.sources.length;
@@ -949,10 +1032,10 @@
   }
 
   function regionList() {
-    if (!state.bg || US) return '';
+    if (!state.bg || NAT) return '';
     const items = regions().filter((r) => state.bg.regions[r.id]).map((r) => `<li><button data-view="${esc(r.id)}"><strong>${esc(r.label)}</strong><span>${esc(state.bg.regions[r.id].teaser)}</span></button></li>`).join('');
-    const usItem = state.api.maps.usa ? `<li><button data-us><strong>United States · US politics</strong><span>Its own map: Washington's arenas on their real buildings, the elections and the states.</span></button></li>` : '';
-    return `<section class="panel regions" aria-labelledby="rh"><h2 id="rh">The regions we follow</h2><ul class="regionlist">${items}${usItem}</ul><p class="fine">Pick one to zoom in and read how it started, what each side wants and why it's on the map now.</p></section>`;
+    const segItems = Object.entries(SEGS).filter(([, g]) => state.api.maps[g.home]).map(([k, g]) => `<li><button data-seg="${k}"><strong>${esc(g.homeLabel)} · ${esc(g.label)}</strong><span>${esc(g.blurb)}</span></button></li>`).join('');
+    return `<section class="panel regions" aria-labelledby="rh"><h2 id="rh">The regions we follow</h2><ul class="regionlist">${items}${segItems}</ul><p class="fine">Pick one to zoom in and read how it started, what each side wants and why it's on the map now.</p></section>`;
   }
 
   function detail(d) {
@@ -976,7 +1059,7 @@
       <div class="row" style="margin-bottom:8px"><span class="chip c-${st}">${esc(STATUS[st])}</span><span>overall, by share of posts</span></div>
       ${steps(a.track)}
       ${stories}
-      ${a.topic ? `<button class="btn" data-view="${esc(a.id)}">See its ${plural(a.stories, 'story')}${US ? '' : ' on the map'}</button>` : `<a class="btn" href="briefing.html?node=${encodeURIComponent(a.id)}&since=24h${state.demo ? '&demo=1' : ''}">Open the story</a>`}
+      ${a.topic ? `<button class="btn" data-view="${esc(a.id)}">See its ${plural(a.stories, 'story')}${NAT ? '' : ' on the map'}</button>` : `<a class="btn" href="briefing.html?node=${encodeURIComponent(a.id)}&since=24h${state.demo ? '&demo=1' : ''}">Open the story</a>`}
     </section>`;
   }
 
@@ -989,9 +1072,9 @@
   // Nothing picked: what you can click on this map, so the next step is obvious.
   function topicList(d) {
     const t = topicOf(state.view);
-    const items = d.areas.map((a) => `<li><button data-${a.topic || a.region ? 'view' : 'pick'}="${esc(a.id)}"><strong>${esc(a.label)}${a.topic ? ` · ${plural(a.stories, 'story')} ›` : a.region ? ` · ${plural(a.stories, US ? 'arena' : 'topic')} ›` : ''}${a.track ? ` · ${esc(a.track.label)}` : ''}</strong>${a.about ? `<span>${esc(a.about)}</span>` : ''}<span>${a.count ? `${plural(a.count, 'item')} in ${esc(state.window)}` : `Quiet in the last ${esc(state.window)}`}</span></button></li>`).join('');
+    const items = d.areas.map((a) => `<li><button data-${a.topic || a.region ? 'view' : 'pick'}="${esc(a.id)}"><strong>${esc(a.label)}${a.topic ? ` · ${plural(a.stories, 'story')} ›` : a.region ? ` · ${plural(a.stories, NAT ? 'arena' : 'topic')} ›` : ''}${a.track ? ` · ${esc(a.track.label)}` : ''}</strong>${a.about ? `<span>${esc(a.about)}</span>` : ''}<span>${a.count ? `${plural(a.count, 'item')} in ${esc(state.window)}` : `Quiet in the last ${esc(state.window)}`}</span></button></li>`).join('');
     return `<section class="panel" aria-labelledby="th">
-      <h2 id="th">${t ? 'Stories in this topic' : US ? (state.view === 'world' ? 'On the US map' : 'Arenas in Washington') : 'Topics in this region'}</h2>
+      <h2 id="th">${t ? 'Stories in this topic' : NAT ? (state.view === 'world' ? `On the ${esc(SEG.short)} map` : `Arenas in ${esc(SEG.capital)}`) : 'Topics in this region'}</h2>
       <ul class="topiclist">${items}</ul>
       ${t && d.other ? `<p class="muted" style="margin:8px 0 0;font-size:14px">Plus ${plural(d.other, 'item')} in ${esc(state.window)} about ${esc(t.label)} in general.</p>` : ''}
     </section>`;
@@ -1002,7 +1085,7 @@
     return `<section class="panel" aria-labelledby="fh">
       <div class="phead"><h2 id="fh">Just in</h2><span class="muted" style="font-size:13px">newest first</span></div>
       ${items.length ? `<ul class="plain feedlist" id="feedlist" tabindex="0" aria-label="Newest posts and articles" style="margin-top:8px">${items.map((p) => `<li class="${state.fresh.has(p.uri) ? 'fresh' : ''}">
-        <div class="row"><strong style="color:var(--ink)">${esc(ago(p.at))}</strong><span class="area-tag">${esc(p.topicLabel)}</span><span>${esc(p.who)}${p.stateAffiliated ? stateTag(p.country) : ''}${US ? leanTag(p.lean) : ''}</span>${p.telegram ? '<span class="area-tag news-tag">Telegram</span>' : p.news ? '<span class="area-tag news-tag">Article</span>' : ''}${state.fresh.has(p.uri) ? '<strong style="color:var(--loop)">Live</strong>' : ''}</div>
+        <div class="row"><strong style="color:var(--ink)">${esc(ago(p.at))}</strong><span class="area-tag">${esc(p.topicLabel)}</span><span>${esc(p.who)}${p.stateAffiliated ? stateTag(p.country) : ''}${NAT ? leanTag(p.lean) : ''}</span>${p.telegram ? '<span class="area-tag news-tag">Telegram</span>' : p.news ? '<span class="area-tag news-tag">Article</span>' : ''}${state.fresh.has(p.uri) ? '<strong style="color:var(--loop)">Live</strong>' : ''}</div>
         <a class="txt" href="${safeUrl(p.url)}" target="_blank" rel="noopener">${esc(oneLine(p.text))}</a>
       </li>`).join('')}</ul>` : '<p class="muted" style="margin:8px 0 0">Nothing from tracked voices in the last day.</p>'}
     </section>`;
@@ -1062,14 +1145,14 @@
       <div class="wrap">
         <header class="top">
           <a class="brand" href="index.html${state.demo ? '?demo=1' : ''}" title="Go to the home page"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="10" fill="none" stroke="var(--track)" stroke-width="4"/><path d="M14 4a10 10 0 0 1 9.5 13" fill="none" stroke="var(--loop)" stroke-width="4" stroke-linecap="round"/></svg>in the loop</a>
-          <nav class="crumbs" aria-label="Topic path"><span>Politics</span><span aria-hidden="true">/</span><span>${US ? 'US politics' : 'Geopolitics'}</span>${crumbs.map(([id, l], i) => `<span aria-hidden="true">/</span>${i === crumbs.length - 1 ? `<span class="here">${esc(l)}</span>` : `<button data-view="${esc(id)}">${esc(l)}</button>`}`).join('')}</nav>
-          <a class="brieflink" href="briefing.html?node=${encodeURIComponent(world ? SEG_NODE : d.node.id)}&since=24h${state.demo ? '&demo=1' : ''}" title="The topic briefing is still being worked on">${world ? (US ? 'US politics' : 'Geopolitics') : esc(d.node.label)} briefing <span class="beta">In progress</span></a>
+          <nav class="crumbs" aria-label="Topic path"><span>Politics</span><span aria-hidden="true">/</span><span>${NAT ? esc(SEG.label) : 'Geopolitics'}</span>${crumbs.map(([id, l], i) => `<span aria-hidden="true">/</span>${i === crumbs.length - 1 ? `<span class="here">${esc(l)}</span>` : `<button data-view="${esc(id)}">${esc(l)}</button>`}`).join('')}</nav>
+          <a class="brieflink" href="briefing.html?node=${encodeURIComponent(world ? SEG_NODE : d.node.id)}&since=24h${state.demo ? '&demo=1' : ''}" title="The topic briefing is still being worked on">${world ? (NAT ? esc(SEG.label) : 'Geopolitics') : esc(d.node.label)} briefing <span class="beta">In progress</span></a>
           <div class="status ${state.conn === 'open' && !state.demo ? 'on' : ''}" role="status"><span class="pulse-dot" aria-hidden="true"></span><span>${statusText(d)}</span></div>
         </header>
         <div class="bar">
-          <div><h1>${world ? (US ? "What's moving in US politics" : "What's moving around the world") : topic ? esc(topic.label) : `What's moving in ${d.node.id === 'middle-east' ? 'the ' : ''}${esc(d.node.label)}`}</h1><p class="sub">${US ? (world ? `Washington, the elections and the states, from tracked voices and outlets across the spectrum. Bubble size is posts and articles; colour is where the main stories stand; a moving line joins two places that share a story. Zoom into Washington to see each arena on its real building.` : `${sub} Colour is where the main stories stand; a moving line joins two that share a story. ${how}`) : world ? `One bubble per tracked region: ${esc(regions().map((r) => r.label).join(', '))}. Click a bubble to zoom in. More regions come with more voices and keywords.` : `${sub} Bubble size is posts and articles; colour is where the main stories stand. ${how}`}</p></div>
+          <div><h1>${world ? (NAT ? `What's moving in ${esc(SEG.label)}` : "What's moving around the world") : topic ? esc(topic.label) : `What's moving in ${d.node.id === 'middle-east' ? 'the ' : ''}${esc(d.node.label)}`}</h1><p class="sub">${NAT ? (world ? esc(SEG.homeSub) : `${sub} Colour is where the main stories stand; a moving line joins two that share a story. ${how}`) : world ? `One bubble per tracked region: ${esc(regions().map((r) => r.label).join(', '))}. Click a bubble to zoom in. More regions come with more voices and keywords.` : `${sub} Bubble size is posts and articles; colour is where the main stories stand. ${how}`}</p></div>
           <div class="controls">
-            <nav class="seg segswitch" aria-label="Segment"><a href="index.html${state.demo ? '?demo=1' : ''}"${US ? '' : ' aria-current="page"'}>Geopolitics</a><a href="index.html?segment=us${state.demo ? '&demo=1' : ''}"${US ? ' aria-current="page"' : ''}>US politics</a></nav>
+            <nav class="seg segswitch" aria-label="Segment"><a href="index.html${state.demo ? '?demo=1' : ''}"${NAT ? '' : ' aria-current="page"'}>Geopolitics</a>${Object.entries(SEGS).map(([k, g]) => `<a href="index.html?segment=${k}${state.demo ? '&demo=1' : ''}"${SEG_KEY === k ? ' aria-current="page"' : ''}>${esc(g.label)}</a>`).join('')}</nav>
             <div class="seg" role="group" aria-label="Map">${[['world', HOME_LABEL], ...jumps().map((r) => [r.id, r.label])].map(([k, l]) => `<button data-view="${k}" aria-pressed="${k === here}">${esc(l)}</button>`).join('')}</div>
             <div class="seg" role="group" aria-label="Time window">${Object.keys(HOURS).map((w) => `<button data-window="${w}" aria-pressed="${w === state.window}">Last ${w}</button>`).join('')}</div>
           </div>
@@ -1077,7 +1160,7 @@
         <div class="layout">
           <div class="mapcol">
             ${breakingStrip(d)}
-            <div class="map${world && !US ? '' : ' zoomed'}${state.api.maps[mapOf(state.view)].city ? ' city' : ''}${state.arrive && !reduceMotion() ? ' arrive' : ''}" tabindex="-1">${mapSvg(d)}${cartouche()}</div>${tourCaption()}
+            <div class="map${world && !NAT ? '' : ' zoomed'}${state.api.maps[mapOf(state.view)].city ? ' city' : ''}${state.arrive && !reduceMotion() ? ' arrive' : ''}" tabindex="-1">${mapSvg(d)}${cartouche()}</div>${tourCaption()}
             <div class="legend">
               <span><i class="sw c-corroborated"></i>Mostly confirmed</span>
               <span><i class="sw c-reported"></i>Mostly reported once</span>
@@ -1085,12 +1168,12 @@
               <span><i class="sw c-quiet" style="background:none;border:2px dashed var(--muted)"></i>Quiet</span>
               <span>Pulsing ring: at least 1.5× its usual pace</span>
               <span><i class="sw" style="background:none;border:2px solid var(--breaking)"></i>Breaking: 3+ outlets within 90 min</span>
-              ${US ? '<span><i class="sw" style="background:none;border-radius:0;height:0;border-top:3px dashed var(--loop)"></i>Shared story</span><span><b style="color:var(--loop)">●●</b>● Where a fight stands</span>' : ''}
+              ${NAT ? '<span><i class="sw" style="background:none;border-radius:0;height:0;border-top:3px dashed var(--loop)"></i>Shared story</span><span><b style="color:var(--loop)">●●</b>● Where a fight stands</span>' : ''}
             </div>
-            ${world && !US ? regionList() : summaryPanel(d) + background()}
+            ${world && !NAT ? regionList() : summaryPanel(d) + background()}
             ${d.errors?.length ? `<details class="footnote"><summary>${plural(d.errors.length, 'warning')}</summary><ul>${d.errors.map((e) => `<li>${esc(e)}</li>`).join('')}</ul></details>` : ''}
           </div>
-          <aside>${world && !US ? '' : detail(d)}${feed(d)}</aside>
+          <aside>${world && !NAT ? '' : detail(d)}${feed(d)}</aside>
         </div>
       </div>`;
 
@@ -1103,12 +1186,11 @@
     app.querySelectorAll('[data-tour]').forEach((b) => b.addEventListener('click', (e) => { e.stopPropagation(); startTour(); }));
     app.querySelector('.tourcap .next')?.addEventListener('click', (e) => { e.stopPropagation(); nextStop(); });
     app.querySelector('.tourcap .stop')?.addEventListener('click', (e) => { e.stopPropagation(); endTour(false); });
-    const portalEl = app.querySelector('.portal');
-    if (portalEl) {
-      const open = () => toUS();
+    app.querySelectorAll('.portal').forEach((portalEl) => {
+      const open = () => toSeg(portalEl.dataset.seg);
       portalEl.addEventListener('click', open);
       portalEl.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
-    }
+    });
     const frame = (id, on) => app.querySelector(`[data-frame="${CSS.escape(id)}"]`)?.classList.toggle('on', on);
     app.querySelectorAll('[data-window]').forEach((b) => b.addEventListener('click', () => { state.window = b.dataset.window; refresh(); }));
     app.querySelectorAll('.bubble').forEach((g) => {
@@ -1122,7 +1204,7 @@
       g.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(); } });
     });
     app.querySelector('#close')?.addEventListener('click', () => { state.area = null; refresh(); });
-    app.querySelector('[data-us]')?.addEventListener('click', () => toUS());
+    app.querySelectorAll('[data-seg]').forEach((b) => { if (b.tagName === 'BUTTON') b.addEventListener('click', () => toSeg(b.dataset.seg)); });
     if (focused) app.querySelector(`.bubble[data-area="${CSS.escape(focused)}"]`)?.focus();
     const list = document.getElementById('feedlist');
     if (list) list.scrollTop = feedTop; // live updates keep your place in the list
@@ -1149,12 +1231,13 @@
     return Promise.resolve();
   }
 
-  // From the world map into US politics: the camera flies to the United
-  // States, then the US page opens on the same view and carries on.
-  async function toUS() {
-    const href = `index.html?segment=us&arrive=1${state.demo ? '&demo=1' : ''}`;
+  // From the world map into a country's politics: the camera flies to the
+  // country, then its page opens on the same view and carries on.
+  async function toSeg(key) {
+    if (!SEGS[key]) return;
+    const href = `index.html?segment=${key}&arrive=1${state.demo ? '&demo=1' : ''}`;
     if (state.view !== 'world') { location.href = href; return; }
-    await fly('world', '@us');
+    await fly('world', `@${key}`);
     location.href = href;
   }
 
@@ -1193,7 +1276,7 @@
     if (!t || t.i < 0) return '';
     const x = t.list[t.i];
     const who = x.sources.length === 1 ? `by ${esc(x.sources[0])}` : `${plural(x.sources.length, 'source')}`;
-    return `<div class="tourcap" role="status" style="--dur:${STOP_MS}ms"><span class="tk">Today in Washington · ${t.i + 1} of ${t.list.length}</span><a class="th" href="${safeUrl(x.url)}" target="_blank" rel="noopener">${esc(x.headline)}</a><span class="tb"><button class="stop">Stop</button><button class="next">${t.i + 1 < t.list.length ? 'Next ›' : 'Finish'}</button></span><span class="tm"><span class="chip c-${esc(x.status)}">${esc(STATUS[x.status] || x.status)}</span> ${who} · ${plural(x.posts, 'item')} · ${esc(x.place?.label || nodeLabel(x.topicId) || '')} · latest ${esc(ago(x.lastSeen))}</span><span class="bar2"><i></i></span></div>`;
+    return `<div class="tourcap" role="status" style="--dur:${STOP_MS}ms"><span class="tk">Today in ${esc(SEG?.capital || '')} · ${t.i + 1} of ${t.list.length}</span><a class="th" href="${safeUrl(x.url)}" target="_blank" rel="noopener">${esc(x.headline)}</a><span class="tb"><button class="stop">Stop</button><button class="next">${t.i + 1 < t.list.length ? 'Next ›' : 'Finish'}</button></span><span class="tm"><span class="chip c-${esc(x.status)}">${esc(STATUS[x.status] || x.status)}</span> ${who} · ${plural(x.posts, 'item')} · ${esc(x.place?.label || nodeLabel(x.topicId) || '')} · latest ${esc(ago(x.lastSeen))}</span><span class="bar2"><i></i></span></div>`;
   }
 
   function refresh() {
@@ -1215,10 +1298,10 @@
         if (state.tour && e.isTrusted && !e.target.closest('.tourcap, [data-tour]')) endTour(false, true);
       }, true);
       // The first visit of the day to US politics starts the tour by itself.
-      if (US && state.view === 'world' && !reduceMotion()) {
+      if (NAT && state.view === 'world' && !reduceMotion()) {
         let seen = null;
         const today = new Date().toISOString().slice(0, 10);
-        try { seen = localStorage.getItem('itl-us-tour'); localStorage.setItem('itl-us-tour', today); } catch {}
+        try { seen = localStorage.getItem(SEG.tourKey); localStorage.setItem(SEG.tourKey, today); } catch {}
         if (seen !== today) setTimeout(() => { if (!state.tour && state.view === 'world') startTour(); }, 1800);
       }
       const follow = () => state.api.follow({
@@ -1246,16 +1329,16 @@
       document.getElementById('app').innerHTML = `<p class="loading">Could not load the live map: ${esc(err.message)}</p>`;
     }
   }
-  // Arriving from the world map's zoom: keep the United States on screen
-  // while the US data loads, so the zoom carries on instead of blinking.
-  if (US && params.get('arrive') && window.itlLive) {
+  // Arriving from the world map's zoom: keep the country on screen while
+  // its data loads, so the zoom carries on instead of blinking.
+  if (NAT && params.get('arrive') && window.itlLive) {
     fetch('maps.json').then((r) => r.json()).then((maps) => {
       const app = document.getElementById('app');
       if (state.data || !app.querySelector('.loading')) return;
-      const W = maps.views.world, u = maps.views.usa;
+      const W = maps.views.world, u = maps.views[SEG.home];
       const k = Math.cos((((W.north + W.south) / 2) * Math.PI) / 180), sx = W.width / (W.east - W.west), sy = sx / k;
       const x0 = (u.west - W.west) * sx, x1 = (u.east - W.west) * sx, y0 = (W.north - u.north) * sy, y1 = (W.north - u.south) * sy;
-      app.innerHTML = `<div class="wrap"><div class="map zoomed arrivewait"><svg viewBox="${x0} ${y0} ${x1 - x0} ${y1 - y0}" preserveAspectRatio="xMidYMid slice" style="aspect-ratio:${u.width}/${u.height}" aria-hidden="true">${W.countries.map((c) => `<path class="country${c.name === 'United States of America' ? ' focus' : ''}" style="vector-effect:non-scaling-stroke" d="${c.d}"/>`).join('')}</svg><p>Opening US politics…</p></div></div>`;
+      app.innerHTML = `<div class="wrap"><div class="map zoomed arrivewait"><svg viewBox="${x0} ${y0} ${x1 - x0} ${y1 - y0}" preserveAspectRatio="xMidYMid slice" style="aspect-ratio:${u.width}/${u.height}" aria-hidden="true">${W.countries.map((c) => `<path class="country${c.name === SEG.country ? ' focus' : ''}" style="vector-effect:non-scaling-stroke" d="${c.d}"/>`).join('')}</svg><p>Opening ${esc(SEG.label)}…</p></div></div>`;
     }).catch(() => {});
   }
   if (!window.itlLive) {
