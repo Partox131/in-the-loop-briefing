@@ -80,7 +80,7 @@
   .leader { stroke: var(--muted); stroke-width: calc(1.2px * var(--s, 1)); stroke-dasharray: calc(3px * var(--s, 1)); }
   .anchor { fill: var(--ink); }
   /* Zoom between views: bubbles fade, the camera flies, the new view pops in. */
-  .map { transition: height .95s cubic-bezier(.65, 0, .35, 1), border-color .6s, background-color .6s; }
+  .map { transition: height .95s cubic-bezier(.65, 0, .35, 1), width .95s cubic-bezier(.65, 0, .35, 1), border-color .6s, background-color .6s; }
   .map.leaving .bubble, .map.leaving .leader, .map.leaving .anchor, .map.leaving .clabel, .map.leaving .cartouche { opacity: 0; transition: opacity .2s; }
   .map.flying svg { height: 100%; }
   .map.flying .country { vector-effect: non-scaling-stroke; transition: fill .9s; }
@@ -853,6 +853,19 @@
   }
 
   /** "@us", "@ca": the flight from the world map into a country's section. */
+  // "Just in" is switched off on the geopolitics world map for now (Amir,
+  // 25 Nov 2026): people first pick what they want to follow, then get a
+  // list. The map takes the whole width there. Set to true to bring it back.
+  const FEED_ON_HOME = false;
+  const sideOf = (view) => FEED_ON_HOME || NAT || view !== 'world' || Boolean(intoSeg(view));
+  // How wide the map will be in a view: the side column takes 340px plus the
+  // 28px gap when there is room for both (see .mapcol and aside in the CSS).
+  function mapWidthFor(view) {
+    const lay = document.querySelector('.layout');
+    if (!lay) return null;
+    const w = lay.clientWidth;
+    return sideOf(view) && w >= 620 + 28 + 340 ? w - 28 - 340 : w;
+  }
   const intoSeg = (view) => (typeof view === 'string' && view.startsWith('@') ? SEGS[view.slice(1)] || null : null);
   /** A view's area in home-map pixels: the whole home map, or a region's lon/lat box. */
   function boxOf(view) {
@@ -889,16 +902,19 @@
       const W = state.api.maps[HOME];
       const target = state.api.maps[intoSeg(to)?.home || mapOf(to)];
       const width = el.clientWidth, h0 = el.clientHeight;
-      const h1 = (width * target.height) / target.width;
-      const A = fit(boxOf(from), width / h0), B = fit(boxOf(to), width / h1);
+      const w1 = sideOf(from) === sideOf(to) ? width : mapWidthFor(to) || width; // map grows or shrinks when the side column comes or goes
+      const h1 = (w1 * target.height) / target.width;
+      const A = fit(boxOf(from), width / h0), B = fit(boxOf(to), w1 / h1);
       const bg = to === 'world' ? null : state.bg?.regions?.[to];
       const cls = (name) => (bg?.focus?.includes(name) ? 'country focus' : bg?.watch?.includes(name) ? 'country watch' : 'country');
       el.style.height = `${h0}px`;
+      if (w1 !== width) { el.style.width = `${width}px`; if (!sideOf(to)) document.querySelector('aside')?.remove(); }
       el.className = 'map flying';
       el.innerHTML = `<svg viewBox="${A.x} ${A.y} ${A.w} ${A.h}" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${baseShapes(W, cls, false)}</svg>`;
       const svg = el.firstElementChild;
       el.getBoundingClientRect();
       el.style.height = `${h1}px`;
+      if (w1 !== width) el.style.width = `${w1}px`;
       if (to !== 'world' || NAT) el.classList.add('zoomed'); // tints the countries in as we fly
       const t0 = performance.now(), D = 950;
       const step = (now) => {
@@ -1181,7 +1197,7 @@
             ${world && !NAT ? regionList() : summaryPanel(d) + background()}
             ${d.errors?.length ? `<details class="footnote"><summary>${plural(d.errors.length, 'warning')}</summary><ul>${d.errors.map((e) => `<li>${esc(e)}</li>`).join('')}</ul></details>` : ''}
           </div>
-          <aside>${world && !NAT ? '' : detail(d)}${feed(d)}</aside>
+          ${sideOf(state.view) ? `<aside>${world && !NAT ? '' : detail(d)}${feed(d)}</aside>` : ''}
         </div>
       </div>`;
 
