@@ -5,7 +5,7 @@
 // A voice file lists accounts by handle (easier to curate); at runtime we
 // resolve handles to DIDs, which is what we key on (handles can change).
 
-import { stateCountry } from './flags.js?v=be58a7d5f0';
+import { stateCountry } from './flags.js?v=11e28f81b7';
 
 /** Base weight per tier. Officials and OSINT are useful but never promoted alone. */
 export const TIER_WEIGHT = { 1: 1.0, 2: 0.9, 3: 0.7, 4: 0.6, 5: 0.5 };

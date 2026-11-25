@@ -9,6 +9,9 @@ export const MAP_VIEWS = {
   'eastern-europe': { label: 'Eastern Europe', west: 11, east: 47, south: 43, north: 63, width: 1000 },
   'east-asia': { label: 'East Asia', west: 100, east: 136, south: 8, north: 43, width: 1000 },
   world: { label: 'World', west: -180, east: 180, south: -56, north: 78, width: 1000 },
+  // US politics: the lower 48 states (home), and central Washington, D.C.
+  usa: { label: 'United States', west: -126, east: -65, south: 23.5, north: 50, width: 1000 },
+  dc: { label: 'Washington, D.C.', west: -77.062, east: -76.988, south: 38.879, north: 38.905, width: 1000 },
 };
 
 /** Horizontal squash so shapes look right at the view's middle latitude. */

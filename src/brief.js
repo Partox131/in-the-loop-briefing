@@ -12,12 +12,12 @@
 //                                                      ▼
 //                     breadth quota (fewer items per child higher up)
 
-import { ago, bold, cyan, dim, formatPost, green, magenta, yellow } from './format.js?v=be58a7d5f0';
-import { applyQuota, rankPosts } from './rank.js?v=be58a7d5f0';
-import { searchTopic } from './search.js?v=be58a7d5f0';
-import { KEEP_PER_VOICE } from './snapshot.js?v=be58a7d5f0';
-import { buildStorylines } from './storylines.js?v=be58a7d5f0';
-import { byDid, resolveVoices, TIER_NAME, voicesFor } from './voices.js?v=be58a7d5f0';
+import { ago, bold, cyan, dim, formatPost, green, magenta, yellow } from './format.js?v=11e28f81b7';
+import { applyQuota, rankPosts } from './rank.js?v=11e28f81b7';
+import { searchTopic } from './search.js?v=11e28f81b7';
+import { KEEP_PER_VOICE } from './snapshot.js?v=11e28f81b7';
+import { buildStorylines } from './storylines.js?v=11e28f81b7';
+import { byDid, resolveVoices, TIER_NAME, voicesFor } from './voices.js?v=11e28f81b7';
 
 /**
  * @param {object} o
@@ -81,6 +81,8 @@ export async function buildBrief({ client, hierarchy: h, node, voices, since, no
     onTopic.push({
       ...p,
       topicId: deepest,
+      // Every topic it matched: a story touching two arenas links them on the map.
+      topicIds: hits.map((m) => m.id),
       node: childUnder(deepest),
       matchedTerms: hits.flatMap((m) => m.terms),
       lenses: h.lensesFor(deepest, p),

@@ -5,7 +5,7 @@
 // The data goes through the real pipeline (classify, rank, storylines), so
 // the demo also shows what the code does with it.
 
-import { makeVoice } from './voices.js?v=be58a7d5f0';
+import { makeVoice } from './voices.js?v=11e28f81b7';
 
 const MIN = 60_000;
 
@@ -54,13 +54,16 @@ function demoFeeds(now) {
       pv('us-wire.example.com', 'u1', 95, 'Senate passes stopgap spending bill, sending it to the House two days before a government shutdown deadline.', { ...o, likes: 1300, reposts: 420, link: shutdown }),
       pv('us-wire.example.com', 'u2', 260, 'Federal judge blocks the administration\'s new deportation policy nationwide, citing due process.', { ...o, likes: 900, reposts: 300 }),
       pv('us-wire.example.com', 'u3', 700, 'Governor sues over National Guard deployment to the state capital.', { ...o, likes: 400, reposts: 90 }),
+      pv('us-wire.example.com', 'u4', 150, 'Justice Department sues Texas over its new congressional map, the latest redistricting fight before the midterms.', { ...o, likes: 520, reposts: 140 }),
     ],
     'left-mag.example.com': [
       pv('left-mag.example.com', 'l1', 80, 'House Democrats say they will not back the stopgap spending bill without health care money; shutdown deadline is Friday.', { ...o, likes: 800, reposts: 210 }),
+      pv('left-mag.example.com', 'l3', 120, 'Texas Democrats say the Justice Department redistricting lawsuit came too late to stop the new map.', { ...o, likes: 300, reposts: 70 }),
       pv('left-mag.example.com', 'l2', 330, 'New poll: three Democrats lead early 2028 presidential primary field, none above 20%.', { ...o, likes: 500, reposts: 120 }),
     ],
     'right-paper.example.com': [
       pv('right-paper.example.com', 'r1', 70, 'Speaker Johnson says the House will vote on the Senate stopgap spending bill Thursday to avoid a shutdown.', { ...o, likes: 700, reposts: 180, link: shutdown }),
+      pv('right-paper.example.com', 'r3', 180, 'Senate confirms the president\'s nominee for Fed chair after a tense confirmation hearing.', { ...o, likes: 450, reposts: 95 }),
       pv('right-paper.example.com', 'r2', 400, 'White House signs executive order on federal hiring, the third this week.', { ...o, likes: 350, reposts: 60 }),
     ],
     'court-reporter.example.com': [
