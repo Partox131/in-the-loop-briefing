@@ -160,13 +160,27 @@
     ol.rail li + li { margin-top: 0; }
     ol.rail li + li::before { display: none; }
   }
+  .sides .record { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; }
+  details.tl { margin: 10px 0 0; font-size: 14px; }
+  details.tl summary { cursor: pointer; color: var(--muted); }
+  details.tl .tlnew { color: var(--ink); font-weight: 600; margin-left: 6px; }
+  details.tl ol { list-style: none; margin: 8px 0 0; padding: 0 0 0 14px; border-left: 2px solid var(--track); }
+  details.tl li { display: grid; grid-template-columns: 112px 1fr; gap: 8px; padding: 4px 0; position: relative; }
+  details.tl li::before { content: ''; position: absolute; left: -20px; top: 10px; width: 10px; height: 10px; border-radius: 50%; background: var(--bg); border: 2px solid var(--track); }
+  details.tl li.s-corroborated::before { background: var(--confirmed); border-color: var(--confirmed); }
+  details.tl li.s-disputed::before { background: var(--disputed); border-color: var(--disputed); }
+  details.tl li.k-claim::before { border-style: dashed; }
+  details.tl li.new time { font-weight: 600; color: var(--ink); }
+  details.tl li.new time::after { content: ' · new'; }
+  details.tl time { color: var(--muted); font-variant-numeric: tabular-nums; }
+  @media (max-width: 640px) { details.tl li { grid-template-columns: 1fr; gap: 0; } }
   .statetag { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
   .flag { width: 16px; height: 12px; border-radius: 2px; box-shadow: 0 0 0 1px color-mix(in srgb, currentColor 20%, transparent); object-fit: cover; flex: none; }
 </style>
 </head>
 <body>
 <div id="app"><p class="loading">Loading the latest…</p></div>
-<script>window.itlSearch = location.search; window.itlStatic = import('./src/static.js?v=89cbc5f30a').then((m) => m.init({ search: window.itlSearch }));</script>
+<script>window.itlSearch = location.search; window.itlStatic = import('./src/static.js?v=6096a79e24').then((m) => m.init({ search: window.itlSearch }));</script>
 <script>
 (() => {
   const params = new URLSearchParams(location.search);
@@ -181,9 +195,22 @@
   // "state-funded", "public", "official" or "partisan", with a tooltip saying
   // in which conflicts the source speaks for a side.
   const countryName = (c) => { try { return new Intl.DisplayNames(['en'], { type: 'region' }).of(c); } catch { return c; } };
-  const stateTag = (c, long, cred) => {
+  // Track record on claims for a side (server, scripts/stories.js records): rule-based,
+  // how often an independent source later reported the same storyline.
+  const recordOf = (aff) => (aff && state.data?.records?.[aff]) || null;
+  const recordText = (aff) => {
+    const r = recordOf(aff);
+    if (!r?.claims) return '';
+    const parts = [`${r.confirmed} later reported by an independent source`, `${r.unconfirmed} not within 48 hours`];
+    if (r.pending) parts.push(`${r.pending} too recent to tell`);
+    if (r.disputed) parts.push(`${r.disputed} disputed`);
+    const first = r.first ? ` First to report ${r.first === 1 ? 'once' : `${r.first} times`}${r.leadHours != null ? `, by a median ${r.leadHours}h` : ''}.` : '';
+    return `Track record, last 30 days: ${r.claims === 1 ? '1 claim' : `${r.claims} claims`} for a side; ${parts.join(', ')}.${first}`;
+  };
+  const stateTag = (c, long, cred, aff) => {
     const name = c ? countryName(c) : '';
-    const title = (name ? `${name}. ` : '') + (cred?.note || 'State-affiliated');
+    const rec = recordText(aff);
+    const title = (name ? `${name}. ` : '') + (cred?.note || 'State-affiliated') + (rec ? ` ${rec}` : '');
     const img = /^[A-Z]{2}$/.test(c || '') ? `<img class="flag" src="flags/${c.toLowerCase()}.svg" alt="${esc(name)}" width="16" height="12">` : '';
     const word = cred?.short && cred.short !== 'state' ? cred.short : long ? 'state-affiliated' : 'state';
     return ` <span class="statetag" title="${esc(title)}">${img}${word}</span>`;
@@ -315,25 +342,58 @@
     const first = s.firstClaim && s.firstWitness && Date.parse(s.firstClaim.at) < Date.parse(s.firstWitness.at)
       ? `<p class="firstnote">First reported by ${esc(s.firstClaim.by)} (for ${esc(sideName(s.firstClaim.side))}), ${gap(s.firstClaim.at, s.firstWitness.at)} before an independent source (${esc(s.firstWitness.by)}).</p>`
       : '';
-    return `<div class="sides"><p class="sideshead">What each side says</p><ul>${s.sides.map((x) => `<li><strong>${esc(sideName(x.side))}</strong> <span class="muted">via ${esc(x.by)}, ${esc(ago(x.at))}</span>: <a href="${safeUrl(x.url)}" target="_blank" rel="noopener">${esc(oneLine(x.text, 160))}</a></li>`).join('')}</ul>${s.status === 'claimed' ? '<p class="muted" style="margin:4px 0 0">No source outside the conflict has reported this yet.</p>' : ''}${first}</div>`;
+    return `<div class="sides"><p class="sideshead">What each side says</p><ul>${s.sides.map((x) => `<li><strong>${esc(sideName(x.side))}</strong> <span class="muted">via ${esc(x.by)}, ${esc(ago(x.at))}</span>: <a href="${safeUrl(x.url)}" target="_blank" rel="noopener">${esc(oneLine(x.text, 160))}</a>${recordText(x.by) ? `<span class="record">${esc(x.by)}: ${esc(recordText(x.by).replace(/^Track record, /, ''))}</span>` : ''}</li>`).join('')}</ul>${s.status === 'claimed' ? '<p class="muted" style="margin:4px 0 0">No source outside the conflict has reported this yet.</p>' : ''}${first}</div>`;
+  }
+
+  // How the storyline developed, kept by the server over days (stories.json,
+  // source credibility plan part 4). Moments after your last visit are marked.
+  const dayTime = (iso) => new Date(iso).toLocaleString([], { weekday: 'short', hour: '2-digit', minute: '2-digit' });
+  const MOMENT = {
+    corroborated: 'Now confirmed: a source outside the conflict reports it',
+    claimed: 'Only one side says this so far',
+    reported: 'Reported by one independent source',
+    disputed: 'Sources disagree',
+    official: 'Official statement',
+  };
+  function moment(e, claimed) {
+    const quote = e.text ? `: <a href="${safeUrl(e.url)}" target="_blank" rel="noopener">${esc(oneLine(e.text, 140))}</a>` : '';
+    const lead = e.isFirst ? 'First report: ' : '';
+    if (e.kind === 'first') return `<strong>First reported</strong> by ${esc(e.by)}${quote}`;
+    if (e.kind === 'claim') return `<strong>${lead}${esc(sideName(e.side))} claims</strong>, via ${esc(e.by)}${quote}`;
+    if (e.kind === 'witness') return `<strong>${lead}${e.isFirst ? 'independent' : 'Independent'} report</strong> from ${esc(e.by)}${quote}`;
+    if (e.to === 'corroborated') return `<strong>${claimed ? 'Now confirmed: a source outside the conflict reports it too' : 'Now confirmed by two independent sources'}</strong>${e.by ? ` (${esc(e.by)})` : ''}`;
+    return `<strong>${esc(MOMENT[e.to] || e.to)}</strong>`;
+  }
+  function timelineBlock(s) {
+    let events = (s.history?.events || []).filter((e) => !(e.kind === 'status' && !e.from));
+    // The first report is usually also the first claim or independent report: show it once.
+    const first = events.find((e) => e.kind === 'first');
+    const same = first && events.find((e) => (e.kind === 'claim' || e.kind === 'witness') && e.at === first.at && e.by === first.by);
+    if (same) events = events.filter((e) => e !== first).map((e) => (e === same ? { ...e, isFirst: true } : e));
+    const claimed = events.some((e) => e.kind === 'claim');
+    if (events.length < 2) return '';
+    const since = state.baseline?.at || 0;
+    const fresh = since ? events.filter((e) => Date.parse(e.at) > since).length : 0;
+    return `<details class="tl"><summary>How it developed: ${plural(events.length, 'moment')} since ${esc(dayTime(s.history.firstSeen))}${fresh ? ` <span class="tlnew">${fresh} new since you last checked</span>` : ''}</summary><ol>${events.map((e) => `<li class="${since && Date.parse(e.at) > since ? 'new' : ''} k-${esc(e.kind)}${e.to ? ` s-${esc(e.to)}` : ''}"><time datetime="${esc(e.at)}">${esc(dayTime(e.at))}</time><span>${moment(e, claimed)}</span></li>`).join('')}</ol></details>`;
   }
 
   function story(s, isNew) {
     const voice = s.lead.voice;
-    const who = (voice ? `${esc(voice.name)}${tagged(voice) ? stateTag(voice.country, true, voice.cred) : ''}` : `@${esc(s.lead.handle)}`) + (s.lead.telegram ? ' (Telegram)' : s.lead.news ? ' (news article)' : '');
+    const who = (voice ? `${esc(voice.name)}${tagged(voice) ? stateTag(voice.country, true, voice.cred, voice.affiliation) : ''}` : `@${esc(s.lead.handle)}`) + (s.lead.telegram ? ' (Telegram)' : s.lead.news ? ' (news article)' : '');
     const lift = s.lead.why?.amplifiedBy ? `, shared by ${plural(s.lead.why.amplifiedBy, 'other voice')}` : '';
     const topic = s.topicId !== state.data.node.id ? ` In ${esc(s.topicLabel)}.` : '';
-    const sources = s.sources.length ? `<p class="sources">Sources: ${s.sources.map((x) => `${esc(x.affiliation)}${tagged(x) ? stateTag(x.country, false, x.cred) : ''}`).join(', ')}</p>` : '';
+    const sources = s.sources.length ? `<p class="sources">Sources: ${s.sources.map((x) => `${esc(x.affiliation)}${tagged(x) ? stateTag(x.country, false, x.cred, x.affiliation) : ''}`).join(', ')}</p>` : '';
     const related = s.related.length
-      ? `<details><summary>${s.postCount - 1 > s.related.length ? `Top ${s.related.length} of ${s.postCount - 1} related posts` : plural(s.postCount - 1, 'related post')}</summary><div class="rel">${s.related.map((p) => `<div><strong>${esc(p.voice ? p.voice.name : '@' + p.handle)}</strong>${tagged(p.voice) ? stateTag(p.voice.country, false, p.voice.cred) : ''} <span class="muted">${esc(ago(p.createdAt))}</span><br>${esc(oneLine(p.text))} <a href="${safeUrl(p.url)}" target="_blank" rel="noopener">${p.telegram ? 'View on Telegram' : p.news ? 'Read article' : 'View post'}</a></div>`).join('')}</div></details>`
+      ? `<details><summary>${s.postCount - 1 > s.related.length ? `Top ${s.related.length} of ${s.postCount - 1} related posts` : plural(s.postCount - 1, 'related post')}</summary><div class="rel">${s.related.map((p) => `<div><strong>${esc(p.voice ? p.voice.name : '@' + p.handle)}</strong>${tagged(p.voice) ? stateTag(p.voice.country, false, p.voice.cred, p.voice.affiliation) : ''} <span class="muted">${esc(ago(p.createdAt))}</span><br>${esc(oneLine(p.text))} <a href="${safeUrl(p.url)}" target="_blank" rel="noopener">${p.telegram ? 'View on Telegram' : p.news ? 'Read article' : 'View post'}</a></div>`).join('')}</div></details>`
       : '';
     return `<article class="story">
       <div>${s.breaking ? `<span class="breakingtag" title="First reported under 3 hours ago, by ${s.breaking} independent outlets within 90 minutes">Breaking · ${plural(s.breaking, 'outlet')}</span>` : ''}<div class="state ${s.status}"><span class="dot ${s.status}"></span>${s.status === 'claimed' ? esc(claimText(s)) : STATE_LABEL[s.status]}</div>${rail(s)}${isNew ? '<span class="newtag">New to you</span>' : ''}</div>
       <div>
         <h3><a href="${safeUrl(s.lead.url)}" target="_blank" rel="noopener">${esc(oneLine(s.lead.text, 280))}</a></h3>
-        <p class="by">Led by ${who}, ${esc(ago(s.lead.createdAt))}${lift}. ${[s.postCount - s.articleCount ? plural(s.postCount - s.articleCount, 'post') : '', s.articleCount ? plural(s.articleCount, 'news article') : ''].filter(Boolean).join(' and ')} from ${plural(s.voiceCount, 'source')}.${topic}</p>
+        <p class="by">Led by ${who}, ${esc(ago(s.lead.createdAt))}${lift}. ${[s.postCount - s.articleCount ? plural(s.postCount - s.articleCount, 'post') : '', s.articleCount ? plural(s.articleCount, 'news article') : ''].filter(Boolean).join(' and ')} from ${plural(s.voiceCount, 'source')}.${topic}${s.history && Date.now() - Date.parse(s.history.firstSeen) > DAY ? ` Followed since ${esc(new Date(s.history.firstSeen).toLocaleDateString([], { weekday: 'short', day: 'numeric', month: 'short' }))}.` : ''}</p>
         ${s.disagreements.map(disagreement).join('')}
         ${sidesBlock(s)}
+        ${timelineBlock(s)}
         ${sources}
         ${related}
       </div>

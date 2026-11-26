@@ -475,7 +475,7 @@
   <p>A live map of what credible outlets, reporters and analysts are saying about geopolitics, US politics and Canadian politics. Each story shows how many independent outlets carry it, whether it's confirmed or disputed, and what changed since you last looked. Sources include Bluesky, news outlets' feeds and official Telegram channels, refreshed every few minutes.</p>
   <nav aria-label="Regions and segments"><a href="/middle-east/">Middle East: the war with Iran, Gaza and Lebanon</a> · <a href="/eastern-europe/">Eastern Europe: the war in Ukraine and NATO's eastern flank</a> · <a href="/east-asia/">East Asia: China and Taiwan</a> · <a href="/us-politics/">US politics</a> · <a href="/canadian-politics/">Canadian politics</a> · <a href="briefing.html">Briefing</a> · <a href="/about/">About and how it works</a></nav>
 </div></div>
-<script>window.itlSearch = location.search; window.itlLive = (demo, node) => import('./src/static.js?v=89cbc5f30a').then((m) => m.initLive({ demo, node, search: window.itlSearch }));</script>
+<script>window.itlSearch = location.search; window.itlLive = (demo, node) => import('./src/static.js?v=6096a79e24').then((m) => m.initLive({ demo, node, search: window.itlSearch }));</script>
 <script>
 (() => {
   const params = new URLSearchParams(location.search);
@@ -1059,6 +1059,52 @@
     return { x: cx - w / 2, y: cy - h / 2, w, h };
   }
   const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
+  /**
+   * The camera path between two boxes the way map apps move (van Wijk and
+   * Nuij's smooth zoom and pan, as in d3.interpolateZoom): pull back until
+   * both places are in view, travel, then come in. at(t) gives the box at
+   * t in [0, 1]; ms is a duration that suits the distance.
+   */
+  function zoomPath(A, B) {
+    const rho = 1.4, r2 = rho * rho, r4 = r2 * r2;
+    const x0 = A.x + A.w / 2, y0 = A.y + A.h / 2, w0 = A.w;
+    const x1 = B.x + B.w / 2, y1 = B.y + B.h / 2, w1 = B.w;
+    const dx = x1 - x0, dy = y1 - y0, d2 = dx * dx + dy * dy;
+    let S, f;
+    if (d2 < 1e-9 * w0 * w0) {
+      S = Math.log(w1 / w0) / rho;
+      f = (t) => [x0 + t * dx, y0 + t * dy, w0 * Math.exp(rho * t * S)];
+    } else {
+      const d1 = Math.sqrt(d2);
+      const b0 = (w1 * w1 - w0 * w0 + r4 * d2) / (2 * w0 * r2 * d1), b1 = (w1 * w1 - w0 * w0 - r4 * d2) / (2 * w1 * r2 * d1);
+      const q0 = Math.log(Math.sqrt(b0 * b0 + 1) - b0), q1 = Math.log(Math.sqrt(b1 * b1 + 1) - b1);
+      S = (q1 - q0) / rho;
+      f = (t) => {
+        const s = t * S, c0 = Math.cosh(q0);
+        const u = (w0 / (r2 * d1)) * (c0 * Math.tanh(rho * s + q0) - Math.sinh(q0));
+        return [x0 + u * dx, y0 + u * dy, (w0 * c0) / Math.cosh(rho * s + q0)];
+      };
+    }
+    const a0 = A.w / A.h, a1 = B.w / B.h;
+    return {
+      ms: Math.min(2400, Math.max(650, (Math.abs(S) * 1000 * rho) / Math.SQRT2)),
+      at: (t) => { const [cx, cy, w] = f(t), h = w / (a0 + (a1 - a0) * t); return { x: cx - w / 2, y: cy - h / 2, w, h }; },
+    };
+  }
+  const vbText = (b) => `${b.x} ${b.y} ${b.w} ${b.h}`;
+  /** Move an svg's camera from box A to box B along the zoom path. */
+  function glide(svg, A, B, ms, t0 = performance.now()) {
+    const path = zoomPath(A, B), D = ms || path.ms;
+    return new Promise((done) => {
+      const step = (now) => {
+        if (!svg.isConnected) { done(); return; }
+        const t = Math.min(1, (now - t0) / D);
+        svg.setAttribute('viewBox', vbText(path.at(ease(t))));
+        if (t < 1) requestAnimationFrame(step); else done();
+      };
+      requestAnimationFrame(step);
+    });
+  }
   // How long the bubbles take to fade before the camera moves.
   const LEAVE_MS = 160;
 
@@ -1072,7 +1118,7 @@
     return flight(el, {
       base: state.api.maps[HOME],
       target: state.api.maps[intoSeg(to)?.home || mapOf(to)],
-      from: boxOf(from), to: boxOf(to),
+      from: PHONE() ? boxOn(state.api.maps[HOME], state.api.maps[mapOf(from)], shownCam(from)) : boxOf(from), to: boxOf(to),
       side: sideOf(to),
       zoomed: to !== 'world' || NAT, // tints the countries in as we fly
       cls: (name) => (name === intoSeg(to)?.country || bg?.focus?.includes(name) ? 'country focus' : bg?.watch?.includes(name) ? 'country watch' : 'country'),
@@ -1102,13 +1148,11 @@
       el.getBoundingClientRect();
       el.style.height = `${h1}px`;
       if (w1 !== width) el.style.width = `${w1}px`;
-      const t0 = performance.now(), D = 950;
+      // Pull back, travel, come in. A desktop frame changes size over .95s, so it keeps that pace.
+      const path = zoomPath(A, B), t0 = performance.now(), D = PHONE() ? path.ms : 950;
       const step = (now) => {
-        const t = Math.min(1, (now - t0) / D), e = ease(t);
-        const w = A.w * (B.w / A.w) ** e, h = A.h * (B.h / A.h) ** e; // zoom at an even pace
-        const cx = A.x + A.w / 2 + (B.x + B.w / 2 - A.x - A.w / 2) * e;
-        const cy = A.y + A.h / 2 + (B.y + B.h / 2 - A.y - A.h / 2) * e;
-        svg.setAttribute('viewBox', `${cx - w / 2} ${cy - h / 2} ${w} ${h}`);
+        const t = Math.min(1, (now - t0) / D);
+        svg.setAttribute('viewBox', vbText(path.at(ease(t))));
         if (t < 1) requestAnimationFrame(step); else { state.flying = false; state.handoff = svg; done(); }
       };
       requestAnimationFrame(step);
@@ -1123,16 +1167,14 @@
       const svg = el.querySelector('svg');
       if (!svg) { state.flying = false; done(); return; }
       const m = state.api.maps[mapOf(to)];
-      const A = PHONE() ? phoneCam(from) : cropOf(from), B = PHONE() ? phoneCam(to) : cropOf(to);
-      const t0 = performance.now(), D = 800;
+      const A = PHONE() ? shownCam(from) : cropOf(from), B = PHONE() ? phoneCam(to) : cropOf(to);
+      const path = zoomPath(A, B), t0 = performance.now(), D = PHONE() ? path.ms : 800;
       const step = (now) => {
-        const t = Math.min(1, (now - t0) / D), e = ease(t);
-        const w = A.w * (B.w / A.w) ** e, h = A.h * (B.h / A.h) ** e;
-        const cx = A.x + A.w / 2 + (B.x + B.w / 2 - A.x - A.w / 2) * e;
-        const cy = A.y + A.h / 2 + (B.y + B.h / 2 - A.y - A.h / 2) * e;
-        svg.setAttribute('viewBox', `${cx - w / 2} ${cy - h / 2} ${w} ${h}`);
-        if (!PHONE()) svg.style.setProperty('--s', (w / m.width).toFixed(3));
-        if (t < 1) requestAnimationFrame(step); else { state.flying = false; done(); }
+        const t = Math.min(1, (now - t0) / D), b = path.at(ease(t));
+        svg.setAttribute('viewBox', vbText(b));
+        if (!PHONE()) svg.style.setProperty('--s', (b.w / m.width).toFixed(3));
+        if (t < 1) requestAnimationFrame(step);
+        else { state.flying = false; if (PHONE()) state.lastCam = { key: camKey(to), map: `${SEG_KEY || ''}|${mapOf(to)}`, box: B }; done(); }
       };
       requestAnimationFrame(step);
     }, LEAVE_MS));
@@ -1390,14 +1432,30 @@
     return { x, y: b.y + b.h / 2 - h / 2, w, h };
   }
   const camKey = (view) => `${SEG_KEY || ''}|${view}`;
+  // The story a loop card is about, if it is drawn on this view's map.
+  function storyHome(id) {
+    const path = state.api.live.trail(id);
+    const home = path.length >= 2 ? path.at(-2).id : null;
+    return home === SEG_NODE ? 'world' : home;
+  }
   function phoneCam(view) {
     const f = frameSize(), aspect = f.w / f.h;
+    if (looping() && state.focusId && storyHome(state.focusId) === view) {
+      const pl = state.api.live.placeOf(state.focusId), m = state.api.maps[mapOf(view)];
+      if (pl && m) {
+        const [x, y] = state.api.project(m, pl.lon, pl.lat);
+        const b = portrait(view === 'world' ? { x: 0, y: 0, w: m.width, h: m.height } : cropOf(view), aspect);
+        return { ...b, x: x - b.w / 2, y: y - b.h * 0.36 };
+      }
+    }
     const c = state.cam;
     if (c && c.key === camKey(view) && Math.abs(c.box.w / c.box.h - aspect) < 0.02) return c.box;
     const m = state.api.maps[mapOf(view)];
     const b = view === 'world' ? { x: 0, y: 0, w: m.width, h: m.height } : cropOf(view);
     return portrait(b, aspect, view === 'world' && !NAT ? m.width * WORLD_FOCUS : undefined);
   }
+  /** The camera as it is on screen now, for the start of a move. */
+  const shownCam = (view) => (state.lastCam?.key === camKey(view) ? state.lastCam.box : phoneCam(view));
   // How far the camera may wander: the view's own area plus a margin.
   function camLimits(view) {
     const m = state.api.maps[mapOf(view)];
@@ -1447,6 +1505,25 @@
     pin();
     shell.addEventListener('scroll', pin);
     if (state.loopCover) wireCover(shell);
+    // Same map, new camera (the next story, a picked bubble): glide there
+    // instead of jumping, like a maps app.
+    const msvg = shell.querySelector('.map > svg');
+    if (msvg) {
+      const v = msvg.viewBox.baseVal, now = { x: v.x, y: v.y, w: v.width, h: v.height };
+      const mapKey = `${SEG_KEY || ''}|${mapOf(state.view)}`, last = state.lastCam;
+      state.lastCam = { key: camKey(state.view), map: mapKey, box: now };
+      const moved = last && last.map === mapKey && (Math.abs(last.box.x - now.x) + Math.abs(last.box.y - now.y) > now.w * 0.01 || Math.abs(last.box.w / now.w - 1) > 0.01);
+      const g = state.glide, same = (a, b2) => Math.abs(a.x - b2.x) + Math.abs(a.y - b2.y) + Math.abs(a.w - b2.w) < 1e-6 * a.w + 1e-9;
+      if (moved && !reduceMotion()) {
+        state.glide = { map: mapKey, A: last.box, B: now, t0: performance.now(), ms: zoomPath(last.box, now).ms };
+      }
+      // A re-draw in the middle of a glide (live posts, the loop's caption) carries it on.
+      const go2 = state.glide;
+      if (go2 && go2.map === mapKey && same(go2.B, now) && performance.now() < go2.t0 + go2.ms && !reduceMotion()) {
+        msvg.setAttribute('viewBox', vbText(zoomPath(go2.A, go2.B).at(ease(Math.min(1, (performance.now() - go2.t0) / go2.ms)))));
+        glide(msvg, go2.A, go2.B, go2.ms, go2.t0);
+      } else if (g === go2) state.glide = null;
+    }
     if (looping()) { wireLoop(shell); return; }
     state.hdrH = shell.querySelector('.pbar').offsetHeight;
     shell.style.setProperty('--hdr', `${state.hdrH}px`);
@@ -1508,6 +1585,7 @@
       const box = { x: cx - w / 2, y: cy - h / 2, w, h };
       svg.setAttribute('viewBox', `${box.x} ${box.y} ${box.w} ${box.h}`);
       state.cam = { key: camKey(state.view), box };
+      state.lastCam = { key: camKey(state.view), map: `${SEG_KEY || ''}|${mapOf(state.view)}`, box };
       return box;
     };
     const gesture = () => {
@@ -1894,6 +1972,7 @@
     state.loopCover = null;
     if (!list.length) { render(); return; }
     endTour(false, true);
+    state.cam = null; // the loop drives the camera
     state.tour = { list, i: -1, timer: null };
     nextStop();
   }
@@ -1904,6 +1983,7 @@
     t.i += 1;
     if (t.i < 0) t.i = 0; // "back" from the first story
     if (t.i >= t.list.length) { endTour(true); return; }
+    state.focusId = t.list[t.i].topicId; // the camera heads for this story's place
     await pickNode(t.list[t.i].topicId);
     if (state.tour !== t) return;
     t.at = Date.now();
@@ -1916,6 +1996,7 @@
     if (!t) return;
     clearTimeout(t.timer);
     state.tour = null;
+    state.focusId = null;
     if (CLIP && home) state.clipEnd = true;
     if (home && state.view !== 'world') go('world');
     else if (!quiet) render();

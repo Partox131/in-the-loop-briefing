@@ -12,13 +12,13 @@
 //                                                      ▼
 //                     breadth quota (fewer items per child higher up)
 
-import { ago, bold, cyan, dim, formatPost, green, magenta, yellow } from './format.js?v=89cbc5f30a';
-import { applyQuota, rankPosts } from './rank.js?v=89cbc5f30a';
-import { searchTopic } from './search.js?v=89cbc5f30a';
-import { KEEP_PER_VOICE } from './snapshot.js?v=89cbc5f30a';
-import { buildStorylines } from './storylines.js?v=89cbc5f30a';
-import { byDid, resolveVoices, TIER_NAME, voicesFor } from './voices.js?v=89cbc5f30a';
-import { conflictOfNode } from './credibility.js?v=89cbc5f30a';
+import { ago, bold, cyan, dim, formatPost, green, magenta, yellow } from './format.js?v=6096a79e24';
+import { applyQuota, rankPosts } from './rank.js?v=6096a79e24';
+import { searchTopic } from './search.js?v=6096a79e24';
+import { KEEP_PER_VOICE } from './snapshot.js?v=6096a79e24';
+import { buildStorylines } from './storylines.js?v=6096a79e24';
+import { byDid, resolveVoices, TIER_NAME, voicesFor } from './voices.js?v=6096a79e24';
+import { conflictOfNode } from './credibility.js?v=6096a79e24';
 
 /**
  * @param {object} o
@@ -30,8 +30,9 @@ import { conflictOfNode } from './credibility.js?v=89cbc5f30a';
  * @param {Date} [o.now]
  * @param {boolean} [o.search]   also pull the open conversation via search (default true)
  * @param {{posts: Array, voices: Map}} [o.news]  news articles as posts (see news.js newsPosts)
+ * @param {boolean} [o.quota]   cap stories per child node (default true)
  */
-export async function buildBrief({ client, hierarchy: h, node, voices, since, now = new Date(), search = true, perVoice = KEEP_PER_VOICE, perTerm = 100, news }) {
+export async function buildBrief({ client, hierarchy: h, node, voices, since, now = new Date(), search = true, perVoice = KEEP_PER_VOICE, perTerm = 100, news, quota = true }) {
   const breadth = h.breadth(node);
   const scope = new Set([node, ...h.descendants(node)]);
   const errors = [];
@@ -93,7 +94,9 @@ export async function buildBrief({ client, hierarchy: h, node, voices, since, no
   }
 
   const ranked = rankPosts(onTopic, { voices: voiceIndex, now, halfLifeHours: breadth.halfLifeHours });
-  const stories = applyQuota(buildStorylines(ranked), { ...breadth, childOf: (s) => s.lead.node });
+  const all = buildStorylines(ranked);
+  // quota: false keeps every storyline (the server's storyline tracker, scripts/stories.js)
+  const stories = quota ? applyQuota(all, { ...breadth, childOf: (s) => s.lead.node }) : all;
 
   return {
     node: h.get(node),
