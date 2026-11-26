@@ -22,8 +22,8 @@
 <meta name="twitter:image" content="https://inthelooplive.com/og-image.png">
 <title>In the Loop: live map of world news, US and Canadian politics</title>
 <script>if (/[?&](node|since)=/.test(location.search)) location.replace('briefing.html' + location.search + location.hash);</script>
-<script src="/alerts.js?v=a4ba4a9256" defer></script>
-<script src="analytics.js?v=00b8c0f4b5"></script>
+<script src="/alerts.js?v=a6243203bb" defer></script>
+<script src="analytics.js?v=26c3aada9a"></script>
 <script src="signup.js?v=75d20b6c98" defer></script>
 <link rel="manifest" href="/manifest.webmanifest">
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://inthelooplive.com/#website","name":"In the Loop","url":"https://inthelooplive.com/","publisher":{"@id":"https://inthelooplive.com/#org"}},{"@type":"Organization","@id":"https://inthelooplive.com/#org","name":"In the Loop","url":"https://inthelooplive.com/","logo":"https://inthelooplive.com/og-image.png"}]}</script>
@@ -363,7 +363,7 @@
   .loopcap .chip { background: #fff; }
   .loopread { color: #fff; font-size: 14px; font-weight: 600; text-decoration: none; align-self: stretch; text-align: center; padding: 10px 0 0; }
   .loopcount { align-self: stretch; text-align: center; font-size: 12px; opacity: .7; }
-  .pshell .loopcover { position: absolute; inset: 0; z-index: 9; background: rgba(14, 16, 38, .9); backdrop-filter: blur(6px); display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 14px; padding: 0 28px; pointer-events: auto; }
+  .pshell .loopcover { position: absolute; inset: 0; z-index: 9; background: rgba(14, 16, 38, .9); color: #fff; backdrop-filter: blur(6px); display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 14px; padding: 0 28px; pointer-events: auto; }
   .loopcover .kick { font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #B9C1E6; }
   .loopcover h2 { margin: 0; font: 800 34px/1.06 var(--display); text-wrap: balance; }
   .loopcover p { margin: 0; font-size: 16px; opacity: .9; max-width: 32ch; }
@@ -1196,7 +1196,7 @@
     }, LEAVE_MS));
   }
 
-  async function go(to, { push = true } = {}) {
+  async function go(to, { push = true, track = true } = {}) {
     if (!to || to === state.view || state.flying || state.switching) return;
     if (push) history.pushState({ view: to }, '', urlFor(to));
     const from = state.view;
@@ -1205,7 +1205,8 @@
     await fly(from, to);
     state.view = to;
     state.arrive = true;
-    if (push) window.itlTrack?.('map_zoom', { from_view: from, to_view: to, view_kind: to === 'world' ? 'home' : topicOf(to) ? 'topic' : 'region' });
+    // Only the visitor's own moves: not the tour's, not the browser's back button.
+    if (push && track && !state.tour) window.itlTrack?.('map_zoom', { from_view: from, to_view: to, view_kind: to === 'world' ? 'home' : topicOf(to) ? 'topic' : 'region' });
     if (state.pending) { state.area = state.pending; state.pending = null; }
     refresh();
     if (!state.tour) document.querySelector('.map')?.focus({ preventScroll: true });
@@ -1689,7 +1690,7 @@
   }
   function wireCover(shell) {
     shell.querySelector('[data-loopstart]')?.addEventListener('click', () => { window.itlTrack?.('tour_start', { trigger: 'loop_cover' }); startTour(); });
-    shell.querySelector('[data-loopskip]')?.addEventListener('click', () => { state.loopCover = null; render(); });
+    shell.querySelector('[data-loopskip]')?.addEventListener('click', () => { window.itlTrack?.('tour_skip', { stories: state.loopCover?.n || 0 }); state.loopCover = null; render(); });
   }
   function wireLoop(shell) {
     const nav = shell.querySelector('.loopnav'), cap = shell.querySelector('.loopcap');
@@ -1814,7 +1815,7 @@
       portalEl.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
     });
     const frame = (id, on) => app.querySelector(`[data-frame="${CSS.escape(id)}"]`)?.classList.toggle('on', on);
-    app.querySelectorAll('[data-window]').forEach((b) => b.addEventListener('click', () => { state.window = b.dataset.window; refresh(); }));
+    app.querySelectorAll('[data-window]').forEach((b) => b.addEventListener('click', () => { if (state.window !== b.dataset.window) window.itlTrack?.('time_window', { window: b.dataset.window, view: state.view }); state.window = b.dataset.window; refresh(); }));
     app.querySelectorAll('.bubble').forEach((g) => {
       const pick = (e) => {
         const a = state.data.areas.find((x) => x.id === g.dataset.area);
@@ -2015,9 +2016,11 @@
     if (!t) return;
     clearTimeout(t.timer);
     state.tour = null;
+    // How far people watch: finished (home after the last story) or stopped early.
+    if (!CLIP) window.itlTrack?.('tour_end', { stories_seen: Math.max(0, Math.min(t.i + 1, t.list.length)), stories: t.list.length, completed: Boolean(home && t.i >= t.list.length) });
     state.focusId = null;
     if (CLIP && home) state.clipEnd = true;
-    if (home && state.view !== 'world') go('world');
+    if (home && state.view !== 'world') go('world', { track: false });
     else if (!quiet) render();
   }
   function tourCaption() {
@@ -2070,7 +2073,7 @@
     const today = new Date().toISOString().slice(0, 10);
     try { seen = localStorage.getItem(SEG.tourKey); localStorage.setItem(SEG.tourKey, today); } catch {}
     const g = SEG;
-    if (seen !== today) setTimeout(() => { if (!state.tour && SEG === g && state.view === 'world') startTour(); }, 1800);
+    if (seen !== today) setTimeout(() => { if (!state.tour && SEG === g && state.view === 'world') { window.itlTrack?.('tour_start', { trigger: 'auto' }); startTour(); } }, 1800);
   }
 
   async function start() {

@@ -115,8 +115,10 @@ itl-alerts[hidden]{display:none}
       await post('subscribe', { subscription: sub.toJSON(), ...c });
       const was = saved()?.on;
       store.set(KEY, JSON.stringify({ on: true, topics: c.topics, max: c.max, quiet: c.quiet }));
+      window.itlTrack?.(was ? 'alerts_update' : 'alerts_on', { topics: c.topics.join(','), max_per_day: c.max, quiet_hours: c.quiet });
       ui.msg = was ? 'Saved.' : 'Alerts are on. A first notification is on its way so you can see it works.'; ui.err = false;
     } catch (e) {
+      window.itlTrack?.('alerts_error', { reason: ['denied', 'dismissed'].includes(e.message) ? e.message : 'failed' });
       ui.err = true;
       ui.msg = e.message === 'denied' ? 'Notifications are blocked for this site. You can allow them in your browser\'s site settings.'
         : e.message === 'dismissed' ? 'No problem. Press the button again whenever you want alerts.'
@@ -132,6 +134,7 @@ itl-alerts[hidden]{display:none}
       const sub = await r?.pushManager.getSubscription();
       if (sub) { await post('unsubscribe', { endpoint: sub.endpoint }).catch(() => {}); await sub.unsubscribe(); }
       store.set(KEY, JSON.stringify({ ...(saved() || defaults()), on: false }));
+      window.itlTrack?.('alerts_off');
       ui.msg = 'Alerts are off.'; ui.err = false;
     } catch { ui.msg = 'That didn\'t work. Please try again.'; ui.err = true; }
     ui.busy = false; draw();
@@ -175,6 +178,7 @@ ${ui.msg ? `<p class="msg${ui.err ? ' err' : ''}" role="status">${esc(ui.msg)}</
   }
 
   function open() {
+    window.itlTrack?.('alerts_open', { alerts_on: Boolean(saved()?.on) });
     if (!dialog) {
       dialog = document.createElement('dialog');
       dialog.className = 'itl-al';
