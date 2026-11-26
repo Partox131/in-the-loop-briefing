@@ -102,6 +102,10 @@
 <p>We haven't started sending yet. When we do, you'll first get one email asking you to confirm; if you don't, you won't hear from us again. Every email will have a one-click unsubscribe link, and will say who it's from.</p>
 <p>When we start sending, the emails will go out through an email delivery service, which will process your address only to deliver them. We'll name it here before the first email.</p>
 
+<h2>Breaking news alerts</h2>
+<p>If you turn on alerts (the bell on the map), your browser gives us an address at its push service (Google, Mozilla, Apple or Microsoft) that only lets us send notifications to that browser. We keep it on our own server in Canada with the topics you picked, your time zone (so quiet hours work) and which alerts we sent you, for 30 days. It isn't linked to your name, email or IP address. The alerts themselves are encrypted so the push service can't read them.</p>
+<p>To stop them, open the bell and press "Turn off alerts", or block notifications for this site in your browser; either way we delete the address.</p>
+
 <h2>Remove your address</h2>
 <p>Type the address you signed up with and we'll delete it from our list straight away.</p>
 <form class="forget" onsubmit="event.preventDefault();var f=this,m=f.nextElementSibling;fetch('https://api.inthelooplive.com/forget',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:f.email.value})}).then(function(r){m.textContent=r.ok?'Done. If that address was on our list, it is gone.':'That didn\'t work. Check the address and try again.'}).catch(function(){m.textContent='That didn\'t work. Please try again in a minute.'})">
@@ -113,7 +117,8 @@
 <h2>How long we keep things</h2>
 <ul>
   <li>Your email address: until you unsubscribe or remove it. After an unsubscribe we keep only the fact that the address unsubscribed, so we never email it again by mistake; removing it deletes that too.</li>
-  <li>Our server keeps daily backups of the list for 14 days.</li>
+  <li>Alerts: the push address until you turn alerts off or your browser drops it; the record of which alerts we sent, 30 days.</li>
+  <li>Our server keeps daily backups of the list and of alert sign-ups for 14 days.</li>
   <li>Google Analytics keeps visit data for its default 2 months.</li>
 </ul>
 

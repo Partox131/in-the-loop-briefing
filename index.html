@@ -22,8 +22,10 @@
 <meta name="twitter:image" content="https://inthelooplive.com/og-image.png">
 <title>In the Loop: live map of world news, US and Canadian politics</title>
 <script>if (/[?&](node|since)=/.test(location.search)) location.replace('briefing.html' + location.search + location.hash);</script>
+<script src="/alerts.js?v=1ae8d384ef" defer></script>
 <script src="analytics.js?v=00b8c0f4b5"></script>
 <script src="signup.js?v=75d20b6c98" defer></script>
+<link rel="manifest" href="/manifest.webmanifest">
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://inthelooplive.com/#website","name":"In the Loop","url":"https://inthelooplive.com/","publisher":{"@id":"https://inthelooplive.com/#org"}},{"@type":"Organization","@id":"https://inthelooplive.com/#org","name":"In the Loop","url":"https://inthelooplive.com/","logo":"https://inthelooplive.com/og-image.png"}]}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -489,7 +491,7 @@
   <p>A live map of what credible outlets, reporters and analysts are saying about geopolitics, US politics and Canadian politics. Each story shows how many independent outlets carry it, whether it's confirmed or disputed, and what changed since you last looked. Sources include Bluesky, news outlets' feeds and official Telegram channels, refreshed every few minutes.</p>
   <nav aria-label="Regions and segments"><a href="/middle-east/">Middle East: the war with Iran, Gaza and Lebanon</a> · <a href="/eastern-europe/">Eastern Europe: the war in Ukraine and NATO's eastern flank</a> · <a href="/east-asia/">East Asia: China and Taiwan</a> · <a href="/us-politics/">US politics</a> · <a href="/canadian-politics/">Canadian politics</a> · <a href="briefing.html">Briefing</a> · <a href="/about/">About and how it works</a></nav>
 </div></div>
-<script>window.itlSearch = location.search; window.itlLive = (demo, node) => import('./src/static.js?v=6096a79e24').then((m) => m.initLive({ demo, node, search: window.itlSearch }));</script>
+<script>window.itlSearch = location.search; window.itlLive = (demo, node) => import('./src/static.js?v=8dcab853bf').then((m) => m.initLive({ demo, node, search: window.itlSearch }));</script>
 <script>
 (() => {
   const params = new URLSearchParams(location.search);
@@ -1490,7 +1492,7 @@
     const hint = geoHome ? 'Tap a region to see what it is, tap again to zoom in. Drag the map to look around.' : topic ? 'Tap a story to preview it.' : 'Tap a bubble to see what it is, tap again to zoom in.';
     return `<div class="pshell">
       <header class="pbar">
-        <div class="prow">${brand}${card}</div>
+        <div class="prow">${brand}${card}<itl-alerts></itl-alerts></div>
         <div class="controls">${parts.controls}</div>
       </header>
       ${mapEl(mapSvg(d))}
@@ -1774,6 +1776,7 @@
           <nav class="crumbs" aria-label="Topic path"><span>Politics</span><span aria-hidden="true">/</span><span>${NAT ? esc(SEG.label) : 'Geopolitics'}</span>${crumbs.map(([id, l], i) => `<span aria-hidden="true">/</span>${i === crumbs.length - 1 ? `<span class="here">${esc(l)}</span>` : `<button data-view="${esc(id)}">${esc(l)}</button>`}`).join('')}</nav>
           ${parts.brief}
           ${parts.status}
+          <itl-alerts></itl-alerts>
         </header>
         <div class="bar">
           <div><h1>${world ? (NAT ? `What's moving in ${esc(SEG.label)}` : "What's moving around the world") : topic ? esc(topic.label) : `What's moving in ${d.node.id === 'middle-east' ? 'the ' : ''}${esc(d.node.label)}`}</h1><p class="sub">${NAT ? (world ? esc(SEG.homeSub) : `${sub} Colour is where the main stories stand; a moving line joins two that share a story. ${how}`) : world ? `One bubble per tracked region: ${esc(regions().map((r) => r.label).join(', '))}. Click a bubble to zoom in. More regions come with more voices and keywords.` : `${sub} Bubble size is posts and articles; colour is where the main stories stand. ${how}`}</p></div>
