@@ -22,6 +22,7 @@
 <meta name="twitter:image" content="https://inthelooplive.com/og-image.png">
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"CollectionPage","@id":"https://inthelooplive.com/us-politics/","url":"https://inthelooplive.com/us-politics/","name":"US politics today: the White House, Congress, courts and states","description":"What Washington and the states are doing: the White House, Congress, the courts, federal agencies, elections and governors. Where each story stands, how many outlets carry it, and what's confirmed or disputed, updated every 15 minutes.","isPartOf":{"@id":"https://inthelooplive.com/#website"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"In the Loop","item":"https://inthelooplive.com/"},{"@type":"ListItem","position":2,"name":"US politics","item":"https://inthelooplive.com/us-politics/"}]}]}</script>
 <script src="/analytics.js?v=00b8c0f4b5"></script>
+<script src="/signup.js?v=75d20b6c98" defer></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -56,6 +57,9 @@
   h3 { font: 700 19px/1.3 var(--display); margin: 28px 0 8px; }
   .kicker { color: var(--muted); font-weight: 600; margin: 0; }
   .lede { font-size: 19px; }
+  form.forget { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+  form.forget input { flex: 1 1 220px; min-height: 40px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--raise); color: inherit; font: inherit; }
+  form.forget button { min-height: 40px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--ink); font: inherit; font-weight: 600; cursor: pointer; }
   .cta { display: inline-block; margin: 12px 0 4px; padding: 12px 20px; border-radius: 999px; background: var(--loop); color: var(--on-loop); font-weight: 700; text-decoration: none; }
   .card { background: var(--raise); border: 1px solid var(--line); border-radius: 14px; padding: 16px 20px; margin: 12px 0; }
   .stats { display: flex; flex-wrap: wrap; gap: 8px 24px; margin: 8px 0 0; padding: 0; list-style: none; color: var(--muted); }
@@ -94,9 +98,10 @@
 <ul class="topics"><li><a href="/index.html?segment=us&amp;view=elections"><b>Elections</b></a>: Results, races, candidates and the rules for voting.</li><li><a href="/index.html?segment=us&amp;view=states"><b>States</b></a>: Governors, state laws and states pushing back against Washington.</li><li><a href="/index.html?segment=us&amp;view=congress"><b>Congress</b></a>: The House and Senate: spending fights, bills, hearings and votes.</li><li><a href="/index.html?segment=us&amp;view=courts"><b>Courts</b></a>: The Supreme Court and the lower courts ruling on the administration and on the law.</li><li><a href="/index.html?segment=us&amp;view=white-house"><b>White House</b></a>: The president and his administration: orders, appointments, trade and immigration.</li><li><a href="/index.html?segment=us&amp;view=agencies"><b>Agencies</b></a>: Federal departments and agencies, from the Justice Department and FBI to the Fed.</li></ul>
 
 
+<itl-signup source="page"></itl-signup>
 </main>
 <footer>
-  <p><a href="/middle-east/">Middle East</a> · <a href="/eastern-europe/">Ukraine and NATO east</a> · <a href="/east-asia/">China and Taiwan</a> · <a href="/us-politics/">US politics</a> · <a href="/canadian-politics/">Canadian politics</a> · <a href="/">Live map</a> · <a href="/briefing.html">Briefing</a> · <a href="/about/">About and how it works</a></p>
+  <p><a href="/middle-east/">Middle East</a> · <a href="/eastern-europe/">Ukraine and NATO east</a> · <a href="/east-asia/">China and Taiwan</a> · <a href="/us-politics/">US politics</a> · <a href="/canadian-politics/">Canadian politics</a> · <a href="/">Live map</a> · <a href="/briefing.html">Briefing</a> · <a href="/about/">About and how it works</a> · <a href="/privacy/">Privacy</a></p>
   <p>In the Loop gathers what credible outlets and reporters publish and shows where each story stands. Headlines belong to the outlets that wrote them; follow the links to read them.</p>
 </footer>
 </div>

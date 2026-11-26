@@ -39,7 +39,7 @@ export function sitemap(now = new Date()) {
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `  <url><loc>${u}</loc><lastmod>${lastmod}</lastmod></url>\n`).join('')}</urlset>\n`;
 }
 
-function shell({ path, title, description, body, jsonLd, analytics = '' }) {
+function shell({ path, title, description, body, jsonLd, analytics = '', signup = true }) {
   const url = `${SITE}${path}`;
   return `<!doctype html>
 <html lang="en">
@@ -98,6 +98,9 @@ ${analytics}<link rel="preconnect" href="https://fonts.googleapis.com">
   h3 { font: 700 19px/1.3 var(--display); margin: 28px 0 8px; }
   .kicker { color: var(--muted); font-weight: 600; margin: 0; }
   .lede { font-size: 19px; }
+  form.forget { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+  form.forget input { flex: 1 1 220px; min-height: 40px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--raise); color: inherit; font: inherit; }
+  form.forget button { min-height: 40px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--ink); font: inherit; font-weight: 600; cursor: pointer; }
   .cta { display: inline-block; margin: 12px 0 4px; padding: 12px 20px; border-radius: 999px; background: var(--loop); color: var(--on-loop); font-weight: 700; text-decoration: none; }
   .card { background: var(--raise); border: 1px solid var(--line); border-radius: 14px; padding: 16px 20px; margin: 12px 0; }
   .stats { display: flex; flex-wrap: wrap; gap: 8px 24px; margin: 8px 0 0; padding: 0; list-style: none; color: var(--muted); }
@@ -129,9 +132,10 @@ ${analytics}<link rel="preconnect" href="https://fonts.googleapis.com">
 </header>
 <main>
 ${body}
+${signup ? '<itl-signup source="page"></itl-signup>' : ''}
 </main>
 <footer>
-  <p>${PAGES.map((p) => `<a href="/${p.slug}/">${esc(shortLabel(p))}</a>`).join(' · ')} · <a href="/">Live map</a> · <a href="/briefing.html">Briefing</a> · <a href="/about/">About and how it works</a></p>
+  <p>${PAGES.map((p) => `<a href="/${p.slug}/">${esc(shortLabel(p))}</a>`).join(' · ')} · <a href="/">Live map</a> · <a href="/briefing.html">Briefing</a> · <a href="/about/">About and how it works</a> · <a href="/privacy/">Privacy</a></p>
   <p>In the Loop gathers what credible outlets and reporters publish and shows where each story stands. Headlines belong to the outlets that wrote them; follow the links to read them.</p>
 </footer>
 </div>
@@ -272,5 +276,45 @@ export function renderAbout({ counts, analytics = '' }) {
     body,
     jsonLd,
     analytics,
+  });
+}
+
+/** /privacy/: what we collect (analytics, the email list) and how to remove an address. */
+export function renderPrivacy({ analytics = '', updated = '26 November 2026' } = {}) {
+  const body = `<h1>Privacy</h1>
+<p class="kicker">Last updated ${updated}</p>
+<p class="lede">In the Loop is a small independent project run from Canada. We collect as little as we can: visit counts, and your email address if you give it to us.</p>
+
+<h2>Visit counts (Google Analytics)</h2>
+<p>We use Google Analytics 4 to count visits and see which parts of the map people use. Ads features and Google signals are off, and we sell nothing. In the EU, the UK, Switzerland and Quebec analytics cookies stay off unless you press "OK" on the strip at the top of the page; anywhere, "No thanks" turns them off. Without cookies Google only receives anonymous pings that can't be tied to you.</p>
+
+<h2>Your email address</h2>
+<p>If you sign up for our email brief, we store your address on our own server in Canada, with the date you signed up and the sign-up box you used, as a record that you asked for it. We don't store your IP address. We use it only to send you In the Loop's brief, never share or sell it, and don't send anything else.</p>
+<p>We haven't started sending yet. When we do, you'll first get one email asking you to confirm; if you don't, you won't hear from us again. Every email will have a one-click unsubscribe link, and will say who it's from.</p>
+<p>When we start sending, the emails will go out through an email delivery service, which will process your address only to deliver them. We'll name it here before the first email.</p>
+
+<h2>Remove your address</h2>
+<p>Type the address you signed up with and we'll delete it from our list straight away.</p>
+<form class="forget" onsubmit="event.preventDefault();var f=this,m=f.nextElementSibling;fetch('https://api.inthelooplive.com/forget',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:f.email.value})}).then(function(r){m.textContent=r.ok?'Done. If that address was on our list, it is gone.':'That didn\\'t work. Check the address and try again.'}).catch(function(){m.textContent='That didn\\'t work. Please try again in a minute.'})">
+  <input type="email" name="email" required autocomplete="email" aria-label="Email address to remove" placeholder="you@example.com">
+  <button type="submit">Remove my address</button>
+</form>
+<p role="status"></p>
+
+<h2>How long we keep things</h2>
+<ul>
+  <li>Your email address: until you unsubscribe or remove it. After an unsubscribe we keep only the fact that the address unsubscribed, so we never email it again by mistake; removing it deletes that too.</li>
+  <li>Our server keeps daily backups of the list for 14 days.</li>
+  <li>Google Analytics keeps visit data for its default 2 months.</li>
+</ul>
+`;
+  return shell({
+    path: 'privacy/',
+    title: 'Privacy',
+    description: 'What In the Loop collects (visit counts and, if you sign up, your email address), why, and how to remove it.',
+    body,
+    jsonLd: { '@context': 'https://schema.org', '@type': 'WebPage', '@id': `${SITE}privacy/`, url: `${SITE}privacy/`, name: 'Privacy', isPartOf: { '@id': `${SITE}#website` } },
+    analytics,
+    signup: false,
   });
 }

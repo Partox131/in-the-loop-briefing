@@ -22,6 +22,7 @@
 <meta name="twitter:image" content="https://inthelooplive.com/og-image.png">
 <title>Briefing: geopolitics, US and Canadian politics · In the Loop</title>
 <script src="analytics.js?v=00b8c0f4b5"></script>
+<script src="signup.js?v=75d20b6c98" defer></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -495,6 +496,7 @@
         <div class="col">
           <div class="listhead"><h2>${d.node.kind === 'story' ? 'Updates in this story' : 'Storylines'}</h2><div class="lenses" role="group" aria-label="Lens">${LENSES.map(([k, l]) => `<button data-lens="${k}" aria-pressed="${k === state.lens}">${l}</button>`).join('')}</div></div>
           ${visible.length ? visible.map((s) => story(s, !seen || !seen.status[s.id])).join('') : '<p class="muted" style="padding:28px 0">No storylines for this lens in this window.</p>'}
+          <itl-signup source="briefing"></itl-signup>
           ${d.missingVoices.length ? `<p class="notes">Voices not found on Bluesky: ${esc(d.missingVoices.join(', '))}</p>` : ''}
           ${d.errors.length ? `<details class="notes"><summary>${plural(d.errors.length, 'warning')}</summary><ul>${d.errors.map((e) => `<li>${esc(e)}</li>`).join('')}</ul></details>` : ''}
         </div>
