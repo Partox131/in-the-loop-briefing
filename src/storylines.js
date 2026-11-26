@@ -8,8 +8,8 @@
 // each other. Embeddings and LLM claim extraction would plug in at
 // `mergeSimilar`/`claimsOf` later.
 
-import { mergeSimilar } from './similar.js?v=fda10a0532';
-import { roleOf } from './credibility.js?v=fda10a0532';
+import { mergeSimilar } from './similar.js?v=940542179f';
+import { roleOf } from './credibility.js?v=940542179f';
 
 const TRACKING_PARAMS = /^(utm_|fbclid|gclid|ref|smid|cmpid|at_|taid|ito|mc_)/i;
 
@@ -94,6 +94,28 @@ export function statusOf(posts, conflict) {
   return { status, claimedBy: [...claims], witnesses: witnesses.size };
 }
 
+/**
+ * What each side says and who was first (source credibility plan, part 3):
+ *   sides         one entry per side with a claim: its latest item
+ *   firstClaim    the earliest item that is a side's claim
+ *   firstWitness  the earliest item from an independent source
+ * Times are ISO strings; `by` is the source's name.
+ */
+export function sidesOf(posts, conflict) {
+  const item = (p, side) => ({ side, at: p.createdAt, by: p.voice?.name || p.handle, text: p.text, url: p.url });
+  const byTime = [...posts].sort((a, b) => Date.parse(a.createdAt) - Date.parse(b.createdAt));
+  const latest = new Map();
+  let firstClaim, firstWitness;
+  for (const p of byTime) {
+    const r = roleOf(p, conflict);
+    if (r.claim) {
+      latest.set(r.claim, item(p, r.claim));
+      firstClaim ??= item(p, r.claim);
+    } else if (r.witness && p.voice?.tier !== 4) firstWitness ??= item(p);
+  }
+  return { sides: [...latest.values()], firstClaim, firstWitness };
+}
+
 /** The conflict most of a storyline's posts are about (posts carry `conflict`). */
 function conflictOf(posts) {
   const n = new Map();
@@ -154,6 +176,7 @@ export function buildStorylines(posts, { textMatch = true } = {}) {
       score: group.reduce((s, p) => s + (p.score ?? 0), 0),
       ...statusOf(group, conflictOf(group)),
       conflict: conflictOf(group),
+      ...sidesOf(group, conflictOf(group)),
       disagreements: findDisagreements(group),
       // true when similar wording (not a shared link or quote) joined its posts
       matchedByText: matched,

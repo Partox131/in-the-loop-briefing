@@ -5,8 +5,8 @@
 // A voice file lists accounts by handle (easier to curate); at runtime we
 // resolve handles to DIDs, which is what we key on (handles can change).
 
-import { stateCountry } from './flags.js?v=fda10a0532';
-import { credibilityTag, independenceOf, partiesOf } from './credibility.js?v=fda10a0532';
+import { stateCountry } from './flags.js?v=940542179f';
+import { credibilityTag, independenceOf, partiesOf } from './credibility.js?v=940542179f';
 
 /** Base weight per tier. Officials and OSINT are useful but never promoted alone. */
 export const TIER_WEIGHT = { 1: 1.0, 2: 0.9, 3: 0.7, 4: 0.6, 5: 0.5 };

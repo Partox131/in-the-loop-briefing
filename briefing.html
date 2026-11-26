@@ -95,6 +95,7 @@
   .btn.quiet { background: var(--track); color: var(--ink); }
 
   .dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: var(--muted); flex: none; }
+  .sides { margin: 10px 0; padding: 8px 12px; border-left: 2px dashed var(--reported-dot); font-size: 14px; } .sides ul { margin: 4px 0 0; padding-left: 18px; } .sideshead { margin: 0; font-weight: 600; } .firstnote { margin: 6px 0 0; color: var(--ink); }
   .dot.new { background: var(--new); } .dot.reported { background: var(--reported-dot); } .dot.claimed { background: transparent; border: 1.5px dashed var(--reported-dot); box-sizing: border-box; }
   .dot.corroborated, .dot.official { background: var(--confirmed); } .dot.disputed { background: var(--disputed); }
 
@@ -165,7 +166,7 @@
 </head>
 <body>
 <div id="app"><p class="loading">Loading the latest…</p></div>
-<script>window.itlSearch = location.search; window.itlStatic = import('./src/static.js?v=fda10a0532').then((m) => m.init({ search: window.itlSearch }));</script>
+<script>window.itlSearch = location.search; window.itlStatic = import('./src/static.js?v=940542179f').then((m) => m.init({ search: window.itlSearch }));</script>
 <script>
 (() => {
   const params = new URLSearchParams(location.search);
@@ -292,6 +293,7 @@
     const steps = [s.status === 'claimed' ? { cls: 'claimed', text: `${claimText(s)} ${clock(s.firstSeen)}` } : { cls: 'reported', text: `Reported ${clock(s.firstSeen)}` }];
     const latestSide = s.disagreements.flatMap((x) => (x.type === 'numbers' ? x.sides.map((y) => y.at) : [])).sort().at(-1);
     if (s.status === 'disputed') steps.push({ cls: 'disputed', text: latestSide ? `Split ${clock(latestSide)}` : 'Challenged' });
+    else if (s.status === 'corroborated' && s.firstClaim && s.firstWitness) steps.push({ cls: 'corroborated', text: `Confirmed by ${s.firstWitness.by} ${clock(s.firstWitness.at)}` });
     else if (s.status === 'corroborated') steps.push({ cls: 'corroborated', text: `${s.sources.length} outlets agree` });
     else if (s.status === 'official') steps.push({ cls: 'official', text: 'Officials confirm' });
     else if (s.status === 'claimed') steps.push({ cls: '', text: 'Not confirmed by a source outside the conflict' });
@@ -303,6 +305,17 @@
   const sideName = (c) => (/^[A-Z]{2}$/.test(c || '') ? countryName(c) : c || 'One side');
   const claimText = (x) => { const names = (x.claimedBy?.length ? x.claimedBy : ['']).map(sideName); return `${names.join(' and ')} ${names.length > 1 || /s$/.test(names[0]) ? 'claim' : 'claims'}`; };
   const now = () => Date.parse(state.data.generatedAt);
+
+  // What each side says (source credibility plan, part 3): the latest claim
+  // from each side in the conflict, and who reported first.
+  const gap = (a, b) => { const h = (Date.parse(b) - Date.parse(a)) / 3_600_000; return h >= 1 ? `${Math.round(h * 10) / 10}h` : `${Math.max(1, Math.round(h * 60))} min`; };
+  function sidesBlock(s) {
+    if (!s.sides?.length) return '';
+    const first = s.firstClaim && s.firstWitness && Date.parse(s.firstClaim.at) < Date.parse(s.firstWitness.at)
+      ? `<p class="firstnote">First reported by ${esc(s.firstClaim.by)} (${esc(sideName(s.firstClaim.side))}'s side), ${gap(s.firstClaim.at, s.firstWitness.at)} before an independent source (${esc(s.firstWitness.by)}).</p>`
+      : '';
+    return `<div class="sides"><p class="sideshead">What each side says</p><ul>${s.sides.map((x) => `<li><strong>${esc(sideName(x.side))}</strong> <span class="muted">via ${esc(x.by)}, ${esc(ago(x.at))}</span>: <a href="${safeUrl(x.url)}" target="_blank" rel="noopener">${esc(oneLine(x.text, 160))}</a></li>`).join('')}</ul>${s.status === 'claimed' ? '<p class="muted" style="margin:4px 0 0">No source outside the conflict has reported this yet.</p>' : ''}${first}</div>`;
+  }
 
   function story(s, isNew) {
     const voice = s.lead.voice;
@@ -319,6 +332,7 @@
         <h3><a href="${safeUrl(s.lead.url)}" target="_blank" rel="noopener">${esc(oneLine(s.lead.text, 280))}</a></h3>
         <p class="by">Led by ${who}, ${esc(ago(s.lead.createdAt))}${lift}. ${[s.postCount - s.articleCount ? plural(s.postCount - s.articleCount, 'post') : '', s.articleCount ? plural(s.articleCount, 'news article') : ''].filter(Boolean).join(' and ')} from ${plural(s.voiceCount, 'source')}.${topic}</p>
         ${s.disagreements.map(disagreement).join('')}
+        ${sidesBlock(s)}
         ${sources}
         ${related}
       </div>
