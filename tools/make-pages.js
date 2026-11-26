@@ -70,7 +70,10 @@ async function main() {
   const voices = (Array.isArray(vs) ? vs : vs.voices).map(makeVoice);
   const backgrounders = json('backgrounders.json');
   // The pages load analytics.js like the others; the build stamped its version into index.html.
-  const analytics = (readFileSync(join(dir, 'index.html'), 'utf8').match(/<script src="analytics\.js\?v=[0-9a-f]+"><\/script>/)?.[0] || '').replace('src="', 'src="/') + '\n';
+  // And the sign-up card's script (signup.js), stamped the same way.
+  const home = readFileSync(join(dir, 'index.html'), 'utf8');
+  const analytics = [/<script src="analytics\.js\?v=[0-9a-f]+"><\/script>/, /<script src="signup\.js\?v=[0-9a-f]+" defer><\/script>/]
+    .map((re) => (home.match(re)?.[0] || '').replace('src="', 'src="/')).filter(Boolean).join('\n') + '\n';
   const client = new SnapshotClient({ url: opt.snapshot, fallback: noDirect, timeoutMs: 20_000 });
   const now = new Date();
   if (!(await client.usable(new Date(now - 24 * 3_600_000)))) {
