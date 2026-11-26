@@ -243,6 +243,16 @@
   .banner { background: var(--banner-bg); color: var(--reported); padding: 10px 40px; font-size: 14px; }
   .footnote { font-size: 14px; color: var(--muted); max-width: 80ch; margin: 18px 2px 0; }
   .loading { padding: 64px 32px; text-align: center; color: var(--muted); }
+  /* Loading: the Live dial "catching up" (Amir picked it, 26 Nov 2026). The arc closes the loop, then reopens a turn further on. */
+  .loading:has(.loopspin) { min-height: 50vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; box-sizing: border-box; }
+  .loopspin { width: 64px; height: 64px; flex: none; overflow: visible; }
+  .loopspin .t { fill: none; stroke: var(--ink); stroke-opacity: .2; stroke-width: 9; }
+  .loopspin .a { fill: none; stroke: var(--loop); stroke-width: 9; stroke-linecap: round; stroke-dasharray: 94.25 125.66; transform-origin: 32px 32px; transform: rotate(-90deg); animation: loopcatch 1.6s cubic-bezier(.45, 0, .25, 1) infinite; }
+  .loopspin .d { fill: var(--ink); transform-origin: 32px 32px; animation: loopbreathe 1.6s ease-in-out infinite; }
+  .waitnote .loopspin { width: 18px; height: 18px; vertical-align: -4px; margin-right: 7px; }
+  @keyframes loopcatch { 0% { stroke-dasharray: 94.25 125.66; transform: rotate(-90deg); } 50% { stroke-dasharray: 125.66 0; transform: rotate(-90deg); } 100% { stroke-dasharray: 94.25 125.66; transform: rotate(270deg); } }
+  @keyframes loopbreathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(.8); } }
+  @media (prefers-reduced-motion: reduce) { .loopspin .a, .loopspin .d { animation-duration: 4s; } }
   .crawl { max-width: 640px; margin: 0 auto; padding: 0 16px 48px; color: var(--muted); font-size: 14px; }
   .crawl h1 { font-size: 18px; color: var(--ink); }
   .crawl a { color: inherit; }
@@ -471,7 +481,7 @@
 </style>
 </head>
 <body>
-<div id="app"><p class="loading">Loading the live map…</p>
+<div id="app"><div class="loading" role="status"><svg class="loopspin" viewBox="0 0 64 64" aria-hidden="true"><circle class="t" cx="32" cy="32" r="20"/><circle class="a" cx="32" cy="32" r="20"/><circle class="d" cx="32" cy="32" r="7"/></svg><span>Loading the live map…</span></div>
 <!-- Plain text for search engines and crawlers that don't run JavaScript; the map replaces it. -->
 <div class="crawl">
   <h1>In the Loop: what's moving around the world</h1>
@@ -1944,7 +1954,7 @@
     state.switching = true;
     let api;
     try {
-      if (!segData[key || '']?.api) document.querySelector('.map')?.insertAdjacentHTML('beforeend', `<p class="waitnote" role="status">Opening ${esc(SEGS[key]?.label || 'Geopolitics')}…</p>`);
+      if (!segData[key || '']?.api) document.querySelector('.map')?.insertAdjacentHTML('beforeend', `<p class="waitnote" role="status"><svg class="loopspin" viewBox="0 0 64 64" aria-hidden="true"><circle class="t" cx="32" cy="32" r="20"/><circle class="a" cx="32" cy="32" r="20"/><circle class="d" cx="32" cy="32" r="7"/></svg>Opening ${esc(SEGS[key]?.label || 'Geopolitics')}…</p>`);
       api = await ready;
     } catch {
       location.href = `index.html${key ? `?segment=${key}` : ''}${state.demo ? `${key ? '&' : '?'}demo=1` : ''}`;

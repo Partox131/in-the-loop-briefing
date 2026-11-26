@@ -151,6 +151,16 @@
   .banner { background: var(--banner-bg); color: var(--reported); padding: 10px 56px; font-size: 14px; }
   .footnote { margin-top: 28px; font-size: 14px; color: var(--muted); max-width: 72ch; }
   .loading { padding: 64px 32px; text-align: center; color: var(--muted); }
+  /* Loading: the Live dial "catching up" (Amir picked it, 26 Nov 2026). The arc closes the loop, then reopens a turn further on. */
+  .loading:has(.loopspin) { min-height: 50vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; box-sizing: border-box; }
+  .loopspin { width: 64px; height: 64px; flex: none; overflow: visible; }
+  .loopspin .t { fill: none; stroke: var(--ink); stroke-opacity: .2; stroke-width: 9; }
+  .loopspin .a { fill: none; stroke: var(--loop); stroke-width: 9; stroke-linecap: round; stroke-dasharray: 94.25 125.66; transform-origin: 32px 32px; transform: rotate(-90deg); animation: loopcatch 1.6s cubic-bezier(.45, 0, .25, 1) infinite; }
+  .loopspin .d { fill: var(--ink); transform-origin: 32px 32px; animation: loopbreathe 1.6s ease-in-out infinite; }
+  .waitnote .loopspin { width: 18px; height: 18px; vertical-align: -4px; margin-right: 7px; }
+  @keyframes loopcatch { 0% { stroke-dasharray: 94.25 125.66; transform: rotate(-90deg); } 50% { stroke-dasharray: 125.66 0; transform: rotate(-90deg); } 100% { stroke-dasharray: 94.25 125.66; transform: rotate(270deg); } }
+  @keyframes loopbreathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(.8); } }
+  @media (prefers-reduced-motion: reduce) { .loopspin .a, .loopspin .d { animation-duration: 4s; } }
   @media (max-width: 860px) {
     .hero { grid-template-columns: 1fr; }
     .dial { max-width: 340px; margin: 0 auto; }
@@ -182,7 +192,7 @@
 </style>
 </head>
 <body>
-<div id="app"><p class="loading">Loading the latest…</p></div>
+<div id="app"><div class="loading" role="status"><svg class="loopspin" viewBox="0 0 64 64" aria-hidden="true"><circle class="t" cx="32" cy="32" r="20"/><circle class="a" cx="32" cy="32" r="20"/><circle class="d" cx="32" cy="32" r="7"/></svg><span>Loading the latest…</span></div></div>
 <script>window.itlSearch = location.search; window.itlStatic = import('./src/static.js?v=6096a79e24').then((m) => m.init({ search: window.itlSearch }));</script>
 <script>
 (() => {
