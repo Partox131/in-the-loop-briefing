@@ -165,7 +165,7 @@
 </head>
 <body>
 <div id="app"><p class="loading">Loading the latest…</p></div>
-<script>window.itlSearch = location.search; window.itlStatic = import('./src/static.js?v=bf4288f53c').then((m) => m.init({ search: window.itlSearch }));</script>
+<script>window.itlSearch = location.search; window.itlStatic = import('./src/static.js?v=fda10a0532').then((m) => m.init({ search: window.itlSearch }));</script>
 <script>
 (() => {
   const params = new URLSearchParams(location.search);
@@ -301,7 +301,7 @@
   // A side's own claim (src/credibility.js): "Iran claims", shown as a dashed chip
   // until a source with no stake in the conflict reports it too.
   const sideName = (c) => (/^[A-Z]{2}$/.test(c || '') ? countryName(c) : c || 'One side');
-  const claimText = (x) => `${(x.claimedBy?.length ? x.claimedBy : ['']).map(sideName).join(' and ')} ${x.claimedBy?.length > 1 ? 'claim' : 'claims'}`;
+  const claimText = (x) => { const names = (x.claimedBy?.length ? x.claimedBy : ['']).map(sideName); return `${names.join(' and ')} ${names.length > 1 || /s$/.test(names[0]) ? 'claim' : 'claims'}`; };
   const now = () => Date.parse(state.data.generatedAt);
 
   function story(s, isNew) {
