@@ -9,7 +9,7 @@
 // server's snapshot and rewrites them with the last 24 hours. No AI: the
 // summary is counts and the lead headlines of the biggest stories, as on the map.
 
-import { isTopic, mapChildren, regionsOf } from '../src/live.js?v=6496a5eb2a';
+import { isTopic, mapChildren, regionsOf } from '../src/live.js?v=bf4288f53c';
 
 export const SITE = 'https://inthelooplive.com/';
 

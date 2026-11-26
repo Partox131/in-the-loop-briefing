@@ -1,8 +1,8 @@
 // Turn a brief (see brief.js) into the JSON the briefing web page renders.
 // Kept separate from the server so it's easy to test and to reuse.
 
-import { breakingCount, isTopic, segmentOf, stageTrack, trail } from './live.js?v=6496a5eb2a';
-import { TIER_NAME } from './voices.js?v=6496a5eb2a';
+import { breakingCount, isTopic, segmentOf, stageTrack, trail } from './live.js?v=bf4288f53c';
+import { TIER_NAME } from './voices.js?v=bf4288f53c';
 
 const HOUR = 3_600_000;
 
