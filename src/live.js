@@ -6,12 +6,12 @@
 // up through Jetstream: a WebSocket of new posts filtered to the voices'
 // accounts, which works straight from the browser. Read-only, no login.
 
-import { buildBrief } from './brief.js?v=7673f0d481';
-import { KEEP_PER_VOICE } from './snapshot.js?v=7673f0d481';
-import { rankPosts } from './rank.js?v=7673f0d481';
-import { buildStorylines } from './storylines.js?v=7673f0d481';
-import { byDid } from './voices.js?v=7673f0d481';
-import { conflictOfNode } from './credibility.js?v=7673f0d481';
+import { buildBrief } from './brief.js?v=89cbc5f30a';
+import { KEEP_PER_VOICE } from './snapshot.js?v=89cbc5f30a';
+import { rankPosts } from './rank.js?v=89cbc5f30a';
+import { buildStorylines } from './storylines.js?v=89cbc5f30a';
+import { byDid } from './voices.js?v=89cbc5f30a';
+import { conflictOfNode } from './credibility.js?v=89cbc5f30a';
 
 const HOUR = 3_600_000;
 
@@ -303,7 +303,7 @@ export function headlineOf(p) {
  * the most sources are covering. Storylines come from buildStorylines, which
  * joins posts and articles about the same event by links, quotes and wording.
  */
-export function regionSummary({ posts, hierarchy: h, node, now, recentHours = 6, lookbackHours = 24 }) {
+export function regionSummary({ posts, hierarchy: h, node, now, recentHours = 6, lookbackHours = 24, topN = 3 }) {
   const under = new Set(h.descendants(node));
   const scope = new Set([node, ...under]);
   const t = now.getTime();
@@ -339,7 +339,7 @@ export function regionSummary({ posts, hierarchy: h, node, now, recentHours = 6,
     // Last few hours against the rest of the day; null without earlier posts.
     pace: earlier && recent ? round1(recent / recentHours / (earlier / (lookbackHours - recentHours))) : null,
     busiestPlace: placeLabel(day),
-    top: ranked.slice(0, 3).map((s) => ({
+    top: ranked.slice(0, topN).map((s) => ({
       headline: headlineOf(s.lead),
       url: s.lead.url,
       status: s.status,
@@ -534,8 +534,13 @@ export function makeLive({ client, hierarchy: h, voices, node = 'geopolitics', l
         .map((id) => ({ id, label: h.get(id).label, region: r === node ? 'world' : r, stories: mapChildren(h, id) }))),
     /** The home map's id: the world for Geopolitics, the US for US politics. */
     home: () => h.get(node).map || 'world',
-    /** The day's three biggest stories under the segment, for the guided tour. */
-    tour: ({ now = new Date() } = {}) => regionSummary({ posts, hierarchy: h, node, now, lookbackHours }).top.filter((x) => x.topicId && x.topicId !== node),
+    /** The day's biggest stories under the segment (three, or `n`), one per place, for the guided tour and "Today's loop". */
+    tour: ({ now = new Date(), n = 3 } = {}) => {
+      const seen = new Set();
+      return regionSummary({ posts, hierarchy: h, node, now, lookbackHours, topN: n * 3 }).top
+        .filter((x) => x.topicId && x.topicId !== node && !seen.has(x.topicId) && seen.add(x.topicId))
+        .slice(0, n);
+    },
     /** Region > topic > story for a node, for breadcrumbs. */
     trail: (id) => trail(h, id),
     /** The 3D model a node is drawn as (the White House…), or null. */

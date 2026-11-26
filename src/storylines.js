@@ -8,8 +8,8 @@
 // each other. Embeddings and LLM claim extraction would plug in at
 // `mergeSimilar`/`claimsOf` later.
 
-import { mergeSimilar } from './similar.js?v=7673f0d481';
-import { roleOf } from './credibility.js?v=7673f0d481';
+import { mergeSimilar } from './similar.js?v=89cbc5f30a';
+import { roleOf } from './credibility.js?v=89cbc5f30a';
 
 const TRACKING_PARAMS = /^(utm_|fbclid|gclid|ref|smid|cmpid|at_|taid|ito|mc_)/i;
 

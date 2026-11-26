@@ -324,6 +324,41 @@
   .pshell .tourcap .th { font-size: 15px; line-height: 1.25; }
   .pshell .tourcap .tm { font-size: 12px; }
   .pshell .tourcap button { min-height: 32px; }
+  /* Today's loop (phones): full-screen story cards over the map. Text sits on a dark shade in both themes. */
+  .pshell.looping .map { top: 0; bottom: 0; }
+  .pshell .loopbtn { margin-top: 10px; border: 1px solid var(--line); background: var(--raise); color: var(--ink); border-radius: 999px; min-height: 36px; padding: 0 14px; font-weight: 600; font-size: 14px; }
+  .loop { color: #fff; }
+  .pshell .loop { position: absolute; inset: 0; z-index: 8; pointer-events: none; }
+  .loopshade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(14, 16, 38, .6) 0, rgba(14, 16, 38, 0) 22%, rgba(14, 16, 38, 0) 46%, rgba(14, 16, 38, .88) 78%); }
+  .loopnav { position: absolute; inset: 0; pointer-events: auto; touch-action: none; }
+  .loopbars { position: absolute; left: 12px; right: 12px; top: calc(10px + env(safe-area-inset-top, 0px)); display: flex; gap: 4px; }
+  .loopbars i { flex: 1; height: 3px; border-radius: 3px; background: rgba(255, 255, 255, .35); overflow: hidden; }
+  .loopbars i.f b, .loopbars i.on b { display: block; height: 100%; background: #fff; }
+  .loopbars i.on b { animation: loopfill var(--dur) linear var(--el, 0ms) both; }
+  @keyframes loopfill { from { width: 0; } to { width: 100%; } }
+  .loophead { position: absolute; left: 14px; right: 8px; top: calc(22px + env(safe-area-inset-top, 0px)); display: flex; align-items: center; gap: 10px; }
+  .loophead span { flex: 1; min-width: 0; }
+  .loophead strong { display: block; font: 700 16px/1.2 var(--display); }
+  .loophead small { display: block; font-size: 13px; opacity: .85; }
+  .loopx { pointer-events: auto; border: 0; background: rgba(255, 255, 255, .16); color: #fff; width: 40px; height: 40px; border-radius: 50%; font-size: 17px; }
+  .loopcap { position: absolute; left: 16px; right: 16px; bottom: calc(22px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; align-items: flex-start; gap: 8px; pointer-events: auto; touch-action: none; }
+  .loopcap h2 { margin: 0; font: 800 25px/1.12 var(--display); text-wrap: balance; letter-spacing: -.01em; }
+  .loopcap p { margin: 0; font-size: 14px; opacity: .88; }
+  .loopcap .chip { background: #fff; }
+  .loopread { color: #fff; font-size: 14px; font-weight: 600; text-decoration: none; align-self: stretch; text-align: center; padding: 10px 0 0; }
+  .loopcount { align-self: stretch; text-align: center; font-size: 12px; opacity: .7; }
+  .pshell .loopcover { position: absolute; inset: 0; z-index: 9; background: rgba(14, 16, 38, .9); backdrop-filter: blur(6px); display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 14px; padding: 0 28px; pointer-events: auto; }
+  .loopcover .kick { font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #B9C1E6; }
+  .loopcover h2 { margin: 0; font: 800 34px/1.06 var(--display); text-wrap: balance; }
+  .loopcover p { margin: 0; font-size: 16px; opacity: .9; max-width: 32ch; }
+  .loopcover .go { border: 0; background: #fff; color: #1D2147; border-radius: 999px; min-height: 48px; padding: 0 26px; font-weight: 700; font-size: 16px; }
+  .loopcover .skip { border: 0; background: none; color: #fff; opacity: .8; min-height: 40px; padding: 0; font-size: 15px; text-decoration: underline; }
+  html.clip .itl-consent { display: none; }
+  .pshell .clipend { position: absolute; inset: 0; z-index: 10; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; text-align: center; padding: 0 24px; animation: fadein .6s ease-out both; }
+  .pshell .clipend .brand { font-size: 38px; gap: 12px; }
+  .pshell .clipend .brand svg { width: 44px; height: 44px; }
+  .pshell .clipend strong { font: 700 20px/1.25 var(--display); color: var(--muted); }
+  .pshell .clipend > span:last-child { font: 700 22px/1 var(--body); color: var(--loop); }
   .statetag { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
   /* Segment switch: Geopolitics or US politics. */
   .segswitch { display: inline-flex; }
@@ -440,7 +475,7 @@
   <p>A live map of what credible outlets, reporters and analysts are saying about geopolitics, US politics and Canadian politics. Each story shows how many independent outlets carry it, whether it's confirmed or disputed, and what changed since you last looked. Sources include Bluesky, news outlets' feeds and official Telegram channels, refreshed every few minutes.</p>
   <nav aria-label="Regions and segments"><a href="/middle-east/">Middle East: the war with Iran, Gaza and Lebanon</a> · <a href="/eastern-europe/">Eastern Europe: the war in Ukraine and NATO's eastern flank</a> · <a href="/east-asia/">East Asia: China and Taiwan</a> · <a href="/us-politics/">US politics</a> · <a href="/canadian-politics/">Canadian politics</a> · <a href="briefing.html">Briefing</a> · <a href="/about/">About and how it works</a></nav>
 </div></div>
-<script>window.itlSearch = location.search; window.itlLive = (demo, node) => import('./src/static.js?v=7673f0d481').then((m) => m.initLive({ demo, node, search: window.itlSearch }));</script>
+<script>window.itlSearch = location.search; window.itlLive = (demo, node) => import('./src/static.js?v=89cbc5f30a').then((m) => m.initLive({ demo, node, search: window.itlSearch }));</script>
 <script>
 (() => {
   const params = new URLSearchParams(location.search);
@@ -808,7 +843,11 @@
     // Keep labels readable when the map is drawn small. On a phone the map
     // fills the screen and the camera (cam) shows part of it: text is sized
     // in screen pixels from the camera instead.
-    const phone = PHONE(), cam = phone ? phoneCam(state.view) : box;
+    const phone = PHONE();
+    let cam = phone ? phoneCam(state.view) : box;
+    // Today's loop: the story sits in the upper part of the screen, above its caption.
+    const at = phone && looping() && nodes.find((n) => n.a.id === state.area);
+    if (at) cam = { ...cam, x: at.x - cam.w / 2, y: at.y - cam.h * 0.36 };
     const k = phone ? cam.h / frameSize().h : s * Math.min(2.6, Math.max(1, 720 / (document.querySelector('.map')?.clientWidth || window.innerWidth)));
     const bg = state.bg?.regions?.[regionOf(state.view)?.id];
     const cls = (name) => (bg?.focus?.includes(name) ? 'country focus' : bg?.watch?.includes(name) ? 'country watch' : 'country');
@@ -1333,12 +1372,13 @@
   const PHONE = () => window.matchMedia('(max-width: 640px)').matches;
   const WORLD_FOCUS = 0.6; // the world map opens over Europe and the Middle East
   const PEEK = 196; // px of sheet showing while you look at the map
+  const looping = () => Boolean(state.tour && state.tour.i >= 0 && PHONE());
   function frameSize() {
-    const el = document.querySelector('.pshell .map');
-    if (el?.clientHeight) return { w: el.clientWidth, h: el.clientHeight };
-    const hdr = document.querySelector('.pshell .pbar')?.offsetHeight || 104;
     const app = document.getElementById('app');
-    return { w: app?.clientWidth || window.innerWidth, h: Math.max(200, (app?.clientHeight || window.innerHeight) - hdr - PEEK) };
+    const W = app?.clientWidth || window.innerWidth, H = app?.clientHeight || window.innerHeight;
+    if (looping()) return { w: W, h: H }; // Today's loop: the map is the whole screen
+    const hdr = document.querySelector('.pshell .pbar')?.offsetHeight || state.hdrH || 104;
+    return { w: W, h: Math.max(200, H - hdr - PEEK) };
   }
   /** A tall camera on box `b`: about its full height, a slice of its width around `cx`. */
   function portrait(b, aspect, cx) {
@@ -1374,6 +1414,7 @@
     const brand = card ? parts.brand.replace('in the loop</a>', '<span class="vh">in the loop</span></a>') : parts.brand;
     const picked = d.areas.some((x) => x.id === state.area);
     const body = picked ? side + breakingStrip(d) + summary + more : breakingStrip(d) + summary + side + more;
+    if (looping()) return loopShell(mapEl);
     const hint = geoHome ? 'Tap a region to see what it is, tap again to zoom in. Drag the map to look around.' : topic ? 'Tap a story to preview it.' : 'Tap a bubble to see what it is, tap again to zoom in.';
     return `<div class="pshell">
       <header class="pbar">
@@ -1385,7 +1426,7 @@
       <section class="sheet is-${state.sheet || 'peek'}" aria-label="What's happening">
         <div class="grab" role="button" tabindex="0" aria-label="Show more"><span></span></div>
         <div class="sheetbody">
-          <div class="ptop"><h1>${title}</h1><p class="phint">${hint}</p></div>
+          <div class="ptop"><h1>${title}</h1><p class="phint">${hint}</p><button class="loopbtn" data-tour>▶ Today's loop</button></div>
           ${body}
           ${parts.legend}
           <p>${parts.brief}</p>
@@ -1393,6 +1434,8 @@
           ${parts.banner}${parts.errs}
         </div>
       </section>
+      ${state.loopCover ? loopCover() : ''}
+      ${state.clipEnd ? `<div class="clipend"><span class="brand">${parts.brand.match(/<svg[\s\S]*?<\/svg>/)?.[0] || ''}in the loop</span><strong>What's moving ${esc(segWord())}, live</strong><span>inthelooplive.com</span></div>` : ''}
     </div>`;
   }
   // After each phone render: sheet sizes and dragging, map dragging and pinching.
@@ -1403,7 +1446,10 @@
     const pin = () => { if (shell.scrollTop || shell.scrollLeft) shell.scrollTo(0, 0); if (app.scrollTop) app.scrollTop = 0; };
     pin();
     shell.addEventListener('scroll', pin);
-    shell.style.setProperty('--hdr', `${shell.querySelector('.pbar').offsetHeight}px`);
+    if (state.loopCover) wireCover(shell);
+    if (looping()) { wireLoop(shell); return; }
+    state.hdrH = shell.querySelector('.pbar').offsetHeight;
+    shell.style.setProperty('--hdr', `${state.hdrH}px`);
     shell.style.setProperty('--peek', `${PEEK}px`);
     const sheet = shell.querySelector('.sheet'), body = shell.querySelector('.sheetbody'), grab = shell.querySelector('.grab');
     const key = `${camKey(state.view)}|${state.area || ''}`;
@@ -1500,6 +1546,80 @@
     };
     svg.addEventListener('pointerup', lift);
     svg.addEventListener('pointercancel', lift);
+  }
+  // ---- "Today's loop" on phones (concept B): the day's biggest stories as
+  // full-screen cards. The camera flies to each story, a caption says what
+  // happened; tap for the next, tap the left edge to go back, swipe up to
+  // read the story. Recorded at 1080 × 1920 it is also the daily social clip.
+  const LOOP_N = 5;
+  // ?clip=1 plays the loop on its own for recording the daily 9:16 clip
+  // (scripts/record-loop.cjs): no close button, the address instead of
+  // "swipe up", and an end card.
+  const CLIP = new URLSearchParams(location.search).has('clip');
+  if (CLIP) document.documentElement.classList.add('clip');
+  const segWord = () => (NAT ? `in ${SEG.label}` : 'around the world');
+  const dayText = () => new Date().toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+  const storyHref = (id) => `briefing.html?node=${encodeURIComponent(id)}&since=24h${state.demo ? '&demo=1' : ''}`;
+  function loopShell(mapEl) {
+    const t = state.tour, x = t.list[t.i];
+    const where = [x.place?.label, nodeLabel(x.topicId)].filter((v, i, a) => v && a.indexOf(v) === i)[0] || '';
+    const region = regionOf(state.view)?.label || (NAT ? SEG.label : '');
+    const outlets = x.sources.length;
+    return `<div class="pshell looping">
+      ${mapEl(mapSvg(state.data))}
+      <div class="loop" role="region" aria-label="Today's loop, story ${t.i + 1} of ${t.list.length}" aria-live="polite">
+        <div class="loopshade"></div>
+        <div class="loopnav" aria-hidden="true"></div>
+        <div class="loopbars" style="--dur:${STOP_MS}ms;--el:${t.at ? t.at - Date.now() : 0}ms">${t.list.map((_, i) => `<i class="${i < t.i ? 'f' : i === t.i ? 'on' : ''}"><b></b></i>`).join('')}</div>
+        <div class="loophead"><span><strong>${esc(where)}</strong>${region && region !== where ? `<small>${esc(region)}</small>` : ''}</span>${CLIP ? '' : '<button class="loopx" aria-label="Close Today\'s loop">✕</button>'}</div>
+        <div class="loopcap">
+          <span class="chip c-${esc(x.status)}">${esc(STATUS[x.status] || x.status)}</span>
+          <h2>${esc(oneLine(x.headline, 140))}</h2>
+          <p>${plural(outlets, 'source')} · ${plural(x.posts, 'item')} · latest ${esc(ago(x.lastSeen))}</p>
+          ${CLIP ? '<span class="loopread">inthelooplive.com</span>' : `<a class="loopread" href="${storyHref(x.topicId)}">Swipe up or tap to read the story ↑</a>`}
+          <span class="loopcount">${t.i + 1} of ${t.list.length} · Today's loop</span>
+        </div>
+      </div>
+    </div>`;
+  }
+  function loopCover() {
+    const n = state.loopCover.n;
+    return `<div class="loopcover" role="dialog" aria-label="Today's loop">
+      <span class="kick">Today's loop · ${esc(dayText())}</span>
+      <h2>${n} ${n === 1 ? 'story' : 'stories'} moving ${esc(segWord())} today</h2>
+      <p>About ${Math.max(1, Math.round((n * STOP_MS) / 60000))} minute${n * STOP_MS > 90000 ? 's' : ''}. Tap to go on, swipe up on a story to read it.</p>
+      <button class="go" data-loopstart>▶ Start</button>
+      <button class="skip" data-loopskip>Skip to the map</button>
+    </div>`;
+  }
+  function wireCover(shell) {
+    shell.querySelector('[data-loopstart]')?.addEventListener('click', () => { window.itlTrack?.('tour_start', { trigger: 'loop_cover' }); startTour(); });
+    shell.querySelector('[data-loopskip]')?.addEventListener('click', () => { state.loopCover = null; render(); });
+  }
+  function wireLoop(shell) {
+    const nav = shell.querySelector('.loopnav'), cap = shell.querySelector('.loopcap');
+    shell.querySelector('.loopx')?.addEventListener('click', () => endTour(false));
+    let p0 = null;
+    const down = (e) => { p0 = { x: e.clientX, y: e.clientY, t: Date.now() }; };
+    const up = (e) => {
+      if (!p0) return;
+      const dx = e.clientX - p0.x, dy = e.clientY - p0.y;
+      p0 = null;
+      const t = state.tour;
+      if (!t) return;
+      if (dy < -50 && Math.abs(dy) > Math.abs(dx)) { location.href = storyHref(t.list[t.i].topicId); return; }
+      if (Math.hypot(dx, dy) > 12) return;
+      if (e.target.closest('a, button')) return;
+      if (e.clientX < shell.clientWidth * 0.3) t.i -= 2; // back one
+      nextStop();
+    };
+    for (const el of [nav, cap]) { el.addEventListener('pointerdown', down); el.addEventListener('pointerup', up); }
+    document.onkeydown = (e) => {
+      if (!looping()) { document.onkeydown = null; return; }
+      if (e.key === 'Escape') endTour(false);
+      else if (e.key === 'ArrowRight') nextStop();
+      else if (e.key === 'ArrowLeft') { state.tour.i -= 2; nextStop(); }
+    };
   }
   // A drag of the map or the sheet is not a tap on what lies under the finger.
   document.addEventListener('click', (e) => { if (state.dragged && Date.now() - state.dragged < 350) { e.preventDefault(); e.stopImmediatePropagation(); } }, true);
@@ -1770,8 +1890,9 @@
   // other. The camera flies to each one and a caption says what happened.
   const STOP_MS = 6500;
   function startTour() {
-    const list = state.api.live.tour({ now: new Date() });
-    if (!list.length) return;
+    const list = state.api.live.tour({ now: new Date(), n: PHONE() ? LOOP_N : 3 });
+    state.loopCover = null;
+    if (!list.length) { render(); return; }
     endTour(false, true);
     state.tour = { list, i: -1, timer: null };
     nextStop();
@@ -1781,9 +1902,11 @@
     if (!t) return;
     clearTimeout(t.timer);
     t.i += 1;
+    if (t.i < 0) t.i = 0; // "back" from the first story
     if (t.i >= t.list.length) { endTour(true); return; }
     await pickNode(t.list[t.i].topicId);
     if (state.tour !== t) return;
+    t.at = Date.now();
     render();
     document.querySelector('.map')?.scrollIntoView({ behavior: reduceMotion() ? 'auto' : 'smooth', block: 'nearest' });
     t.timer = setTimeout(nextStop, STOP_MS);
@@ -1793,6 +1916,7 @@
     if (!t) return;
     clearTimeout(t.timer);
     state.tour = null;
+    if (CLIP && home) state.clipEnd = true;
     if (home && state.view !== 'world') go('world');
     else if (!quiet) render();
   }
@@ -1830,6 +1954,17 @@
 
   // The first visit of the day to a country's politics starts its tour by itself.
   function maybeTour() {
+    // Phones: "Today's loop" is offered once a day per segment, on a cover card.
+    if (CLIP && PHONE()) { setTimeout(startTour, 1500); return; }
+    if (PHONE() && state.view === 'world') {
+      const key = `itl-loop-${SEG_KEY || 'geo'}`, today = new Date().toISOString().slice(0, 10);
+      let seen = null;
+      try { seen = localStorage.getItem(key); localStorage.setItem(key, today); } catch {}
+      if (seen === today || new URLSearchParams(location.search).has('noloop')) return;
+      const n = state.api.live.tour({ now: new Date(), n: LOOP_N }).length;
+      if (n) { state.loopCover = { n }; render(); }
+      return;
+    }
     if (!NAT || state.view !== 'world' || reduceMotion()) return;
     let seen = null;
     const today = new Date().toISOString().slice(0, 10);
@@ -1848,7 +1983,7 @@
       refresh();
       // Any click of yours stops a running tour (except its own buttons).
       document.getElementById('app').addEventListener('click', (e) => {
-        if (state.tour && e.isTrusted && !e.target.closest('.tourcap, [data-tour]')) endTour(false, true);
+        if (state.tour && e.isTrusted && !e.target.closest('.tourcap, [data-tour], .loop')) endTour(false, true);
       }, true);
       maybeTour();
       follow();
