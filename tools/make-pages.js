@@ -13,11 +13,11 @@
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { makeHierarchy } from '../src/hierarchy.js?v=6096a79e24';
-import { makeLive } from '../src/live.js?v=6096a79e24';
-import { newsPosts } from '../src/news.js?v=6096a79e24';
-import { SnapshotClient } from '../src/snapshot.js?v=6096a79e24';
-import { makeVoice } from '../src/voices.js?v=6096a79e24';
+import { makeHierarchy } from '../src/hierarchy.js?v=8dcab853bf';
+import { makeLive } from '../src/live.js?v=8dcab853bf';
+import { newsPosts } from '../src/news.js?v=8dcab853bf';
+import { SnapshotClient } from '../src/snapshot.js?v=8dcab853bf';
+import { makeVoice } from '../src/voices.js?v=8dcab853bf';
 import { PAGES, renderPage, sitemap } from './region-pages.js';
 
 const SNAPSHOT_URL = 'https://api.inthelooplive.com/snapshot.json';

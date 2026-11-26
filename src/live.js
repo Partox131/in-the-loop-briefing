@@ -6,12 +6,12 @@
 // up through Jetstream: a WebSocket of new posts filtered to the voices'
 // accounts, which works straight from the browser. Read-only, no login.
 
-import { buildBrief } from './brief.js?v=6096a79e24';
-import { KEEP_PER_VOICE } from './snapshot.js?v=6096a79e24';
-import { rankPosts } from './rank.js?v=6096a79e24';
-import { buildStorylines } from './storylines.js?v=6096a79e24';
-import { byDid } from './voices.js?v=6096a79e24';
-import { conflictOfNode } from './credibility.js?v=6096a79e24';
+import { buildBrief } from './brief.js?v=8dcab853bf';
+import { KEEP_PER_VOICE } from './snapshot.js?v=8dcab853bf';
+import { rankPosts } from './rank.js?v=8dcab853bf';
+import { buildStorylines } from './storylines.js?v=8dcab853bf';
+import { byDid } from './voices.js?v=8dcab853bf';
+import { conflictOfNode } from './credibility.js?v=8dcab853bf';
 
 const HOUR = 3_600_000;
 
@@ -402,6 +402,9 @@ export function breakingNews({ posts, hierarchy: h, node, now, rules = BREAKING 
         headline: headlineOf(s.lead),
         url: s.lead.url,
         outlets,
+        // independent outlets by name, for push notifications ("including Reuters and BBC")
+        names: [...new Set(s.posts.filter((p) => p.voice && !p.voice.stateAffiliated).map((p) => p.voice.affiliation || p.voice.name).filter(Boolean))].slice(0, 3),
+        uris: s.posts.map((p) => p.uri),
         status: s.status,
         firstSeen: s.firstSeen,
         topicId,

@@ -1,0 +1,14 @@
+{
+  "name": "In the Loop",
+  "short_name": "In the Loop",
+  "description": "A live map of what credible voices and outlets are saying about geopolitics, US politics and Canadian politics.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#F5F6F8",
+  "theme_color": "#3047D6",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
