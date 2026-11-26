@@ -13,7 +13,10 @@
 // Ads storage and signals are always off: we run no ads.
 //
 // The pages report their own events with window.itlTrack(name, params):
-// segment_switch, map_zoom, story_preview, tour_start. This file adds
+// segment_switch, map_zoom, story_preview, time_window, tour_start,
+// tour_skip, tour_end, briefing_filter, newsletter_signup,
+// newsletter_dismiss, alerts_open, alerts_on, alerts_update, alerts_off,
+// alerts_error. This file adds app_installed,
 // source_click (a link out to an outlet or post), story_open and
 // briefing_open (links into the briefing page).
 (() => {
@@ -27,6 +30,7 @@
   const q = new URLSearchParams(window.itlSearch ?? location.search);
   if (!/^G-[A-Z0-9]+$/.test(GA_ID) || q.has('demo') || /^(localhost|127\.|\[::1\])/.test(location.hostname)) return;
 
+  const appMode = () => { try { return window.matchMedia('(display-mode: standalone)').matches || navigator.standalone ? 'app' : 'browser'; } catch { return 'browser'; } };
   const read = () => { try { return localStorage.getItem(KEY); } catch { return null; } };
   const save = (v) => { try { localStorage.setItem(KEY, v); } catch {} };
   window.dataLayer = window.dataLayer || [];
@@ -44,7 +48,8 @@
     if (loaded) return;
     loaded = true;
     gtag('js', new Date());
-    gtag('config', GA_ID, { allow_google_signals: false, allow_ad_personalization_signals: false });
+    // app_mode: "app" when opened from the home-screen icon (installed), "browser" otherwise.
+    gtag('config', GA_ID, { allow_google_signals: false, allow_ad_personalization_signals: false, app_mode: appMode() });
     const s = document.createElement('script');
     s.async = true;
     s.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
@@ -52,8 +57,17 @@
   };
   if (ADVANCED || choice === 'granted') load();
 
-  const segment = () => new URLSearchParams(location.search).get('segment') || 'geopolitics';
+  // The segment on screen: ?segment= on the map, or the page's own path
+  // (/us-politics/, /canadian-politics/) on the region and segment pages.
+  const segment = () => {
+    const s = new URLSearchParams(location.search).get('segment');
+    if (s) return s;
+    if (/^\/us-politics\//.test(location.pathname)) return 'us';
+    if (/^\/canadian-politics\//.test(location.pathname)) return 'ca';
+    return 'geopolitics';
+  };
   window.itlTrack = (name, params = {}) => { if (loaded) gtag('event', name, { segment: segment(), ...params }); };
+  window.addEventListener('appinstalled', () => window.itlTrack('app_installed'));
 
   // Links out and into the briefing, from anywhere on either page.
   document.addEventListener('click', (e) => {
@@ -74,6 +88,8 @@
   const css = `
 .itl-consent{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;justify-content:center;padding:6px 16px;font:13px/1.4 var(--body,system-ui,sans-serif);background:var(--raise,#fff);color:var(--muted,#5b6080);border-bottom:1px solid var(--line,#e2e5ef)}
 .itl-consent p{margin:0}
+.itl-consent a{color:inherit}
+@media (max-width:640px){.itl-consent .more{display:none}}
 .itl-consent button{font:inherit;min-height:28px;padding:0 12px;border-radius:999px;border:1px solid var(--line,#e2e5ef);background:transparent;color:var(--ink,#1d2147);cursor:pointer}
 .itl-consent button.ok{background:var(--ink,#1d2147);color:var(--bg,#f5f6f8);border-color:transparent;font-weight:600}`;
   const show = () => {
@@ -85,7 +101,7 @@
     bar.className = 'itl-consent';
     bar.setAttribute('role', 'region');
     bar.setAttribute('aria-label', 'Analytics choice');
-    bar.innerHTML = '<p>We count visits with Google Analytics to learn which parts of the map people use. No ads, nothing sold.</p><span><button type="button" class="ok">OK</button> <button type="button" class="no">No thanks</button></span>';
+    bar.innerHTML = '<p>We count visits with Google Analytics<span class="more"> to learn which parts of the map people use</span>. No ads, nothing sold. <a href="/privacy/">Privacy</a></p><span><button type="button" class="ok">OK</button> <button type="button" class="no">No thanks</button></span>';
     const answer = (v) => {
       save(v);
       gtag('consent', 'update', { analytics_storage: v });

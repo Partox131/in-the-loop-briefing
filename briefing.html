@@ -21,7 +21,7 @@
 <meta name="twitter:description" content="What credible voices and outlets are saying, story by story: what's confirmed, what's disputed, and what changed since you last checked.">
 <meta name="twitter:image" content="https://inthelooplive.com/og-image.png">
 <title>Briefing: geopolitics, US and Canadian politics · In the Loop</title>
-<script src="analytics.js?v=00b8c0f4b5"></script>
+<script src="analytics.js?v=26c3aada9a"></script>
 <script src="signup.js?v=75d20b6c98" defer></script>
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -503,8 +503,8 @@
         </div>
         ${side(d)}
       </main>`;
-    app.querySelectorAll('[data-lens]').forEach((b) => b.addEventListener('click', () => { state.lens = b.dataset.lens; render(); }));
-    app.querySelectorAll('[data-since]').forEach((b) => b.addEventListener('click', () => { state.since = b.dataset.since; load(); }));
+    app.querySelectorAll('[data-lens]').forEach((b) => b.addEventListener('click', () => { window.itlTrack?.('briefing_filter', { filter: 'lens', value: b.dataset.lens, node: d.node.id }); state.lens = b.dataset.lens; render(); }));
+    app.querySelectorAll('[data-since]').forEach((b) => b.addEventListener('click', () => { window.itlTrack?.('briefing_filter', { filter: 'since', value: b.dataset.since, node: d.node.id }); state.since = b.dataset.since; load(); }));
     const mr = app.querySelector('#markread');
     if (mr) mr.addEventListener('click', () => { saveSeen(d.node.id, d); state.baseline = loadSeen(d.node.id); render(); });
   }
