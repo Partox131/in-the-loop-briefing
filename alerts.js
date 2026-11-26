@@ -4,8 +4,8 @@
 // is docs/research/push-notifications.md.
 //
 // Phase 1 (26 Nov 2026): the bell only shows after visiting the site once with
-// ?alerts=1 (remembered in this browser; ?alerts=0 hides it again), while Amir
-// tries it. It never shows in demo mode or clip recordings.
+// ?alerts=1 (remembered in this browser; ?alerts=0 hides it again), or when
+// the site is opened from the home screen, while Amir tries it. It never shows in demo mode or clip recordings.
 //
 // Rules: permission is asked only when the reader presses "Turn on alerts".
 // On iPhone and iPad, web pages can only get alerts once added to the home
@@ -22,7 +22,6 @@
   };
   if (q.get('alerts') === '1') store.set(BETA, '1');
   if (q.get('alerts') === '0') store.set(BETA, null);
-  const off = q.has('demo') || q.has('clip') || store.get(BETA) !== '1';
 
   const TOPICS = [
     ['geopolitics', 'Geopolitics', 'All regions'],
@@ -44,6 +43,9 @@
   const ua = navigator.userAgent || '';
   const ios = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   const standalone = window.matchMedia?.('(display-mode: standalone)').matches || navigator.standalone === true;
+  // Phase 1: shown with ?alerts=1, and always in the site installed on a home
+  // screen (it has its own storage on iPhone, so it can't remember ?alerts=1).
+  const off = q.has('demo') || q.has('clip') || (store.get(BETA) !== '1' && !standalone);
   const supported = 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
 
   const css = `
