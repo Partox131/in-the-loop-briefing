@@ -265,10 +265,13 @@ export function renderAbout({ counts, analytics = '' }) {
 <h2>Political lean</h2>
 <p>In the US and Canadian politics segments, each source carries a lean label (left, centre-left, centre, centre-right, right). These are our own first call, so you can see the mix behind a story at a glance. Bluesky leans left on North American politics, so we add right-of-centre outlets through their news feeds where we can.</p>
 
+<h2>Who runs it</h2>
+<p>In the Loop is run by Amir, as an independent project. Questions, corrections or a source we should add: <a href="mailto:partox131@gmail.com">partox131@gmail.com</a>.</p>
+
 <h2>Background pages</h2>
 <p>The region pages carry backgrounders written and checked by hand. Every figure names who counted it, the date and a link, and when sources disagree we say whose number it is.</p>
 `;
-  const jsonLd = { '@context': 'https://schema.org', '@type': 'AboutPage', '@id': `${SITE}about/`, url: `${SITE}about/`, name: 'About In the Loop', isPartOf: { '@id': `${SITE}#website` }, about: { '@id': `${SITE}#org` } };
+  const jsonLd = { '@context': 'https://schema.org', '@type': 'AboutPage', '@id': `${SITE}about/`, url: `${SITE}about/`, name: 'About In the Loop', isPartOf: { '@id': `${SITE}#website` }, about: { '@id': `${SITE}#org` }, mainEntity: { '@type': 'Organization', '@id': `${SITE}#org`, name: 'In the Loop', url: SITE, email: 'partox131@gmail.com', founder: { '@type': 'Person', name: 'Amir' } } };
   return shell({
     path: 'about/',
     title: 'About and how it works',
