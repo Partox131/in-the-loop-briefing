@@ -167,21 +167,43 @@ export const SIDE_NAMES = {
 
 const VERB = "(?:says?|said|claims?|claimed|reports?|reported|announce[sd]?|warns?|warned|insists?|confirms?|confirmed|denies|denied|accuses?|accused|tells?|told)";
 const WORDS = "(?:\\s+[\\w'’-]+){0,3}";
+// Words that mark a quoted source without naming its side ("…, spokesperson
+// says", "…: Army spokesman", "state media reported"). The side is then the
+// one the headline names.
+const SPEAKER = "(?:spokes(?:man|woman|person)|officials?|military|army|navy|guards?|ministry|commander|state (?:media|tv|television|news agency))";
+const GENERIC = [
+  new RegExp(`\\b${SPEAKER}${WORDS}\\s+${VERB}\\b`, 'i'), // "…, spokesperson says"
+  new RegExp(`[:—–]\\s*(?:[\\w'’-]+\\s+){0,3}${SPEAKER}\\s*$`, 'i'), // "…: Army spokesman", "… — spokesperson"
+  new RegExp(`\\b(?:according to|reported by|cited by) ${SPEAKER}`, 'i'),
+];
+// Leading words that look like "IRGC:" but are a section name ("Iran war live:").
+const NOT_A_SPEAKER = /\b(?:war|live|latest|news|updates?|crisis|talks|explained|analysis|opinion|briefing)\b/i;
+
 const ATTRIBUTION = Object.fromEntries(
   Object.entries(SIDE_NAMES).map(([code, names]) => {
     const n = `(?:${names.join('|')})`;
-    return [code, [
-      new RegExp(`\\b${n}${WORDS}\\s+${VERB}\\b`, 'i'), // "Iran's army says", "IRGC Navy claims"
-      new RegExp(`\\baccording to (?:the )?${n}\\b`, 'i'), // "according to TASS"
-      new RegExp(`[:—–]\\s*${n}${WORDS}\\s*$`, 'i'), // "…in Hormuz: Iranian Navy"
-      new RegExp(`^\\W*${n}${WORDS}\\s*:`, 'i'), // "IRGC: two tankers…"
-    ]];
+    return [code, {
+      name: new RegExp(`\\b${n}\\b`, 'i'),
+      direct: [
+        new RegExp(`\\b${n}${WORDS}\\s+${VERB}\\b`, 'i'), // "Iran's army says", "IRGC Navy claims"
+        new RegExp(`\\baccording to (?:the )?${n}\\b`, 'i'), // "according to TASS"
+        new RegExp(`[:—–]\\s*${n}${WORDS}\\s*$`, 'i'), // "…in Hormuz: Iranian Navy"
+      ],
+      lead: new RegExp(`^\\W*(${n}(?:\\s+[\\w'’-]+){0,2})\\s*:`, 'i'), // "IRGC: two tankers…"
+    }];
   }),
 );
 
-/** The headline-like first line of an item, where attribution is said. */
+/** The headline of an item: its link title, else its first line or sentence. */
 function firstLine(p) {
-  return String(p?.linkTitle || p?.text || '').split('\n')[0].replace(/[\u{1F300}-\u{1FAFF}☀-➿]/gu, '').trim().slice(0, 240);
+  const text = String(p?.linkTitle || p?.text || '').replace(/[\u{1F300}-\u{1FAFF}\u2600-\u27BF]/gu, '').trim();
+  return text.split(/\n|(?<=[^A-Z.]\.)\s+(?=[A-Z“"])/)[0].trim().replace(/[.!?]+$/, '').slice(0, 240);
+}
+
+function attributes(a, line) {
+  if (a.direct.some((re) => re.test(line))) return true;
+  const lead = a.lead.exec(line);
+  return Boolean(lead && !NOT_A_SPEAKER.test(lead[1]));
 }
 
 /**
@@ -191,7 +213,15 @@ function firstLine(p) {
 export function attributedSides(p, conflict) {
   const parties = CONFLICTS[conflict]?.parties || [];
   const line = firstLine(p);
-  return parties.filter((code) => ATTRIBUTION[code]?.some((re) => re.test(line)));
+  const direct = parties.filter((code) => ATTRIBUTION[code] && attributes(ATTRIBUTION[code], line));
+  if (direct.length) return direct;
+  // "…, spokesperson says": the side is the one the headline names first.
+  if (!GENERIC.some((re) => re.test(line))) return [];
+  const named = parties
+    .map((code) => ({ code, at: ATTRIBUTION[code]?.name.exec(line)?.index ?? -1 }))
+    .filter((x) => x.at >= 0)
+    .sort((a, b) => a.at - b.at);
+  return named.length ? [named[0].code] : [];
 }
 
 /**
