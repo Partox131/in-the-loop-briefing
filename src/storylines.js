@@ -8,8 +8,8 @@
 // each other. Embeddings and LLM claim extraction would plug in at
 // `mergeSimilar`/`claimsOf` later.
 
-import { mergeSimilar } from './similar.js?v=89cbc5f30a';
-import { roleOf } from './credibility.js?v=89cbc5f30a';
+import { mergeSimilar } from './similar.js?v=6096a79e24';
+import { roleOf } from './credibility.js?v=6096a79e24';
 
 const TRACKING_PARAMS = /^(utm_|fbclid|gclid|ref|smid|cmpid|at_|taid|ito|mc_)/i;
 
@@ -114,6 +114,65 @@ export function sidesOf(posts, conflict) {
     } else if (r.witness && p.voice?.tier !== 4) firstWitness ??= item(p);
   }
   return { sides: [...latest.values()], firstClaim, firstWitness };
+}
+
+/**
+ * The key moments of a storyline, oldest first, worked out from its posts
+ * (source credibility plan, part 4). The server keeps these, so a timeline
+ * outlives the 48 hours of posts the snapshot holds.
+ *   first    the earliest report
+ *   claim    each source's first claim for a side, and its later ones 3+ hours apart
+ *   witness  the first report from each independent source (up to 3)
+ *   status   the status changing as reports came in (claimed -> corroborated...)
+ * Each has a `key` that stays the same between runs, so it is stored once.
+ */
+export const CLAIM_UPDATE_MS = 3 * 3_600_000;
+export function timelineOf(posts, conflict) {
+  const byTime = [...posts]
+    .filter((p) => !Number.isNaN(Date.parse(p.createdAt)))
+    .sort((a, b) => Date.parse(a.createdAt) - Date.parse(b.createdAt));
+  const item = (p) => ({
+    at: new Date(Date.parse(p.createdAt)).toISOString(),
+    by: p.voice?.affiliation || p.voice?.name || p.displayName || p.handle,
+    text: String(p.text || '').replace(/\s+/g, ' ').trim().slice(0, 240),
+    url: p.url,
+    uri: p.uri,
+    ...(p.telegram ? { telegram: true } : {}),
+  });
+  const out = [];
+  const witnesses = new Set();
+  const claims = new Set();
+  const lastClaim = new Map();
+  let official = false;
+  let status = null;
+  for (const p of byTime) {
+    if (!out.length) out.push({ key: 'first', kind: 'first', ...item(p) });
+    const r = roleOf(p, conflict);
+    const at = Date.parse(p.createdAt);
+    if (r.claim) {
+      // per source, so each one's track record counts (scripts/stories.js records)
+      const who = `${r.claim}|${item(p).by}`;
+      const last = lastClaim.get(who);
+      if (last === undefined || at - last >= CLAIM_UPDATE_MS) {
+        out.push({ key: `claim:${r.claim}:${p.uri}`, kind: 'claim', side: r.claim, ...item(p) });
+        lastClaim.set(who, at);
+      }
+      claims.add(r.claim);
+    } else if (r.witness && p.voice?.tier !== 4) {
+      if (!witnesses.has(r.witness) && witnesses.size < 3) out.push({ key: `witness:${r.witness}`, kind: 'witness', ...item(p) });
+      witnesses.add(r.witness);
+    } else if (p.voice?.tier === 4) official = true;
+    let next = 'reported';
+    if (witnesses.size >= 2 || (witnesses.size >= 1 && claims.size >= 1)) next = 'corroborated';
+    else if (witnesses.size === 1) next = 'reported';
+    else if (claims.size) next = 'claimed';
+    else if (official) next = 'official';
+    if (next !== status) {
+      out.push({ key: `status:${next}`, kind: 'status', from: status, to: next, ...item(p) });
+      status = next;
+    }
+  }
+  return out;
 }
 
 /** The conflict most of a storyline's posts are about (posts carry `conflict`). */
