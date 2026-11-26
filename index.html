@@ -250,7 +250,38 @@
     .cartouche { position: static; margin: 8px; max-width: none; padding: 4px 10px 4px 4px; gap: 8px; }
     .cartouche small, .cartouche .kick { display: none; }
     .cartouche strong { font-size: 16px; }
+    /* Phones: the map comes first. A short header, the controls in one
+       swipeable row, then the map, the preview and "Just in", and the
+       longer reading (summary, backgrounder) after them. */
+    header.top { gap: 8px 12px; padding: 12px 0 6px; }
+    .brand { font-size: 19px; }
+    nav.crumbs, .bar .sub { display: none; }
+    .brieflink { min-height: 34px; font-size: 14px; padding: 0 10px; }
+    .status { font-size: 13px; }
+    .bar { padding: 2px 0 10px; gap: 10px; }
+    h1 { font-size: 24px; }
+    .controls { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; gap: 8px; margin: 0 -16px; padding: 0 16px; width: calc(100% + 32px); max-width: none; }
+    .controls::-webkit-scrollbar { display: none; }
+    .seg { flex: none; overflow: visible; }
+    .seg button, .segswitch a { min-height: 36px; padding: 6px 12px; font-size: 14px; }
+    .layout { flex-direction: column; gap: 18px; }
+    .mapcol { display: contents; }
+    .mapcol > * { order: 3; }
+    .mapcol > .breaking, .mapcol > .map, .mapcol > .tourcap, .mapcol > .legend { order: 1; }
+    .map { margin: 0 -16px; border-radius: 0; border-left: 0; border-right: 0; }
+    .legend { margin-top: 0; gap: 4px 14px; font-size: 13px; }
+    aside { order: 2; flex: none; }
   }
+  /* Touch: the first tap on a region or segment lifts it and says what it is
+     (what hovering does with a mouse); the second tap opens it. */
+  .map:not(.zoomed) .bubble.armed .disc { transform: translateY(-4px); filter: drop-shadow(0 5px 4px rgba(10, 11, 28, .3)); fill-opacity: .15; stroke-width: calc(4px * var(--s, 1)); }
+  .bubble.armed .disc { stroke-width: calc(4px * var(--s, 1)); }
+  .sculpt.armed .sc { transform: translateY(-6px) scale(1.04); filter: drop-shadow(0 6px 5px rgba(10, 11, 28, .28)); }
+  .portal.armed .slabtop { transform: translateY(-3px); }
+  .portal.armed .slabshadow { opacity: .3; }
+  .taphint { position: absolute; z-index: 20; transform: translate(-50%, calc(-100% - 8px)); background: var(--ink); color: var(--bg); border-radius: 12px; padding: 8px 12px; font-size: 13px; line-height: 1.3; max-width: min(240px, calc(100% - 16px)); width: max-content; pointer-events: none; box-shadow: 0 8px 18px -8px rgba(10, 11, 28, .5); animation: fadein .2s ease-out both; }
+  .taphint strong { display: block; font: 700 15px/1.2 var(--display); }
+  .taphint em { font-style: normal; opacity: .75; }
   .statetag { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
   /* Segment switch: Geopolitics or US politics. */
   .segswitch { display: inline-flex; }
@@ -1196,10 +1227,52 @@
   // "Just in" is only as tall as the map column next to it (map, legend and
   // the panels under it) and scrolls inside. Stacked on a phone, it scrolls
   // within most of a screen instead.
+  // Touch has no hover, so the first tap on a region or segment lifts it and
+  // says what it is; a second tap opens it. Mouse and keyboard open at once.
+  let lastPointer = 'mouse';
+  document.addEventListener('pointerdown', (e) => { lastPointer = e.pointerType; }, true);
+  document.addEventListener('keydown', () => { lastPointer = 'key'; }, true);
+  document.addEventListener('click', (e) => { if (state.armed && !e.target.closest?.('.armed')) { state.armed = null; showArmed(); } }, true);
+  function armFirst(id) {
+    if (lastPointer !== 'touch' || state.armed === id) { if (state.armed) { state.armed = null; showArmed(); } return false; }
+    state.armed = id;
+    showArmed();
+    return true;
+  }
+  function showArmed() {
+    const map = document.querySelector('.map');
+    if (!map) return;
+    document.querySelector('.taphint')?.remove();
+    map.querySelectorAll('.armed').forEach((x) => x.classList.remove('armed'));
+    const id = state.armed;
+    if (!id) return;
+    const seg = id.startsWith('seg:') ? id.slice(4) : '';
+    const el = map.querySelector(seg ? `.portal[data-seg="${CSS.escape(seg)}"]` : `.bubble[data-area="${CSS.escape(id)}"]`);
+    if (!el) { state.armed = null; return; }
+    el.classList.add('armed');
+    if (!seg) map.querySelector(`[data-frame="${CSS.escape(id)}"]`)?.classList.add('on');
+    const a = !seg && state.data.areas.find((x) => x.id === id);
+    const name = seg ? SEGS[seg]?.label : a?.label;
+    const meta = seg ? `Its own map of ${SEGS[seg]?.homeLabel}` : a ? `${plural(a.count, 'item')} in the last ${state.window}${a.count ? ` · ${STATUS[a.status] || ''}` : ''}` : '';
+    const hint = document.createElement('div');
+    hint.className = 'taphint';
+    hint.setAttribute('role', 'status');
+    hint.innerHTML = `<strong>${esc(name || '')}</strong>${esc(meta)}<br><em>Tap again to ${seg ? 'open' : 'zoom in'}</em>`;
+    document.body.append(hint); // on the page, so a short map doesn't clip it
+    const r = (el.querySelector('.disc, .slabface, .sc') || el).getBoundingClientRect(), vw = document.documentElement.clientWidth;
+    const w = hint.offsetWidth, h = hint.offsetHeight;
+    const x = Math.min(vw - w / 2 - 8, Math.max(w / 2 + 8, r.left + r.width / 2));
+    const above = r.top > h + 12;
+    hint.style.left = `${x + window.scrollX}px`;
+    hint.style.top = `${(above ? r.top : r.bottom + 8) + window.scrollY}px`;
+    if (!above) hint.style.transform = 'translate(-50%, 0)';
+  }
+
   let feedObserver = null;
   function fitFeed() {
     const col = document.querySelector('.mapcol'), list = document.getElementById('feedlist'), aside = document.querySelector('aside');
     if (!col || !list || !aside) return;
+    if (window.matchMedia('(max-width: 640px)').matches) { list.style.maxHeight = '55vh'; return; } // phone: right under the map
     const c = col.getBoundingClientRect(), a = aside.getBoundingClientRect();
     const end = (col.lastElementChild || col).getBoundingClientRect().bottom;
     if (a.left < c.right) { list.style.maxHeight = '70vh'; return; } // stacked under the map
@@ -1274,15 +1347,15 @@
     app.querySelector('.tourcap .stop')?.addEventListener('click', (e) => { e.stopPropagation(); endTour(false); });
     app.querySelectorAll('.portal').forEach((portalEl) => {
       const open = () => toSeg(portalEl.dataset.seg);
-      portalEl.addEventListener('click', open);
+      portalEl.addEventListener('click', () => { if (!armFirst(`seg:${portalEl.dataset.seg}`)) open(); });
       portalEl.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
     });
     const frame = (id, on) => app.querySelector(`[data-frame="${CSS.escape(id)}"]`)?.classList.toggle('on', on);
     app.querySelectorAll('[data-window]').forEach((b) => b.addEventListener('click', () => { state.window = b.dataset.window; refresh(); }));
     app.querySelectorAll('.bubble').forEach((g) => {
-      const pick = () => {
+      const pick = (e) => {
         const a = state.data.areas.find((x) => x.id === g.dataset.area);
-        if (state.view === 'world' || a?.topic) { go(g.dataset.area); return; }
+        if (state.view === 'world' || a?.topic) { if (e?.type === 'click' && armFirst(g.dataset.area)) return; go(g.dataset.area); return; }
         state.area = state.area === g.dataset.area ? null : g.dataset.area;
         if (state.area) window.itlTrack?.('story_preview', { story: state.area, from_view: state.view });
         refresh(); app.querySelector(`.bubble[data-area="${CSS.escape(g.dataset.area)}"]`)?.focus();
@@ -1301,6 +1374,7 @@
       switchSeg(a.dataset.goseg || null);
     }));
     if (focused) app.querySelector(`.bubble[data-area="${CSS.escape(focused)}"]`)?.focus();
+    showArmed(); // a live update re-draws the map; keep a tapped region lifted
     const list = document.getElementById('feedlist');
     if (list) list.scrollTop = feedTop; // live updates keep your place in the list
     fitFeed();
