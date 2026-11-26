@@ -46,7 +46,8 @@ export const CONFLICTS = {
 /**
  * Sources that are not simply independent, by affiliation. `partyTo` lists
  * conflicts beyond those implied by the source's country (needed for partisan
- * sources, which have no state).
+ * sources, which have no state). `side` is the side a partisan source speaks
+ * for (a country code), shown as "Palestinians claim".
  */
 export const SOURCE_CLASS = {
   // Iran
@@ -83,7 +84,7 @@ export const SOURCE_CLASS = {
   'ERR News': { independence: 'public' },
   LRT: { independence: 'public' },
   // Partisan, no state
-  'Quds News Network': { independence: 'partisan', partyTo: ['israel-gaza'] },
+  'Quds News Network': { independence: 'partisan', partyTo: ['israel-gaza'], side: 'PS' },
 };
 
 const PARTY_CLASSES = new Set(['state-funded', 'state-controlled', 'official']);
@@ -240,7 +241,7 @@ export function attributedSides(p, conflict) {
 export function roleOf(p, conflict) {
   const v = p.voice;
   if (!v) return {};
-  if (conflict && (v.partyTo || []).includes(conflict)) return { claim: v.country || v.affiliation };
+  if (conflict && (v.partyTo || []).includes(conflict)) return { claim: v.country || SOURCE_CLASS[v.affiliation]?.side || v.affiliation };
   const sides = conflict ? attributedSides(p, conflict) : [];
   if (sides.length) return { claim: sides[0] };
   // Reporters, outlets, OSINT and non-party officials can witness; analysts comment.

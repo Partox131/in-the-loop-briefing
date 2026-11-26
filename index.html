@@ -440,7 +440,7 @@
   <p>A live map of what credible outlets, reporters and analysts are saying about geopolitics, US politics and Canadian politics. Each story shows how many independent outlets carry it, whether it's confirmed or disputed, and what changed since you last looked. Sources include Bluesky, news outlets' feeds and official Telegram channels, refreshed every few minutes.</p>
   <nav aria-label="Regions and segments"><a href="/middle-east/">Middle East: the war with Iran, Gaza and Lebanon</a> · <a href="/eastern-europe/">Eastern Europe: the war in Ukraine and NATO's eastern flank</a> · <a href="/east-asia/">East Asia: China and Taiwan</a> · <a href="/us-politics/">US politics</a> · <a href="/canadian-politics/">Canadian politics</a> · <a href="briefing.html">Briefing</a> · <a href="/about/">About and how it works</a></nav>
 </div></div>
-<script>window.itlSearch = location.search; window.itlLive = (demo, node) => import('./src/static.js?v=940542179f').then((m) => m.initLive({ demo, node, search: window.itlSearch }));</script>
+<script>window.itlSearch = location.search; window.itlLive = (demo, node) => import('./src/static.js?v=7673f0d481').then((m) => m.initLive({ demo, node, search: window.itlSearch }));</script>
 <script>
 (() => {
   const params = new URLSearchParams(location.search);
@@ -525,7 +525,8 @@
   const STATUS = { corroborated: 'Confirmed', official: 'Official', reported: 'Reported once', claimed: 'Claimed by one side', disputed: 'Sources disagree', quiet: 'Quiet' };
   // A side's own claim (src/credibility.js): "Iran claims", shown as a dashed chip
   // until a source with no stake in the conflict reports it too.
-  const sideName = (c) => (/^[A-Z]{2}$/.test(c || '') ? countryName(c) : c || 'One side');
+  const SIDE_NAME = { PS: 'Palestinians', US: 'The US' };
+  const sideName = (c) => SIDE_NAME[c] || (/^[A-Z]{2}$/.test(c || '') ? countryName(c) : c || 'One side');
   const claimText = (x) => { const names = (x.claimedBy?.length ? x.claimedBy : ['']).map(sideName); return `${names.join(' and ')} ${names.length > 1 || /s$/.test(names[0]) ? 'claim' : 'claims'}`; };
   const storyStatus = (x) => (x.status === 'claimed' ? claimText(x) : STATUS[x.status] || x.status);
   const COLOR = { corroborated: 'var(--confirmed)', reported: 'var(--reported-dot)', disputed: 'var(--disputed)', quiet: 'var(--muted)' };
