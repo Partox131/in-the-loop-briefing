@@ -4,7 +4,7 @@
 // merge and de-duplicate by URI, then re-apply our own matcher so that
 // excludes, language filters and word-boundary rules match the live path.
 
-import { compileMatcher } from './topic.js?v=fda10a0532';
+import { compileMatcher } from './topic.js?v=940542179f';
 
 export function termToQuery(term) {
   if (term.startsWith('#')) return term; // hashtag search

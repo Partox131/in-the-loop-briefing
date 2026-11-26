@@ -1,8 +1,8 @@
 // Turn a brief (see brief.js) into the JSON the briefing web page renders.
 // Kept separate from the server so it's easy to test and to reuse.
 
-import { breakingCount, isTopic, segmentOf, stageTrack, trail } from './live.js?v=fda10a0532';
-import { TIER_NAME } from './voices.js?v=fda10a0532';
+import { breakingCount, isTopic, segmentOf, stageTrack, trail } from './live.js?v=940542179f';
+import { TIER_NAME } from './voices.js?v=940542179f';
 
 const HOUR = 3_600_000;
 
@@ -97,6 +97,10 @@ export function briefView(brief, h, { now = new Date() } = {}) {
     status: s.status,
     // sides whose claim this is (country codes), for "Iran claims"
     claimedBy: s.claimedBy,
+    // what each side says, and who reported first (src/storylines.js sidesOf)
+    sides: s.sides || [],
+    firstClaim: s.firstClaim || null,
+    firstWitness: s.firstWitness || null,
     // outlets reporting it if it's breaking news right now, else 0
     breaking: breakingCount(s, now),
     lead: postView(s.lead),
