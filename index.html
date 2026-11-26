@@ -214,6 +214,7 @@
   .chip.c-corroborated, .chip.c-official { color: var(--confirmed); background: color-mix(in srgb, var(--confirmed) 14%, transparent); }
   .chip.c-reported { color: var(--reported); background: color-mix(in srgb, var(--reported-dot) 18%, transparent); }
   .chip.c-disputed { color: var(--disputed); background: color-mix(in srgb, var(--disputed) 14%, transparent); }
+  .chip.c-claimed { color: var(--reported); background: transparent; border: 1px dashed currentColor; } .c-claimed { --c: var(--reported-dot); }
   .news-tag { background: none; border: 1px solid var(--track); }
   .area-tag { font-size: 13px; font-weight: 600; background: var(--track); border-radius: 6px; padding: 1px 8px; color: var(--ink); }
 
@@ -398,7 +399,7 @@
   <p>A live map of what credible outlets, reporters and analysts are saying about geopolitics, US politics and Canadian politics. Each story shows how many independent outlets carry it, whether it's confirmed or disputed, and what changed since you last looked. Sources include Bluesky, news outlets' feeds and official Telegram channels, refreshed every few minutes.</p>
   <nav aria-label="Regions and segments"><a href="/middle-east/">Middle East: the war with Iran, Gaza and Lebanon</a> · <a href="/eastern-europe/">Eastern Europe: the war in Ukraine and NATO's eastern flank</a> · <a href="/east-asia/">East Asia: China and Taiwan</a> · <a href="/us-politics/">US politics</a> · <a href="/canadian-politics/">Canadian politics</a> · <a href="briefing.html">Briefing</a> · <a href="/about/">About and how it works</a></nav>
 </div></div>
-<script>window.itlSearch = location.search; window.itlLive = (demo, node) => import('./src/static.js?v=4841c59de7').then((m) => m.initLive({ demo, node, search: window.itlSearch }));</script>
+<script>window.itlSearch = location.search; window.itlLive = (demo, node) => import('./src/static.js?v=6496a5eb2a').then((m) => m.initLive({ demo, node, search: window.itlSearch }));</script>
 <script>
 (() => {
   const params = new URLSearchParams(location.search);
@@ -457,14 +458,19 @@
   const HOURS = { '1h': 1, '6h': 6, '24h': 24 };
 
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  // State-affiliated sources: the state's flag and a "state" label (src/flags.js).
+  // State-affiliated and partisan sources: the state's flag (src/flags.js) and
+  // their class from the credibility profile (src/credibility.js): "state",
+  // "state-funded", "public", "official" or "partisan", with a tooltip saying
+  // in which conflicts the source speaks for a side.
   const countryName = (c) => { try { return new Intl.DisplayNames(['en'], { type: 'region' }).of(c); } catch { return c; } };
-  const stateTag = (c, long) => {
+  const stateTag = (c, long, cred) => {
     const name = c ? countryName(c) : '';
-    const title = name ? `State-affiliated: ${name}` : 'State-affiliated';
+    const title = (name ? `${name}. ` : '') + (cred?.note || 'State-affiliated');
     const img = /^[A-Z]{2}$/.test(c || '') ? `<img class="flag" src="flags/${c.toLowerCase()}.svg" alt="${esc(name)}" width="16" height="12">` : '';
-    return ` <span class="statetag" title="${esc(title)}">${img}${long ? 'state-affiliated' : 'state'}</span>`;
+    const word = cred?.short && cred.short !== 'state' ? cred.short : long ? 'state-affiliated' : 'state';
+    return ` <span class="statetag" title="${esc(title)}">${img}${word}</span>`;
   };
+  const tagged = (x) => x && (x.stateAffiliated || x.cred?.short === 'partisan');
   const safeUrl = (u) => (/^https:\/\//.test(u || '') ? esc(u) : '#');
   const oneLine = (t, n = 200) => { const s = String(t || '').replace(/\s+/g, ' ').trim(); return s.length > n ? s.slice(0, n - 1) + '…' : s; };
   const ago = (iso) => {
@@ -475,7 +481,12 @@
     return `${Math.round(m / 1440)}d ago`;
   };
   const plural = (n, w) => `${n} ${n === 1 ? w : w.endsWith('y') ? `${w.slice(0, -1)}ies` : `${w}s`}`;
-  const STATUS = { corroborated: 'Confirmed', official: 'Official', reported: 'Reported once', disputed: 'Sources disagree', quiet: 'Quiet' };
+  const STATUS = { corroborated: 'Confirmed', official: 'Official', reported: 'Reported once', claimed: 'Claimed by one side', disputed: 'Sources disagree', quiet: 'Quiet' };
+  // A side's own claim (src/credibility.js): "Iran claims", shown as a dashed chip
+  // until a source with no stake in the conflict reports it too.
+  const sideName = (c) => (/^[A-Z]{2}$/.test(c || '') ? countryName(c) : c || 'One side');
+  const claimText = (x) => `${(x.claimedBy?.length ? x.claimedBy : ['']).map(sideName).join(' and ')} ${x.claimedBy?.length > 1 ? 'claim' : 'claims'}`;
+  const storyStatus = (x) => (x.status === 'claimed' ? claimText(x) : STATUS[x.status] || x.status);
   const COLOR = { corroborated: 'var(--confirmed)', reported: 'var(--reported-dot)', disputed: 'var(--disputed)', quiet: 'var(--muted)' };
   const paceText = (a) => (a.pace == null ? '' : `${a.pace}× usual`);
   // Needs history to compare with: the 24h window has none, so nothing pulses there.
@@ -1126,10 +1137,10 @@
     const by = (x) => {
       const n = x.sources.length;
       // The chip already says the status; this says who.
-      if (n === 1 && x.sources[0]) return `by ${esc(x.sources[0])}${x.flags?.[x.sources[0]] ? stateTag(x.flags[x.sources[0]]) : ''}`;
+      if (n === 1 && x.sources[0]) return `by ${esc(x.sources[0])}${x.flags?.[x.sources[0]] || x.creds?.[x.sources[0]]?.short === 'partisan' ? stateTag(x.flags?.[x.sources[0]], false, x.creds?.[x.sources[0]]) : ''}`;
       return `${x.status === 'corroborated' ? 'by ' : ''}${plural(n, 'source')}`;
     };
-    const story = (x) => `<div class="row"><span class="chip c-${esc(x.status)}">${esc(STATUS[x.status] || x.status)}</span><span>${by(x)}</span>${x.place ? `<span class="area-tag">${esc(x.place.label)}</span>` : ''}<span>latest ${esc(ago(x.lastSeen))}</span></div>`;
+    const story = (x) => `<div class="row"><span class="chip c-${esc(x.status)}">${esc(storyStatus(x))}</span><span>${by(x)}</span>${x.place ? `<span class="area-tag">${esc(x.place.label)}</span>` : ''}<span>latest ${esc(ago(x.lastSeen))}</span></div>`;
     const [top, ...more] = s.top;
     const paceTile = s.pace == null
       ? '<strong>–</strong>no earlier posts to compare'
@@ -1160,7 +1171,7 @@
     const st = a.count ? a.status : 'quiet';
     const stories = a.storylines.length
       ? `<ul class="plain">${a.storylines.map((s) => `<li>
-          <div class="row"><span class="chip c-${esc(s.status)}">${esc(STATUS[s.status] || s.status)}</span><span>${esc(ago(s.firstSeen))}</span><span>${plural(s.posts, 'item')}${s.articles ? ` (${s.articles} ${s.articles === 1 ? 'article' : 'articles'})` : ''}${s.sources.length ? ` · ${s.sources.slice(0, 3).map((n) => esc(n) + (s.flags?.[n] ? stateTag(s.flags[n]) : '')).join(', ')}` : ''}</span></div>
+          <div class="row"><span class="chip c-${esc(s.status)}">${esc(storyStatus(s))}</span><span>${esc(ago(s.firstSeen))}</span><span>${plural(s.posts, 'item')}${s.articles ? ` (${s.articles} ${s.articles === 1 ? 'article' : 'articles'})` : ''}${s.sources.length ? ` · ${s.sources.slice(0, 3).map((n) => esc(n) + (s.flags?.[n] || s.creds?.[n]?.short === 'partisan' ? stateTag(s.flags?.[n], false, s.creds?.[n]) : '')).join(', ')}` : ''}</span></div>
           <a class="txt" href="${safeUrl(s.url)}" target="_blank" rel="noopener">${esc(oneLine(s.text, 220))}</a>
         </li>`).join('')}</ul>`
       : `<p class="muted" style="margin:0">Nothing from tracked voices in the last ${esc(state.window)}.</p>`;
@@ -1201,7 +1212,7 @@
     return `<section class="panel" aria-labelledby="fh">
       <div class="phead"><h2 id="fh">Just in</h2><span class="muted" style="font-size:13px">newest first</span></div>
       ${items.length ? `<ul class="plain feedlist" id="feedlist" tabindex="0" aria-label="Newest posts and articles" style="margin-top:8px">${items.map((p) => `<li class="${state.fresh.has(p.uri) ? 'fresh' : ''}">
-        <div class="row"><strong style="color:var(--ink)">${esc(ago(p.at))}</strong><span class="area-tag">${esc(p.topicLabel)}</span><span>${esc(p.who)}${p.stateAffiliated ? stateTag(p.country) : ''}${NAT ? leanTag(p.lean) : ''}</span>${p.telegram ? '<span class="area-tag news-tag">Telegram</span>' : p.news ? '<span class="area-tag news-tag">Article</span>' : ''}${state.fresh.has(p.uri) ? '<strong style="color:var(--loop)">Live</strong>' : ''}</div>
+        <div class="row"><strong style="color:var(--ink)">${esc(ago(p.at))}</strong><span class="area-tag">${esc(p.topicLabel)}</span><span>${esc(p.who)}${tagged(p) ? stateTag(p.country, false, p.cred) : ''}${NAT ? leanTag(p.lean) : ''}</span>${p.telegram ? '<span class="area-tag news-tag">Telegram</span>' : p.news ? '<span class="area-tag news-tag">Article</span>' : ''}${state.fresh.has(p.uri) ? '<strong style="color:var(--loop)">Live</strong>' : ''}</div>
         <a class="txt" href="${safeUrl(p.url)}" target="_blank" rel="noopener">${esc(oneLine(p.text))}</a>
       </li>`).join('')}</ul>` : '<p class="muted" style="margin:8px 0 0">Nothing from tracked voices in the last day.</p>'}
     </section>`;
@@ -1548,7 +1559,7 @@
     if (!t || t.i < 0) return '';
     const x = t.list[t.i];
     const who = x.sources.length === 1 ? `by ${esc(x.sources[0])}` : `${plural(x.sources.length, 'source')}`;
-    return `<div class="tourcap" role="status" style="--dur:${STOP_MS}ms"><span class="tk">Today in ${esc(SEG?.capital || '')} · ${t.i + 1} of ${t.list.length}</span><a class="th" href="${safeUrl(x.url)}" target="_blank" rel="noopener">${esc(x.headline)}</a><span class="tb"><button class="stop">Stop</button><button class="next">${t.i + 1 < t.list.length ? 'Next ›' : 'Finish'}</button></span><span class="tm"><span class="chip c-${esc(x.status)}">${esc(STATUS[x.status] || x.status)}</span> ${who} · ${plural(x.posts, 'item')} · ${esc(x.place?.label || nodeLabel(x.topicId) || '')} · latest ${esc(ago(x.lastSeen))}</span><span class="bar2"><i></i></span></div>`;
+    return `<div class="tourcap" role="status" style="--dur:${STOP_MS}ms"><span class="tk">Today in ${esc(SEG?.capital || '')} · ${t.i + 1} of ${t.list.length}</span><a class="th" href="${safeUrl(x.url)}" target="_blank" rel="noopener">${esc(x.headline)}</a><span class="tb"><button class="stop">Stop</button><button class="next">${t.i + 1 < t.list.length ? 'Next ›' : 'Finish'}</button></span><span class="tm"><span class="chip c-${esc(x.status)}">${esc(statusText(x))}</span> ${who} · ${plural(x.posts, 'item')} · ${esc(x.place?.label || nodeLabel(x.topicId) || '')} · latest ${esc(ago(x.lastSeen))}</span><span class="bar2"><i></i></span></div>`;
   }
 
   function refresh() {

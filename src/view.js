@@ -1,8 +1,8 @@
 // Turn a brief (see brief.js) into the JSON the briefing web page renders.
 // Kept separate from the server so it's easy to test and to reuse.
 
-import { breakingCount, isTopic, segmentOf, stageTrack, trail } from './live.js?v=4841c59de7';
-import { TIER_NAME } from './voices.js?v=4841c59de7';
+import { breakingCount, isTopic, segmentOf, stageTrack, trail } from './live.js?v=6496a5eb2a';
+import { TIER_NAME } from './voices.js?v=6496a5eb2a';
 
 const HOUR = 3_600_000;
 
@@ -27,6 +27,9 @@ function postView(p) {
           region: p.voice.region,
           stateAffiliated: p.voice.stateAffiliated,
           country: p.voice.country,
+          independence: p.voice.independence,
+          partyTo: p.voice.partyTo,
+          cred: p.voice.cred,
           verified: Boolean(p.voice.verified),
         }
       : null,
@@ -92,6 +95,8 @@ export function briefView(brief, h, { now = new Date() } = {}) {
     // Stable id for "since you last checked": the storyline's earliest post.
     id: [...s.posts].sort((a, b) => Date.parse(a.createdAt) - Date.parse(b.createdAt))[0].uri,
     status: s.status,
+    // sides whose claim this is (country codes), for "Iran claims"
+    claimedBy: s.claimedBy,
     // outlets reporting it if it's breaking news right now, else 0
     breaking: breakingCount(s, now),
     lead: postView(s.lead),
@@ -99,7 +104,7 @@ export function briefView(brief, h, { now = new Date() } = {}) {
     topicLabel: h.get(s.lead.topicId).label,
     lenses: [...new Set(s.posts.flatMap((p) => p.lenses || []))],
     // One chip per outlet: a reporter and their outlet are not two sources.
-    sources: [...new Map(s.voices.map((v) => [v.affiliation, { affiliation: v.affiliation, region: v.region, stateAffiliated: v.stateAffiliated, country: v.country }])).values()],
+    sources: [...new Map(s.voices.map((v) => [v.affiliation, { affiliation: v.affiliation, region: v.region, stateAffiliated: v.stateAffiliated, country: v.country, independence: v.independence, partyTo: v.partyTo, cred: v.cred }])).values()],
     firstSeen: s.firstSeen,
     lastSeen: s.lastSeen,
     postCount: s.posts.length,
