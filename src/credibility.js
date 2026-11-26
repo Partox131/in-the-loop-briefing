@@ -36,6 +36,8 @@ export const CONFLICTS = {
   'lebanon': { label: 'Israel and Lebanon', parties: ['IL', 'LB', 'IR'], nodes: ['lebanon'] },
   'ukraine-war': { label: 'War in Ukraine', parties: ['RU', 'UA', 'BY'], nodes: ['ukraine-war'] },
   'china-taiwan': { label: 'China and Taiwan', parties: ['CN', 'TW'], nodes: ['china-taiwan'] },
+  // The Houthis have no state media in our list, but outlets quote them ("Houthis say…").
+  'yemen': { label: 'Yemen and the Red Sea', parties: ['Houthis', 'SA', 'AE', 'US', 'IL'], nodes: ['red-sea'] },
   // Gulf rivalries: Qatar against Saudi Arabia, the UAE and Bahrain, and Qatar's
   // own mediation (Amir agreed for Al Jazeera, 26 Nov 2026).
   'gulf': { label: 'Gulf politics', parties: ['QA', 'SA', 'AE', 'BH'], nodes: [] },
@@ -163,6 +165,7 @@ export const SIDE_NAMES = {
   SA: ['saudi(?: arabia)?', 'riyadh'],
   AE: ['uae', 'emirati', 'abu dhabi'],
   BH: ['bahrain(?:i)?', 'manama'],
+  Houthis: ['houthis?', 'ansar ?allah', 'yahya saree', 'saba'],
 };
 
 const VERB = "(?:says?|said|claims?|claimed|reports?|reported|announce[sd]?|warns?|warned|insists?|confirms?|confirmed|denies|denied|accuses?|accused|tells?|told)";

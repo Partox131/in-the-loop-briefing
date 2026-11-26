@@ -283,6 +283,47 @@
   .taphint { position: absolute; z-index: 20; transform: translate(-50%, calc(-100% - 8px)); background: var(--ink); color: var(--bg); border-radius: 12px; padding: 8px 12px; font-size: 13px; line-height: 1.3; max-width: min(240px, calc(100% - 16px)); width: max-content; pointer-events: none; box-shadow: 0 8px 18px -8px rgba(10, 11, 28, .5); animation: fadein .2s ease-out both; }
   .taphint strong { display: block; font: 700 15px/1.2 var(--display); }
   .taphint em { font-style: normal; opacity: .75; }
+  /* ---- Phones: the map app (see phoneShell in the script). ---- */
+  .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  html.phone, html.phone body { height: 100%; overflow: hidden; overscroll-behavior: none; }
+  html.phone body { display: flex; flex-direction: column; }
+  html.phone #app { flex: 1; min-height: 0; position: relative; }
+  .pshell { position: absolute; inset: 0; overflow: hidden; background: var(--sea); }
+  .pshell .pbar { position: absolute; inset: 0 0 auto; z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); padding: 8px 0 8px; display: grid; gap: 8px; }
+  .pshell .prow { display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 max(12px, env(safe-area-inset-right, 0px)) 0 max(12px, env(safe-area-inset-left, 0px)); }
+  .pshell .brand { font-size: 19px; flex: none; }
+  .pshell .cartouche { position: static; flex: 1; min-width: 0; margin: 0; padding: 0; gap: 10px; border: 0; background: none; box-shadow: none; backdrop-filter: none; max-width: none; animation: none; }
+  .pshell .cartouche strong { font: 800 18px/1.1 var(--display); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+  .pshell .cartouche small, .pshell .cartouche .kick { display: none; }
+  .pshell .cartouche > div { min-width: 0; }
+  .pshell .cartouche .back { min-height: 36px; padding: 0 12px; font-size: 14px; white-space: nowrap; }
+  .pshell .controls { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; gap: 8px; margin: 0; padding: 0 12px; width: 100%; max-width: none; }
+  .pshell .controls::-webkit-scrollbar { display: none; }
+  .pshell .seg { flex: none; overflow: visible; }
+  .pshell .seg button, .pshell .segswitch a { min-height: 34px; padding: 5px 12px; font-size: 14px; }
+  .pshell .map { position: absolute; left: 0; right: 0; top: var(--hdr, 104px); bottom: var(--peek, 196px); margin: 0; border: 0; border-radius: 0; transition: none; }
+  .pshell .map > svg { width: 100%; height: 100%; touch-action: none; user-select: none; -webkit-user-select: none; }
+  .pshell .tourcap { position: absolute; z-index: 4; left: 8px; right: 8px; bottom: calc(var(--peek, 196px) + 8px); margin: 0; }
+  .pshell .sheet { position: absolute; z-index: 6; left: 0; right: 0; bottom: 0; height: var(--peek, 196px); display: flex; flex-direction: column; background: var(--raise); border-radius: 20px 20px 0 0; box-shadow: 0 -8px 24px -10px rgba(10, 11, 28, .35); transition: height .32s cubic-bezier(.3, .9, .3, 1); }
+  .pshell .sheet.is-half { height: 56%; }
+  .pshell .sheet.is-full { height: calc(100% - var(--hdr, 104px) + 12px); }
+  .pshell .sheet.dragging { transition: none; }
+  .pshell .grab { flex: none; display: flex; justify-content: center; padding: 10px 0 6px; cursor: grab; touch-action: none; }
+  .pshell .grab span { width: 42px; height: 5px; border-radius: 9px; background: var(--border); }
+  .pshell .sheetbody { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 0 max(16px, env(safe-area-inset-right, 0px)) calc(24px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); display: flex; flex-direction: column; gap: 14px; }
+  .pshell .ptop { touch-action: none; }
+  .pshell .ptop h1 { font-size: 22px; line-height: 1.12; }
+  .pshell .phint { margin: 4px 0 0; font-size: 13px; color: var(--muted); }
+  .pshell .sheet .panel { border: 0; border-top: 1px solid var(--line); border-radius: 0; background: none; padding: 14px 0 0; }
+  .pshell .sheet .breaking { margin: 0; }
+  .pshell .sheet .legend { margin: 0; }
+  .pshell .sheet .banner { padding: 8px 12px; border-radius: 10px; }
+  .pshell .sheet p:has(> .brieflink) { margin: 0; }
+  .pshell .sheet .status { margin: 0; }
+  .pshell .tourcap { padding: 10px 12px; gap: 6px 10px; }
+  .pshell .tourcap .th { font-size: 15px; line-height: 1.25; }
+  .pshell .tourcap .tm { font-size: 12px; }
+  .pshell .tourcap button { min-height: 32px; }
   .statetag { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
   /* Segment switch: Geopolitics or US politics. */
   .segswitch { display: inline-flex; }
@@ -399,7 +440,7 @@
   <p>A live map of what credible outlets, reporters and analysts are saying about geopolitics, US politics and Canadian politics. Each story shows how many independent outlets carry it, whether it's confirmed or disputed, and what changed since you last looked. Sources include Bluesky, news outlets' feeds and official Telegram channels, refreshed every few minutes.</p>
   <nav aria-label="Regions and segments"><a href="/middle-east/">Middle East: the war with Iran, Gaza and Lebanon</a> · <a href="/eastern-europe/">Eastern Europe: the war in Ukraine and NATO's eastern flank</a> · <a href="/east-asia/">East Asia: China and Taiwan</a> · <a href="/us-politics/">US politics</a> · <a href="/canadian-politics/">Canadian politics</a> · <a href="briefing.html">Briefing</a> · <a href="/about/">About and how it works</a></nav>
 </div></div>
-<script>window.itlSearch = location.search; window.itlLive = (demo, node) => import('./src/static.js?v=bf4288f53c').then((m) => m.initLive({ demo, node, search: window.itlSearch }));</script>
+<script>window.itlSearch = location.search; window.itlLive = (demo, node) => import('./src/static.js?v=fda10a0532').then((m) => m.initLive({ demo, node, search: window.itlSearch }));</script>
 <script>
 (() => {
   const params = new URLSearchParams(location.search);
@@ -485,7 +526,7 @@
   // A side's own claim (src/credibility.js): "Iran claims", shown as a dashed chip
   // until a source with no stake in the conflict reports it too.
   const sideName = (c) => (/^[A-Z]{2}$/.test(c || '') ? countryName(c) : c || 'One side');
-  const claimText = (x) => `${(x.claimedBy?.length ? x.claimedBy : ['']).map(sideName).join(' and ')} ${x.claimedBy?.length > 1 ? 'claim' : 'claims'}`;
+  const claimText = (x) => { const names = (x.claimedBy?.length ? x.claimedBy : ['']).map(sideName); return `${names.join(' and ')} ${names.length > 1 || /s$/.test(names[0]) ? 'claim' : 'claims'}`; };
   const storyStatus = (x) => (x.status === 'claimed' ? claimText(x) : STATUS[x.status] || x.status);
   const COLOR = { corroborated: 'var(--confirmed)', reported: 'var(--reported-dot)', disputed: 'var(--disputed)', quiet: 'var(--muted)' };
   const paceText = (a) => (a.pace == null ? '' : `${a.pace}× usual`);
@@ -763,8 +804,11 @@
     const box = cropOf(state.view);
     const s = box.w / m.width; // under 1 when a topic view crops the map
     const nodes = layout(d.areas, mapId, box, s);
-    // Keep labels readable when the map is drawn small (phones).
-    const k = s * Math.min(2.6, Math.max(1, 720 / (document.querySelector('.map')?.clientWidth || window.innerWidth)));
+    // Keep labels readable when the map is drawn small. On a phone the map
+    // fills the screen and the camera (cam) shows part of it: text is sized
+    // in screen pixels from the camera instead.
+    const phone = PHONE(), cam = phone ? phoneCam(state.view) : box;
+    const k = phone ? cam.h / frameSize().h : s * Math.min(2.6, Math.max(1, 720 / (document.querySelector('.map')?.clientWidth || window.innerWidth)));
     const bg = state.bg?.regions?.[regionOf(state.view)?.id];
     const cls = (name) => (bg?.focus?.includes(name) ? 'country focus' : bg?.watch?.includes(name) ? 'country watch' : 'country');
     const countries = baseShapes(m, cls, true);
@@ -811,7 +855,7 @@
     const t = topicOf(state.view), tIcon = t && state.api.live.iconOf(t.id), tAt = tIcon && state.api.live.placeOf(t.id);
     const backdrop = tAt && SCULPTURES[tIcon] ? (() => { const [x, y] = state.api.project(m, tAt.lon, tAt.lat); return sculpture(tIcon, x, y, 115 * s, 'sc backdrop'); })() : '';
     const landmarks = m.city ? m.city.monuments.filter((x) => /Monument/.test(x.name)).map((x) => sculpture('monument', x.xy[0], x.xy[1], 150 * s, 'sc landmark')).join('') : '';
-    return `<svg viewBox="${box.x.toFixed(1)} ${box.y.toFixed(1)} ${box.w.toFixed(1)} ${box.h.toFixed(1)}" style="--s:${s.toFixed(3)}" role="group" aria-label="Map of ${esc(topicOf(state.view)?.label || m.label)} with one bubble per ${what}">${NAT || mapId === 'world' ? SCULPT_DEFS : ''}${mapId === 'world' ? '<defs><linearGradient id="slabCa" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".6" stop-color="#FBE6E6"/><stop offset="1" stop-color="#F5C9C9"/></linearGradient><linearGradient id="slabG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".6" stop-color="#E6EAFB"/><stop offset="1" stop-color="#C9D1F5"/></linearGradient></defs>' : ''}${countries}${extras}${landmarks}${backdrop}${dots}${leaders}${arcs(d.links, nodes, s, k)}${bubbles}</svg>`;
+    return `<svg viewBox="${cam.x.toFixed(1)} ${cam.y.toFixed(1)} ${cam.w.toFixed(1)} ${cam.h.toFixed(1)}"${phone ? ' preserveAspectRatio="xMidYMid slice"' : ''} style="--s:${(phone ? k : s).toFixed(3)}" role="group" aria-label="Map of ${esc(topicOf(state.view)?.label || m.label)} with one bubble per ${what}">${NAT || mapId === 'world' ? SCULPT_DEFS : ''}${mapId === 'world' ? '<defs><linearGradient id="slabCa" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".6" stop-color="#FBE6E6"/><stop offset="1" stop-color="#F5C9C9"/></linearGradient><linearGradient id="slabG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".6" stop-color="#E6EAFB"/><stop offset="1" stop-color="#C9D1F5"/></linearGradient></defs>' : ''}${countries}${extras}${landmarks}${backdrop}${dots}${leaders}${arcs(d.links, nodes, s, k)}${bubbles}</svg>`;
   }
 
   // A place drawn as a model: a glow on the ground in its status colour
@@ -961,9 +1005,10 @@
   /** A view's area in home-map pixels: the whole home map, or a region's lon/lat box. */
   function boxOf(view) {
     const W = state.api.maps[HOME];
-    if (view === 'world') return { x: 0, y: 0, w: W.width, h: W.height };
+    if (view === 'world') return PHONE() ? phoneCam('world') : { x: 0, y: 0, w: W.width, h: W.height };
     const into = intoSeg(view);
     const v = state.api.maps[into ? into.home : mapOf(view)];
+    if (PHONE()) return into ? portrait(boxOn(W, v)) : boxOn(W, v, phoneCam(view));
     return boxOn(W, v, into ? undefined : cropOf(view));
   }
   /** Grow a box around its centre to a width/height ratio, so it fills the frame. */
@@ -1006,8 +1051,8 @@
     return new Promise((done) => setTimeout(() => {
       const width = el.clientWidth, h0 = el.clientHeight;
       const sideNow = Boolean(document.querySelector('aside'));
-      const w1 = sideNow === side ? width : mapWidthFor(side) || width; // map grows or shrinks when the side column comes or goes
-      const h1 = (w1 * target.height) / target.width;
+      const w1 = PHONE() ? width : sideNow === side ? width : mapWidthFor(side) || width; // map grows or shrinks when the side column comes or goes
+      const h1 = PHONE() ? h0 : (w1 * target.height) / target.width; // a phone's map fills the screen: the frame stays
       const A = fit(from, width / h0), B = fit(to, w1 / h1);
       el.style.height = `${h0}px`;
       if (w1 !== width) { el.style.width = `${width}px`; if (!side) document.querySelector('aside')?.remove(); }
@@ -1038,7 +1083,7 @@
       const svg = el.querySelector('svg');
       if (!svg) { state.flying = false; done(); return; }
       const m = state.api.maps[mapOf(to)];
-      const A = cropOf(from), B = cropOf(to);
+      const A = PHONE() ? phoneCam(from) : cropOf(from), B = PHONE() ? phoneCam(to) : cropOf(to);
       const t0 = performance.now(), D = 800;
       const step = (now) => {
         const t = Math.min(1, (now - t0) / D), e = ease(t);
@@ -1046,7 +1091,7 @@
         const cx = A.x + A.w / 2 + (B.x + B.w / 2 - A.x - A.w / 2) * e;
         const cy = A.y + A.h / 2 + (B.y + B.h / 2 - A.y - A.h / 2) * e;
         svg.setAttribute('viewBox', `${cx - w / 2} ${cy - h / 2} ${w} ${h}`);
-        svg.style.setProperty('--s', (w / m.width).toFixed(3));
+        if (!PHONE()) svg.style.setProperty('--s', (w / m.width).toFixed(3));
         if (t < 1) requestAnimationFrame(step); else { state.flying = false; done(); }
       };
       requestAnimationFrame(step);
@@ -1058,6 +1103,7 @@
     if (push) history.pushState({ view: to }, '', urlFor(to));
     const from = state.view;
     state.area = null;
+    state.sheet = 'peek';
     await fly(from, to);
     state.view = to;
     state.arrive = true;
@@ -1279,6 +1325,184 @@
     if (!above) hint.style.transform = 'translate(-50%, 0)';
   }
 
+  // ---- Phones (under 640px): the map fills the screen like a maps app. ----
+  // Controls float at the top, everything you read sits in a sheet that
+  // slides up from the bottom, and the camera shows part of the map at a
+  // readable size: drag to move around, pinch to zoom.
+  const PHONE = () => window.matchMedia('(max-width: 640px)').matches;
+  const WORLD_FOCUS = 0.6; // the world map opens over Europe and the Middle East
+  const PEEK = 196; // px of sheet showing while you look at the map
+  function frameSize() {
+    const el = document.querySelector('.pshell .map');
+    if (el?.clientHeight) return { w: el.clientWidth, h: el.clientHeight };
+    const hdr = document.querySelector('.pshell .pbar')?.offsetHeight || 104;
+    const app = document.getElementById('app');
+    return { w: app?.clientWidth || window.innerWidth, h: Math.max(200, (app?.clientHeight || window.innerHeight) - hdr - PEEK) };
+  }
+  /** A tall camera on box `b`: about its full height, a slice of its width around `cx`. */
+  function portrait(b, aspect, cx) {
+    if (!aspect) { const f = frameSize(); aspect = f.w / f.h; }
+    const z = 1.2;
+    let h = b.h * z, w = h * aspect;
+    if (w > b.w * z) { w = b.w * z; h = w / aspect; }
+    const x = (cx ?? b.x + b.w / 2) - w / 2;
+    return { x, y: b.y + b.h / 2 - h / 2, w, h };
+  }
+  const camKey = (view) => `${SEG_KEY || ''}|${view}`;
+  function phoneCam(view) {
+    const f = frameSize(), aspect = f.w / f.h;
+    const c = state.cam;
+    if (c && c.key === camKey(view) && Math.abs(c.box.w / c.box.h - aspect) < 0.02) return c.box;
+    const m = state.api.maps[mapOf(view)];
+    const b = view === 'world' ? { x: 0, y: 0, w: m.width, h: m.height } : cropOf(view);
+    return portrait(b, aspect, view === 'world' && !NAT ? m.width * WORLD_FOCUS : undefined);
+  }
+  // How far the camera may wander: the view's own area plus a margin.
+  function camLimits(view) {
+    const m = state.api.maps[mapOf(view)];
+    const b = view === 'world' ? { x: 0, y: 0, w: m.width, h: m.height } : cropOf(view);
+    return { x0: b.x - b.w * 0.1, x1: b.x + b.w * 1.1, y0: b.y - b.h * 0.25, y1: b.y + b.h * 1.25, wMin: b.w * 0.12, wMax: b.w * 1.3 };
+  }
+  function phoneShell(d, parts, mapEl, world, topic) {
+    const title = world ? (NAT ? `What's moving in ${esc(SEG.label)}` : "What's moving around the world") : topic ? esc(topic.label) : `What's moving in ${d.node.id === 'middle-east' ? 'the ' : ''}${esc(d.node.label)}`;
+    const geoHome = world && !NAT;
+    const side = sideOf(state.view) ? `${geoHome ? '' : detail(d)}${feed(d)}` : '';
+    const summary = geoHome ? '' : summaryPanel(d);
+    const more = geoHome ? regionList() : background();
+    const card = cartouche();
+    const brand = card ? parts.brand.replace('in the loop</a>', '<span class="vh">in the loop</span></a>') : parts.brand;
+    const picked = d.areas.some((x) => x.id === state.area);
+    const body = picked ? side + breakingStrip(d) + summary + more : breakingStrip(d) + summary + side + more;
+    const hint = geoHome ? 'Tap a region to see what it is, tap again to zoom in. Drag the map to look around.' : topic ? 'Tap a story to preview it.' : 'Tap a bubble to see what it is, tap again to zoom in.';
+    return `<div class="pshell">
+      <header class="pbar">
+        <div class="prow">${brand}${card}</div>
+        <div class="controls">${parts.controls}</div>
+      </header>
+      ${mapEl(mapSvg(d))}
+      ${tourCaption()}
+      <section class="sheet is-${state.sheet || 'peek'}" aria-label="What's happening">
+        <div class="grab" role="button" tabindex="0" aria-label="Show more"><span></span></div>
+        <div class="sheetbody">
+          <div class="ptop"><h1>${title}</h1><p class="phint">${hint}</p></div>
+          ${body}
+          ${parts.legend}
+          <p>${parts.brief}</p>
+          ${parts.status}
+          ${parts.banner}${parts.errs}
+        </div>
+      </section>
+    </div>`;
+  }
+  // After each phone render: sheet sizes and dragging, map dragging and pinching.
+  function wirePhone(app) {
+    const shell = app.querySelector('.pshell');
+    if (!shell) return;
+    // The shell never scrolls (focus() and scrollIntoView() elsewhere would move it).
+    const pin = () => { if (shell.scrollTop || shell.scrollLeft) shell.scrollTo(0, 0); if (app.scrollTop) app.scrollTop = 0; };
+    pin();
+    shell.addEventListener('scroll', pin);
+    shell.style.setProperty('--hdr', `${shell.querySelector('.pbar').offsetHeight}px`);
+    shell.style.setProperty('--peek', `${PEEK}px`);
+    const sheet = shell.querySelector('.sheet'), body = shell.querySelector('.sheetbody'), grab = shell.querySelector('.grab');
+    const key = `${camKey(state.view)}|${state.area || ''}`;
+    if (state.sheetKey !== key) { state.sheetKey = key; state.sheetTop = 0; }
+    body.scrollTop = state.sheetTop || 0;
+    body.addEventListener('scroll', () => { state.sheetTop = body.scrollTop; }, { passive: true });
+    const sizes = () => { const H = shell.clientHeight, hdr = shell.querySelector('.pbar').offsetHeight; return { peek: PEEK, half: Math.round(H * 0.56), full: H - hdr + 12 }; };
+    const setSheet = (name) => {
+      state.sheet = name;
+      sheet.classList.remove('is-peek', 'is-half', 'is-full');
+      sheet.classList.add(`is-${name}`);
+      sheet.style.height = '';
+      grab.setAttribute('aria-label', name === 'full' ? 'Show less' : 'Show more');
+    };
+    const order = ['peek', 'half', 'full'];
+    grab.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSheet(order[(order.indexOf(state.sheet || 'peek') + 1) % 3]); } });
+    let drag = null;
+    const down = (e) => { drag = { y: e.clientY, h: sheet.offsetHeight, moved: false, id: e.pointerId }; };
+    sheet.querySelector('.grab').addEventListener('pointerdown', down);
+    shell.querySelector('.ptop').addEventListener('pointerdown', down);
+    sheet.addEventListener('pointermove', (e) => {
+      if (!drag || e.pointerId !== drag.id) return;
+      const dy = e.clientY - drag.y;
+      if (!drag.moved && Math.abs(dy) < 6) return;
+      if (!drag.moved) { drag.moved = true; sheet.setPointerCapture(e.pointerId); sheet.classList.add('dragging'); }
+      const s = sizes();
+      sheet.style.height = `${Math.max(s.peek - 40, Math.min(s.full, drag.h - dy))}px`;
+    });
+    const up = (e) => {
+      if (!drag || e.pointerId !== drag.id) return;
+      const s = sizes();
+      sheet.classList.remove('dragging');
+      if (drag.moved) {
+        const h = sheet.offsetHeight, v = drag.h - h; // positive: moved down
+        const near = order.reduce((a, n) => (Math.abs(s[n] - h) < Math.abs(s[a] - h) ? n : a), 'peek');
+        setSheet(Math.abs(v) > 40 && near === (state.sheet || 'peek') ? order[Math.max(0, Math.min(2, order.indexOf(near) + (v > 0 ? -1 : 1)))] : near);
+        state.dragged = Date.now();
+      } else if (e.target.closest('.grab')) {
+        setSheet(state.sheet === 'peek' || !state.sheet ? 'half' : state.sheet === 'half' ? 'full' : 'peek');
+      }
+      drag = null;
+    };
+    sheet.addEventListener('pointerup', up);
+    sheet.addEventListener('pointercancel', up);
+
+    // The map: one finger drags the camera, two fingers zoom it.
+    const svg = shell.querySelector('.map > svg');
+    if (!svg || state.tour) return;
+    const lim = camLimits(state.view);
+    const pts = new Map();
+    let g0 = null;
+    const vb = () => { const v = svg.viewBox.baseVal; return { x: v.x, y: v.y, w: v.width, h: v.height }; };
+    const put = (b) => {
+      const w = Math.min(lim.wMax, Math.max(lim.wMin, b.w)), h = (w * b.h) / b.w;
+      const cx = Math.min(lim.x1, Math.max(lim.x0, b.x + b.w / 2)), cy = Math.min(lim.y1, Math.max(lim.y0, b.y + b.h / 2));
+      const box = { x: cx - w / 2, y: cy - h / 2, w, h };
+      svg.setAttribute('viewBox', `${box.x} ${box.y} ${box.w} ${box.h}`);
+      state.cam = { key: camKey(state.view), box };
+      return box;
+    };
+    const gesture = () => {
+      const p = [...pts.values()];
+      const mid = { x: p.reduce((a, q) => a + q.x, 0) / p.length, y: p.reduce((a, q) => a + q.y, 0) / p.length };
+      return { mid, dist: p.length > 1 ? Math.hypot(p[0].x - p[1].x, p[0].y - p[1].y) : 0, n: p.length, box: vb() };
+    };
+    svg.addEventListener('pointerdown', (e) => {
+      pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      g0 = { ...gesture(), moved: g0?.moved && pts.size > 1 };
+    });
+    svg.addEventListener('pointermove', (e) => {
+      if (!pts.has(e.pointerId) || !g0) return;
+      pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      const g = gesture();
+      if (g.n !== g0.n) { g0 = { ...g, moved: g0.moved }; return; }
+      if (!g0.moved && Math.hypot(g.mid.x - g0.mid.x, g.mid.y - g0.mid.y) < 8 && Math.abs(g.dist - g0.dist) < 8) return;
+      if (!g0.moved) { g0.moved = true; try { svg.setPointerCapture(e.pointerId); } catch {} }
+      const r = svg.getBoundingClientRect(), f = g0.box.w / r.width;
+      const zoom = g.n > 1 && g0.dist ? g0.dist / g.dist : 1;
+      const w = g0.box.w * zoom, h = g0.box.h * zoom;
+      // keep the point under the fingers under the fingers
+      const ux = g0.box.x + (g0.mid.x - r.left) * f, uy = g0.box.y + (g0.mid.y - r.top) * f;
+      const fx = (g.mid.x - r.left) / r.width, fy = (g.mid.y - r.top) / r.height;
+      put({ x: ux - fx * w, y: uy - fy * h, w, h });
+    });
+    const lift = (e) => {
+      if (!pts.has(e.pointerId)) return;
+      pts.delete(e.pointerId);
+      if (g0?.moved) {
+        state.dragged = Date.now();
+        const zoomed = Math.abs(vb().w - (g0.box.w)) > 1;
+        if (!pts.size && zoomed) setTimeout(render, 0); // re-size labels and lines for the new zoom
+      }
+      g0 = pts.size ? { ...gesture(), moved: g0?.moved } : null;
+    };
+    svg.addEventListener('pointerup', lift);
+    svg.addEventListener('pointercancel', lift);
+  }
+  // A drag of the map or the sheet is not a tap on what lies under the finger.
+  document.addEventListener('click', (e) => { if (state.dragged && Date.now() - state.dragged < 350) { e.preventDefault(); e.stopImmediatePropagation(); } }, true);
+
   let feedObserver = null;
   function fitFeed() {
     const col = document.querySelector('.mapcol'), list = document.getElementById('feedlist'), aside = document.querySelector('aside');
@@ -1309,28 +1533,14 @@
     const here = region?.id || (topic ? topic.id : 'world');
     const focused = document.activeElement?.dataset?.area;
     const feedTop = document.getElementById('feedlist')?.scrollTop || 0;
-    app.innerHTML = `
-      ${state.demo ? '<div class="banner" role="status">Demo mode: made-up sample posts from fictional accounts, run through the real pipeline.</div>' : ''}
-      <div class="wrap">
-        <header class="top">
-          <a class="brand" href="index.html${state.demo ? '?demo=1' : ''}" title="Go to the home page"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="10" fill="none" stroke="var(--track)" stroke-width="4"/><path d="M14 4a10 10 0 0 1 9.5 13" fill="none" stroke="var(--loop)" stroke-width="4" stroke-linecap="round"/></svg>in the loop</a>
-          <nav class="crumbs" aria-label="Topic path"><span>Politics</span><span aria-hidden="true">/</span><span>${NAT ? esc(SEG.label) : 'Geopolitics'}</span>${crumbs.map(([id, l], i) => `<span aria-hidden="true">/</span>${i === crumbs.length - 1 ? `<span class="here">${esc(l)}</span>` : `<button data-view="${esc(id)}">${esc(l)}</button>`}`).join('')}</nav>
-          <a class="brieflink" href="briefing.html?node=${encodeURIComponent(world ? SEG_NODE : d.node.id)}&since=24h${state.demo ? '&demo=1' : ''}" title="The topic briefing is still being worked on">${world ? (NAT ? esc(SEG.label) : 'Geopolitics') : esc(d.node.label)} briefing <span class="beta">In progress</span></a>
-          <div class="status ${state.conn === 'open' && !state.demo ? 'on' : ''}" role="status"><span class="pulse-dot" aria-hidden="true"></span><span>${statusText(d)}</span></div>
-        </header>
-        <div class="bar">
-          <div><h1>${world ? (NAT ? `What's moving in ${esc(SEG.label)}` : "What's moving around the world") : topic ? esc(topic.label) : `What's moving in ${d.node.id === 'middle-east' ? 'the ' : ''}${esc(d.node.label)}`}</h1><p class="sub">${NAT ? (world ? esc(SEG.homeSub) : `${sub} Colour is where the main stories stand; a moving line joins two that share a story. ${how}`) : world ? `One bubble per tracked region: ${esc(regions().map((r) => r.label).join(', '))}. Click a bubble to zoom in. More regions come with more voices and keywords.` : `${sub} Bubble size is posts and articles; colour is where the main stories stand. ${how}`}</p></div>
-          <div class="controls">
-            <nav class="seg segswitch" aria-label="Segment"><a href="index.html${state.demo ? '?demo=1' : ''}" data-goseg=""${NAT ? '' : ' aria-current="page"'}>Geopolitics</a>${Object.entries(SEGS).map(([k, g]) => `<a href="index.html?segment=${k}${state.demo ? '&demo=1' : ''}" data-goseg="${k}"${SEG_KEY === k ? ' aria-current="page"' : ''}>${esc(g.label)}</a>`).join('')}</nav>
-            <div class="seg" role="group" aria-label="Map">${[['world', HOME_LABEL], ...jumps().map((r) => [r.id, r.label])].map(([k, l]) => `<button data-view="${k}" aria-pressed="${k === here}">${esc(l)}</button>`).join('')}</div>
-            <div class="seg" role="group" aria-label="Time window">${Object.keys(HOURS).map((w) => `<button data-window="${w}" aria-pressed="${w === state.window}">Last ${w}</button>`).join('')}</div>
-          </div>
-        </div>
-        <div class="layout">
-          <div class="mapcol">
-            ${breakingStrip(d)}
-            <div class="map${world && !NAT ? '' : ' zoomed'}${state.api.maps[mapOf(state.view)].city ? ' city' : ''}${state.arrive && !reduceMotion() ? ` arrive${state.arrive === 'fresh' ? ' fresh' : ''}` : ''}" tabindex="-1">${mapSvg(d)}${cartouche()}</div>${tourCaption()}
-            <div class="legend">
+    document.documentElement.classList.toggle('phone', PHONE());
+    const parts = {
+      banner: `${state.demo ? '<div class="banner" role="status">Demo mode: made-up sample posts from fictional accounts, run through the real pipeline.</div>' : ''}`,
+      brand: `<a class="brand" href="index.html${state.demo ? '?demo=1' : ''}" title="Go to the home page"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="10" fill="none" stroke="var(--track)" stroke-width="4"/><path d="M14 4a10 10 0 0 1 9.5 13" fill="none" stroke="var(--loop)" stroke-width="4" stroke-linecap="round"/></svg>in the loop</a>`,
+      brief: `<a class="brieflink" href="briefing.html?node=${encodeURIComponent(world ? SEG_NODE : d.node.id)}&since=24h${state.demo ? '&demo=1' : ''}" title="The topic briefing is still being worked on">${world ? (NAT ? esc(SEG.label) : 'Geopolitics') : esc(d.node.label)} briefing <span class="beta">In progress</span></a>`,
+      status: `<div class="status ${state.conn === 'open' && !state.demo ? 'on' : ''}" role="status"><span class="pulse-dot" aria-hidden="true"></span><span>${statusText(d)}</span></div>`,
+      controls: `<nav class="seg segswitch" aria-label="Segment"><a href="index.html${state.demo ? '?demo=1' : ''}" data-goseg=""${NAT ? '' : ' aria-current="page"'}>Geopolitics</a>${Object.entries(SEGS).map(([k, g]) => `<a href="index.html?segment=${k}${state.demo ? '&demo=1' : ''}" data-goseg="${k}"${SEG_KEY === k ? ' aria-current="page"' : ''}>${esc(g.label)}</a>`).join('')}</nav><div class="seg" role="group" aria-label="Map">${[['world', HOME_LABEL], ...jumps().map((r) => [r.id, r.label])].map(([k, l]) => `<button data-view="${k}" aria-pressed="${k === here}">${esc(l)}</button>`).join('')}</div><div class="seg" role="group" aria-label="Time window">${Object.keys(HOURS).map((w) => `<button data-window="${w}" aria-pressed="${w === state.window}">Last ${w}</button>`).join('')}</div>`,
+      legend: `<div class="legend">
               <span><i class="sw c-corroborated"></i>Mostly confirmed</span>
               <span><i class="sw c-reported"></i>Mostly reported once</span>
               <span><i class="sw c-disputed"></i>Sources disagree</span>
@@ -1338,13 +1548,37 @@
               <span>Pulsing ring: at least 1.5× its usual pace</span>
               <span><i class="sw" style="background:none;border:2px solid var(--breaking)"></i>Breaking: 3+ outlets within 90 min</span>
               ${NAT ? '<span><i class="sw" style="background:none;border-radius:0;height:0;border-top:3px dashed var(--loop)"></i>Shared story</span><span><b style="color:var(--loop)">●●</b>● Where a fight stands</span>' : ''}
-            </div>
+            </div>`,
+      errs: `${d.errors?.length ? `<details class="footnote"><summary>${plural(d.errors.length, 'warning')}</summary><ul>${d.errors.map((e) => `<li>${esc(e)}</li>`).join('')}</ul></details>` : ''}`,
+    };
+    const mapEl = (inner) => `<div class="map${world && !NAT ? '' : ' zoomed'}${state.api.maps[mapOf(state.view)].city ? ' city' : ''}${state.arrive && !reduceMotion() ? ` arrive${state.arrive === 'fresh' ? ' fresh' : ''}` : ''}" tabindex="-1">${inner}</div>`;
+    app.innerHTML = PHONE() ? phoneShell(d, parts, mapEl, world, topic) : `
+      ${parts.banner}
+      <div class="wrap">
+        <header class="top">
+          ${parts.brand}
+          <nav class="crumbs" aria-label="Topic path"><span>Politics</span><span aria-hidden="true">/</span><span>${NAT ? esc(SEG.label) : 'Geopolitics'}</span>${crumbs.map(([id, l], i) => `<span aria-hidden="true">/</span>${i === crumbs.length - 1 ? `<span class="here">${esc(l)}</span>` : `<button data-view="${esc(id)}">${esc(l)}</button>`}`).join('')}</nav>
+          ${parts.brief}
+          ${parts.status}
+        </header>
+        <div class="bar">
+          <div><h1>${world ? (NAT ? `What's moving in ${esc(SEG.label)}` : "What's moving around the world") : topic ? esc(topic.label) : `What's moving in ${d.node.id === 'middle-east' ? 'the ' : ''}${esc(d.node.label)}`}</h1><p class="sub">${NAT ? (world ? esc(SEG.homeSub) : `${sub} Colour is where the main stories stand; a moving line joins two that share a story. ${how}`) : world ? `One bubble per tracked region: ${esc(regions().map((r) => r.label).join(', '))}. Click a bubble to zoom in. More regions come with more voices and keywords.` : `${sub} Bubble size is posts and articles; colour is where the main stories stand. ${how}`}</p></div>
+          <div class="controls">
+            ${parts.controls}
+          </div>
+        </div>
+        <div class="layout">
+          <div class="mapcol">
+            ${breakingStrip(d)}
+            ${mapEl(mapSvg(d) + cartouche())}${tourCaption()}
+            ${parts.legend}
             ${world && !NAT ? regionList() : summaryPanel(d) + background()}
-            ${d.errors?.length ? `<details class="footnote"><summary>${plural(d.errors.length, 'warning')}</summary><ul>${d.errors.map((e) => `<li>${esc(e)}</li>`).join('')}</ul></details>` : ''}
+            ${parts.errs}
           </div>
           ${sideOf(state.view) ? `<aside>${world && !NAT ? '' : detail(d)}${feed(d)}</aside>` : ''}
         </div>
       </div>`;
+    if (PHONE()) wirePhone(app);
 
     state.arrive = false;
     crossfade(app.querySelector('.map'));
@@ -1369,6 +1603,7 @@
         if (state.view === 'world' || a?.topic) { if (e?.type === 'click' && armFirst(g.dataset.area)) return; go(g.dataset.area); return; }
         state.area = state.area === g.dataset.area ? null : g.dataset.area;
         if (state.area) window.itlTrack?.('story_preview', { story: state.area, from_view: state.view });
+        if (state.area && PHONE() && state.sheet !== 'full') { state.sheet = 'half'; state.sheetTop = 0; }
         refresh(); app.querySelector(`.bubble[data-area="${CSS.escape(g.dataset.area)}"]`)?.focus();
       };
       g.addEventListener('click', pick);
@@ -1464,9 +1699,15 @@
   // Where a view sits on the world map, in world-map pixels: the camera's
   // start or end point when it flies from one segment to another.
   function worldBox(key, view) {
+    const b = worldBox0(key, view);
+    if (!PHONE()) return b;
+    if (key === SEG_KEY && view !== 'world') return b; // already the phone camera, via boxOf
+    return portrait(b, undefined, key ? undefined : b.x + b.w * WORLD_FOCUS);
+  }
+  function worldBox0(key, view) {
     const maps = state.api.maps, W = maps.world;
     const home = SEGS[key]?.home;
-    if (key === SEG_KEY && view !== 'world') return boxOn(W, maps[mapOf(view)], cropOf(view));
+    if (key === SEG_KEY && view !== 'world') return PHONE() ? boxOn(W, maps[mapOf(view)], phoneCam(view)) : boxOn(W, maps[mapOf(view)], cropOf(view));
     if (home) return boxOn(W, maps[home]);
     if (key === SEG_KEY) return { x: 0, y: 0, w: W.width, h: W.height };
     return maps[view] && view !== 'world' ? boxOn(W, maps[view]) : { x: 0, y: 0, w: W.width, h: W.height };
