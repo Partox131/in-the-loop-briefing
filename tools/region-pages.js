@@ -45,6 +45,8 @@ function shell({ path, title, description, body, jsonLd, analytics = '' }) {
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(title)} · In the Loop</title>
 <meta name="description" content="${esc(description)}">
@@ -88,6 +90,7 @@ ${analytics}<link rel="preconnect" href="https://fonts.googleapis.com">
   header.top { display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center; justify-content: space-between; padding: 18px 0; }
   .brand { display: flex; align-items: center; gap: 9px; font: 800 22px/1 var(--display); color: inherit; text-decoration: none; }
   .brand:hover { color: var(--loop); }
+  .brand .dial { color: var(--ink); flex: none; }
   nav.crumbs { color: var(--muted); font-size: 15px; }
   nav.crumbs a { color: inherit; }
   h1 { font: 800 clamp(30px, 6vw, 44px)/1.1 var(--display); letter-spacing: -0.02em; margin: 16px 0 8px; }
@@ -121,7 +124,7 @@ ${analytics}<link rel="preconnect" href="https://fonts.googleapis.com">
 <body>
 <div class="wrap">
 <header class="top">
-  <a class="brand" href="/" title="Go to the home page"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="10" fill="none" stroke="var(--track)" stroke-width="4"/><path d="M14 4a10 10 0 0 1 9.5 13" fill="none" stroke="var(--loop)" stroke-width="4" stroke-linecap="round"/></svg>in the loop</a>
+  <a class="brand" href="/" title="Go to the home page"><svg class="dial" width="28" height="28" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="20" fill="none" stroke="currentColor" stroke-opacity=".26" stroke-width="9"/><path d="M32 12A20 20 0 1 1 12 32" fill="none" stroke="var(--loop)" stroke-width="9" stroke-linecap="round"/><circle cx="32" cy="32" r="7" fill="currentColor"/></svg>in the loop</a>
   <nav class="crumbs" aria-label="Sections">${PAGES.map((p) => `<a href="/${p.slug}/">${esc(shortLabel(p))}</a>`).join(' · ')}</nav>
 </header>
 <main>
