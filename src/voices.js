@@ -5,7 +5,8 @@
 // A voice file lists accounts by handle (easier to curate); at runtime we
 // resolve handles to DIDs, which is what we key on (handles can change).
 
-import { stateCountry } from './flags.js?v=4841c59de7';
+import { stateCountry } from './flags.js?v=6496a5eb2a';
+import { credibilityTag, independenceOf, partiesOf } from './credibility.js?v=6496a5eb2a';
 
 /** Base weight per tier. Officials and OSINT are useful but never promoted alone. */
 export const TIER_WEIGHT = { 1: 1.0, 2: 0.9, 3: 0.7, 4: 0.6, 5: 0.5 };
@@ -23,6 +24,8 @@ export const LEANS = ['left', 'centre-left', 'centre', 'centre-right', 'right'];
  * @property {string} region        where the source is based / whose perspective it carries
  * @property {boolean} stateAffiliated
  * @property {string|undefined} country  state-affiliated only: the state's two-letter country code (its flag is shown)
+ * @property {string} independence  independent, public, state-funded, state-controlled, official or partisan (src/credibility.js)
+ * @property {string[]} partyTo     conflicts in which this source speaks for a side (src/credibility.js)
  * @property {string[]} topics      topic node ids this voice covers
  * @property {number} weight
  */
@@ -47,6 +50,11 @@ export function makeVoice(v) {
     // US politics: where a source sits, left to right (our call, see voices.example.json).
     ...(LEANS.includes(v.lean) ? { lean: v.lean } : {}),
     country: stateCountry(v),
+    // Credibility profile (src/credibility.js): who controls the source, and
+    // the conflicts in which it speaks for a side.
+    independence: independenceOf({ affiliation: v.affiliation || v.name || handle, tier }),
+    partyTo: partiesOf({ affiliation: v.affiliation || v.name || handle, tier, country: stateCountry(v) }),
+    cred: credibilityTag({ affiliation: v.affiliation || v.name || handle, tier, country: stateCountry(v) }),
     topics: v.topics || [],
     domainVerified,
     weight: TIER_WEIGHT[tier] * (domainVerified ? 1 : 0.9),

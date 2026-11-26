@@ -8,7 +8,8 @@
 // each other. Embeddings and LLM claim extraction would plug in at
 // `mergeSimilar`/`claimsOf` later.
 
-import { mergeSimilar } from './similar.js?v=4841c59de7';
+import { mergeSimilar } from './similar.js?v=6496a5eb2a';
+import { roleOf } from './credibility.js?v=6496a5eb2a';
 
 const TRACKING_PARAMS = /^(utm_|fbclid|gclid|ref|smid|cmpid|at_|taid|ito|mc_)/i;
 
@@ -64,18 +65,40 @@ export function claimsOf(text) {
 }
 
 /**
- * Status of a storyline from who is reporting it (design doc table 3.2):
- *   reported      one outlet/reporter, or claims only
- *   corroborated  two or more independent outlets/reporters (different affiliations)
- *   official      a named official account is a source
+ * Status of a storyline from who is reporting it (source credibility plan,
+ * docs/design/source-credibility.md, Amir 26 Nov 2026):
+ *   claimed       only a side in the story's conflict says it: its own media or
+ *                 officials, or outlets writing "Iran says…"
+ *   reported      one independent source reporting it in its own voice
+ *   corroborated  ("Confirmed") two independent sources, or a side's claim plus
+ *                 one independent source
+ *   official      a named official account with no side in it is the source
  *   disputed      sources disagree (set after disagreement detection)
+ * State media from one country count as one source; outside a conflict every
+ * source reports in its own voice, as before.
  */
-function statusOf(voicesInvolved) {
-  const press = new Set(voicesInvolved.filter((v) => v.tier <= 2).map((v) => v.affiliation));
-  const official = voicesInvolved.some((v) => v.tier === 4);
-  if (press.size >= 2) return 'corroborated';
-  if (official) return 'official';
-  return 'reported';
+export function statusOf(posts, conflict) {
+  const witnesses = new Set();
+  const claims = new Set();
+  for (const p of posts) {
+    const r = roleOf(p, conflict);
+    if (r.claim) claims.add(r.claim);
+    else if (r.witness && p.voice?.tier !== 4) witnesses.add(r.witness);
+  }
+  const official = posts.some((p) => p.voice?.tier === 4 && !roleOf(p, conflict).claim);
+  let status = 'reported';
+  if (witnesses.size >= 2 || (witnesses.size >= 1 && claims.size >= 1)) status = 'corroborated';
+  else if (witnesses.size === 1) status = 'reported';
+  else if (claims.size) status = 'claimed';
+  else if (official) status = 'official';
+  return { status, claimedBy: [...claims], witnesses: witnesses.size };
+}
+
+/** The conflict most of a storyline's posts are about (posts carry `conflict`). */
+function conflictOf(posts) {
+  const n = new Map();
+  for (const p of posts) if (p.conflict) n.set(p.conflict, (n.get(p.conflict) || 0) + 1);
+  return [...n].sort((a, b) => b[1] - a[1])[0]?.[0];
 }
 
 /**
@@ -123,11 +146,14 @@ export function buildStorylines(posts, { textMatch = true } = {}) {
       sources: [...new Set(voicesInvolved.map((v) => v.affiliation))],
       // affiliation -> country code, for state-affiliated sources (their flag is shown)
       flags: Object.fromEntries(voicesInvolved.filter((v) => v.country).map((v) => [v.affiliation, v.country])),
+      // affiliation -> credibility tag ({ short, note }) for sources that are not independent
+      creds: Object.fromEntries(voicesInvolved.filter((v) => v.cred).map((v) => [v.affiliation, v.cred])),
       regions: [...new Set(voicesInvolved.map((v) => v.region))],
       firstSeen: new Date(Math.min(...times)).toISOString(),
       lastSeen: new Date(Math.max(...times)).toISOString(),
       score: group.reduce((s, p) => s + (p.score ?? 0), 0),
-      status: statusOf(voicesInvolved),
+      ...statusOf(group, conflictOf(group)),
+      conflict: conflictOf(group),
       disagreements: findDisagreements(group),
       // true when similar wording (not a shared link or quote) joined its posts
       matchedByText: matched,

@@ -6,11 +6,12 @@
 // up through Jetstream: a WebSocket of new posts filtered to the voices'
 // accounts, which works straight from the browser. Read-only, no login.
 
-import { buildBrief } from './brief.js?v=4841c59de7';
-import { KEEP_PER_VOICE } from './snapshot.js?v=4841c59de7';
-import { rankPosts } from './rank.js?v=4841c59de7';
-import { buildStorylines } from './storylines.js?v=4841c59de7';
-import { byDid } from './voices.js?v=4841c59de7';
+import { buildBrief } from './brief.js?v=6496a5eb2a';
+import { KEEP_PER_VOICE } from './snapshot.js?v=6496a5eb2a';
+import { rankPosts } from './rank.js?v=6496a5eb2a';
+import { buildStorylines } from './storylines.js?v=6496a5eb2a';
+import { byDid } from './voices.js?v=6496a5eb2a';
+import { conflictOfNode } from './credibility.js?v=6496a5eb2a';
 
 const HOUR = 3_600_000;
 
@@ -133,6 +134,9 @@ function postLine(p, h) {
     tier: p.voice?.tier,
     stateAffiliated: Boolean(p.voice?.stateAffiliated),
     country: p.voice?.country,
+    independence: p.voice?.independence || 'independent',
+    partyTo: p.voice?.partyTo || [],
+    cred: p.voice?.cred,
     lean: p.voice?.lean || null,
     topicId: p.topicId,
     topicLabel: h.get(p.topicId).label,
@@ -212,6 +216,8 @@ export function liveView({ posts, hierarchy: h, node, now, windowHours = 1, look
         articles: s.posts.filter((p) => p.source === 'news').length,
         sources: s.sources,
         flags: s.flags,
+        creds: s.creds,
+        claimedBy: s.claimedBy,
         posts: s.posts.length,
         firstSeen: s.firstSeen,
       })),
@@ -339,6 +345,8 @@ export function regionSummary({ posts, hierarchy: h, node, now, recentHours = 6,
       status: s.status,
       sources: s.sources,
       flags: s.flags,
+      creds: s.creds,
+      claimedBy: s.claimedBy,
       posts: s.posts.length,
       articles: s.posts.filter((p) => p.source === 'news').length,
       place: placeLabel(s.posts),
@@ -364,7 +372,9 @@ export function outletKey(p) {
 
 /** Is this storyline breaking now? Returns how many outlets have it, or 0. */
 export function breakingCount(s, now, rules = BREAKING) {
-  if (s.status === 'disputed') return 0;
+  // Disputed updates never break, and neither do a side's own claims: breaking
+  // needs at least one independent source (source credibility plan, 26 Nov 2026).
+  if (s.status === 'disputed' || s.status === 'claimed') return 0;
   const first = Date.parse(s.firstSeen);
   if (!(now.getTime() - first < rules.maxAgeHours * HOUR)) return 0;
   const early = new Set(s.posts.filter((p) => Date.parse(p.createdAt) - first <= rules.withinMinutes * 60_000).map(outletKey).filter(Boolean));
@@ -511,7 +521,7 @@ export function makeLive({ client, hierarchy: h, voices, node = 'geopolitics', l
       const [ranked] = rankPosts([{ ...post, handle: post.handle || voice.handle, displayName: post.displayName || voice.name }], {
         voices: voiceIndex,
       });
-      posts.push({ ...ranked, topicId: hits[0].id, topicIds: hits.map((m) => m.id), matchedTerms: hits.flatMap((m) => m.terms) });
+      posts.push({ ...ranked, topicId: hits[0].id, conflict: conflictOfNode(h, hits[0].id), topicIds: hits.map((m) => m.id), matchedTerms: hits.flatMap((m) => m.terms) });
       return true;
     },
     /** Regions with a map, for the view switcher. */
