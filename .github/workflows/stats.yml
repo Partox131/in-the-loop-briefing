@@ -2,7 +2,8 @@ name: Resource stats
 
 # Once a day, counts which sources feed the site (scripts/resource-stats.js in
 # the private in-the-loop repo, tools/resource-stats.js here) and pushes the
-# CSV files to the "stats" branch, replacing the previous ones. Claude's daily
+# CSV files and social.json (the day's top stories, for the social post drafts)
+# to the "stats" branch, replacing the previous ones. Claude's daily
 # routine copies them into the "Resource breakdown" dashboard. Free: public
 # repos get Actions minutes at no cost. Built from deploy/stats.yml in the
 # private repo; edit it there, not here.
@@ -26,6 +27,11 @@ jobs:
           node-version: 22
       - name: Count items per source
         run: node tools/resource-stats.js --voices voices.example.json --hierarchy topics.hierarchy.example.json --out "$RUNNER_TEMP/stats"
+      # The day's top stories per region and segment, read by Claude's daily routine
+      # that drafts the social posts (social.json). A failure here never blocks the stats.
+      - name: Top stories for the social post drafts
+        continue-on-error: true
+        run: node tools/social-brief.js --voices voices.example.json --hierarchy topics.hierarchy.example.json --out "$RUNNER_TEMP/stats"
       - name: Push to the stats branch
         env:
           GH_TOKEN: ${{ github.token }}
