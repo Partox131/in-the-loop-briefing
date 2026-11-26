@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="What credible voices and outlets are saying, story by story: what's confirmed, what's disputed, and what changed since you last checked.">
 <link rel="canonical" href="https://inthelooplive.com/briefing.html">
@@ -53,6 +55,7 @@
   header.top { display: flex; flex-wrap: wrap; gap: 12px 32px; align-items: center; justify-content: space-between; padding: 18px 56px; max-width: 1360px; margin: 0 auto; }
   .brand { display: flex; align-items: center; gap: 9px; font: 800 22px/1 var(--display); letter-spacing: -0.01em; color: inherit; text-decoration: none; border-radius: 6px; }
   .brand:hover { color: var(--loop); }
+  .brand .dial { color: var(--ink); flex: none; }
   nav.crumbs { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; color: var(--muted); font-size: 15px; }
   nav.crumbs a { color: var(--muted); text-decoration: none; }
   nav.crumbs a:hover { color: var(--ink); text-decoration: underline; }
@@ -460,7 +463,7 @@
       ${d.demo ? '<div class="banner" role="status">Demo mode: made-up sample posts from fictional accounts, run through the real pipeline. Live Bluesky data runs without demo mode.</div>' : ''}
       <header class="top">
         <div style="display:flex;flex-wrap:wrap;gap:12px 32px;align-items:center">
-          <a class="brand" href="index.html${state.demo ? '?demo=1' : ''}" title="Go to the home page"><svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="10" fill="none" stroke="var(--track)" stroke-width="4"/><path d="M14 4a10 10 0 0 1 9.5 13" fill="none" stroke="var(--loop)" stroke-width="4" stroke-linecap="round"/></svg>in the loop</a>
+          <a class="brand" href="index.html${state.demo ? '?demo=1' : ''}" title="Go to the home page"><svg class="dial" width="28" height="28" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="20" fill="none" stroke="currentColor" stroke-opacity=".26" stroke-width="9"/><path d="M32 12A20 20 0 1 1 12 32" fill="none" stroke="var(--loop)" stroke-width="9" stroke-linecap="round"/><circle cx="32" cy="32" r="7" fill="currentColor"/></svg>in the loop</a>
           <nav class="crumbs" aria-label="Topic path">${crumbs}</nav>
           ${window.itlStatic ? `<a class="backlink" href="${mapHref(d)}">← ${d.map ? 'Back to the map' : 'Live map'}</a>` : ''}
         </div>
