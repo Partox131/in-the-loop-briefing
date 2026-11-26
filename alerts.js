@@ -7,6 +7,9 @@
 // ?alerts=1 (remembered in this browser; ?alerts=0 hides it again), or when
 // the site is opened from the home screen, while Amir tries it. It never shows in demo mode or clip recordings.
 //
+// 26 Nov 2026: no daily cap or hour gap for now (server RULES.limits), so the
+// "At most N a day" picker is hidden; `max` is still sent for when it returns.
+//
 // Rules: permission is asked only when the reader presses "Turn on alerts".
 // On iPhone and iPad, web pages can only get alerts once added to the home
 // screen, so there the panel explains how instead.
@@ -148,8 +151,8 @@ itl-alerts[hidden]{display:none}
 <p>We'll tell you when at least 3 independent outlets report something new within 90 minutes. A side's own claims never trigger an alert.</p>
 <form>
 <fieldset><legend>Alert me about</legend>${TOPICS.map(box).join('')}</fieldset>
-<fieldset><legend>How many</legend>
-<label>At most <select name="max">${[1, 3, 5].map((n) => `<option${n === s.max ? ' selected' : ''}>${n}</option>`).join('')}</select> a day, at least an hour apart</label>
+<fieldset><legend>When</legend>
+<input type="hidden" name="max" value="${esc(s.max)}">
 <label><input type="checkbox" name="quiet"${s.quiet ? ' checked' : ''}><span>Quiet at night<small>Nothing between 11 PM and 7 AM; one morning alert for what broke overnight</small></span></label>
 </fieldset>
 <div class="row"><button type="submit"${ui.busy ? ' disabled' : ''}>${s.on ? 'Save' : 'Turn on alerts'}</button>${s.on ? `<button type="button" class="plain" data-off${ui.busy ? ' disabled' : ''}>Turn off alerts</button>` : ''}<button type="button" class="plain" data-close>Close</button></div>
