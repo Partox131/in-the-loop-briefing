@@ -10,17 +10,17 @@
 // as the fallback (src/snapshot.js). Add ?direct=1 to the URL to skip the
 // server, or ?snapshot=<url> to try another one.
 
-import { BskyClient } from './bsky.js?v=89cbc5f30a';
-import { buildBrief } from './brief.js?v=89cbc5f30a';
-import { DEMO_VOICES, demoFetch } from './demo.js?v=89cbc5f30a';
-import { project } from './geo.js?v=89cbc5f30a';
-import { makeHierarchy } from './hierarchy.js?v=89cbc5f30a';
-import { subscribePosts } from './jetstream.js?v=89cbc5f30a';
-import { makeLive } from './live.js?v=89cbc5f30a';
-import { newsPosts } from './news.js?v=89cbc5f30a';
-import { SnapshotClient } from './snapshot.js?v=89cbc5f30a';
-import { makeVoice } from './voices.js?v=89cbc5f30a';
-import { briefView } from './view.js?v=89cbc5f30a';
+import { BskyClient } from './bsky.js?v=6096a79e24';
+import { buildBrief } from './brief.js?v=6096a79e24';
+import { DEMO_VOICES, demoFetch } from './demo.js?v=6096a79e24';
+import { project } from './geo.js?v=6096a79e24';
+import { makeHierarchy } from './hierarchy.js?v=6096a79e24';
+import { subscribePosts } from './jetstream.js?v=6096a79e24';
+import { makeLive } from './live.js?v=6096a79e24';
+import { newsPosts } from './news.js?v=6096a79e24';
+import { SnapshotClient } from './snapshot.js?v=6096a79e24';
+import { makeVoice } from './voices.js?v=6096a79e24';
+import { briefView } from './view.js?v=6096a79e24';
 
 const SINCE_HOURS = { '6h': 6, '12h': 12, '24h': 24, '48h': 48, '7d': 168 };
 const CACHE_MS = 120_000;
@@ -31,6 +31,46 @@ export function makeClient({ search = globalThis.location?.search || '', url = S
   const q = new URLSearchParams(search);
   if (q.has('direct')) return direct;
   return new SnapshotClient({ url: q.get('snapshot') || url, fallback: direct });
+}
+
+export const STORIES_URL = SNAPSHOT_URL.replace(/snapshot\.json$/, 'stories.json');
+let storiesCache = null;
+/**
+ * The server's stories.json (storylines kept over days with their timeline,
+ * and each source's track record, scripts/stories.js), or null. Fetched at
+ * most every 2 minutes; the page works the same without it.
+ */
+export async function loadStories({ search = globalThis.location?.search || '', fetchImpl = globalThis.fetch } = {}) {
+  const q = new URLSearchParams(search);
+  if (q.has('direct') && !q.has('stories')) return null;
+  if (storiesCache && Date.now() - storiesCache.at < CACHE_MS) return storiesCache.value;
+  const url = q.get('stories') || (q.get('snapshot') ? q.get('snapshot').replace(/snapshot\.json(\?.*)?$/, 'stories.json') : STORIES_URL);
+  let value = null;
+  try {
+    const res = await fetchImpl(url, { cache: 'no-cache', signal: AbortSignal.timeout(6_000) });
+    if (res.ok) value = await res.json();
+  } catch {
+    value = null;
+  }
+  if (value?.version !== 1 || !Array.isArray(value.storylines)) value = storiesCache?.value || null;
+  storiesCache = { at: Date.now(), value };
+  return value;
+}
+
+/**
+ * Give each story on the page its stored history: the storyline that holds
+ * any of its posts. Adds `history` (id, first seen, timeline) to the story and
+ * `records` (track record by source) to the view.
+ */
+export function withHistory(view, doc) {
+  if (!doc) return view;
+  const byItem = new Map();
+  for (const st of doc.storylines) for (const uri of st.items || []) byItem.set(uri, st);
+  const stories = view.stories.map((s) => {
+    const st = (s.uris || []).map((u) => byItem.get(u)).find(Boolean);
+    return st ? { ...s, history: { id: st.id, firstSeen: st.firstSeen, lastSeen: st.lastSeen, status: st.status, events: st.events || [] } } : s;
+  });
+  return { ...view, stories, records: doc.records || {}, storiesAt: doc.generatedAt };
 }
 
 async function getJson(path) {
@@ -87,7 +127,9 @@ export async function init({ base = '.', defaultNode = 'iran-war', search } = {}
       since: new Date(now - hours * 3_600_000),
       search: false,
     });
-    const value = { ...briefView(brief, hierarchy, { now }), demo: useDemo, source: useDemo ? 'demo' : live.mode || 'direct' };
+    const view = { ...briefView(brief, hierarchy, { now }), demo: useDemo, source: useDemo ? 'demo' : live.mode || 'direct' };
+    // ?stories=<url> tries another stories.json (also in demo mode, for checking the page)
+    const value = useDemo && !new URLSearchParams(search ?? globalThis.location?.search ?? '').has('stories') ? view : withHistory(view, await loadStories({ search }));
     cache.set(key, { at: Date.now(), value });
     return value;
   };
