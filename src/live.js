@@ -6,12 +6,12 @@
 // up through Jetstream: a WebSocket of new posts filtered to the voices'
 // accounts, which works straight from the browser. Read-only, no login.
 
-import { buildBrief } from './brief.js?v=355b4e7eab';
-import { KEEP_PER_VOICE } from './snapshot.js?v=355b4e7eab';
-import { rankPosts } from './rank.js?v=355b4e7eab';
-import { buildStorylines } from './storylines.js?v=355b4e7eab';
-import { byDid } from './voices.js?v=355b4e7eab';
-import { conflictOfNode, roleOf } from './credibility.js?v=355b4e7eab';
+import { buildBrief } from './brief.js?v=9d5b4dd352';
+import { KEEP_PER_VOICE } from './snapshot.js?v=9d5b4dd352';
+import { rankPosts } from './rank.js?v=9d5b4dd352';
+import { buildStorylines } from './storylines.js?v=9d5b4dd352';
+import { byDid } from './voices.js?v=9d5b4dd352';
+import { conflictOfNode, roleOf } from './credibility.js?v=9d5b4dd352';
 
 const HOUR = 3_600_000;
 
@@ -192,6 +192,8 @@ export function liveView({ posts, hierarchy: h, node, now, windowHours = 1, look
       region: Boolean(n.map),
       // a small 3D model of the place (the White House…) instead of a plain bubble
       icon: n.icon,
+      // the country it stands on (geopolitics), raised on the map by volume
+      country: n.country,
       breaking: 0, // set by makeLive.view from alertNews
       hot: 0,
       stories: mapChildren(h, id).length,
@@ -591,6 +593,7 @@ export function worldView({ posts, hierarchy: h, node, now, windowHours = 1, loo
       region: true,
       label: h.get(id).label,
       place: h.get(id).place,
+      icon: h.get(id).icon, // the region's symbol on the world map (an atom for the Middle East)
       count,
       perHour: Math.round(perHour * 10) / 10,
       usualPerHour: Math.round(usual * 10) / 10,
@@ -702,6 +705,7 @@ export function makeLive({ client, hierarchy: h, voices, node = 'geopolitics', l
     trail: (id) => trail(h, id),
     /** The 3D model a node is drawn as (the White House…), or null. */
     iconOf: (id) => (h.nodes.has(id) ? h.get(id).icon : null),
+    countryOf: (id) => (h.nodes.has(id) ? h.get(id).country : null),
     /** Lon/lat of a node on the map, or null. */
     placeOf: (id) => (h.nodes.has(id) ? h.get(id).place : null),
     /**
