@@ -425,13 +425,16 @@
   /* On the world map: the way into US politics. */
   .portal { cursor: pointer; }
   /* Geopolitics regions: their countries lift off the world map under the pointer. */
-  .lift { pointer-events: none; opacity: 0; transition: opacity .25s; }
-  .lift.on { opacity: 1; }
+  .lift { pointer-events: none; }
   .lift .liftshadow { fill: #0A0B1C; opacity: .2; filter: blur(3px); }
   .lift .liftside path { fill: color-mix(in srgb, var(--lc) 70%, #1D2147); stroke: color-mix(in srgb, var(--lc) 70%, #1D2147); stroke-width: .6; }
-  .lift .lifttop { transform: translateY(4px); transition: transform .4s cubic-bezier(.3, 1.5, .5, 1); }
-  .lift.on .lifttop { transform: translateY(-1px); }
+  .lift .lifttop { transform: translateY(0); transition: transform .4s cubic-bezier(.3, 1.5, .5, 1); }
+  .lift.on .lifttop { transform: translateY(-3px); }
   .lift .liftface { fill: color-mix(in srgb, var(--lc) 22%, #FFFFFF); stroke: var(--lc); stroke-width: .9; stroke-linejoin: round; }
+  /* Region and topic maps: countries rise with how much is being said about them. */
+  .relief .rshadow { fill: #0A0B1C; opacity: .16; filter: blur(4px); }
+  .relief .rside path { fill: color-mix(in srgb, var(--loop) 62%, #1D2147); stroke: color-mix(in srgb, var(--loop) 62%, #1D2147); }
+  .relief .rface { fill: color-mix(in srgb, var(--loop) 24%, var(--bg)); stroke: var(--loop); stroke-width: 1.2; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
   .map:not(.zoomed) .bubble { transform-box: fill-box; transform-origin: center; }
   .map:not(.zoomed) .bubble .disc { transition: r .6s ease, transform .35s cubic-bezier(.3, 1.5, .5, 1), filter .35s; transform-box: fill-box; transform-origin: center; }
   .map:not(.zoomed) .bubble:hover .disc, .map:not(.zoomed) .bubble:focus-visible .disc { transform: translateY(-4px); filter: drop-shadow(0 5px 4px rgba(10, 11, 28, .3)); fill-opacity: .15; }
@@ -499,7 +502,7 @@
   <p>A live map of what credible outlets, reporters and analysts are saying about geopolitics, US politics and Canadian politics. Each story shows how many independent outlets carry it, whether it's confirmed or disputed, and what changed since you last looked. Sources include Bluesky, news outlets' feeds and official Telegram channels, refreshed every few minutes.</p>
   <nav aria-label="Regions and segments"><a href="/middle-east/">Middle East: the war with Iran, Gaza and Lebanon</a> · <a href="/eastern-europe/">Eastern Europe: the war in Ukraine and NATO's eastern flank</a> · <a href="/east-asia/">East Asia: China and Taiwan</a> · <a href="/us-politics/">US politics</a> · <a href="/canadian-politics/">Canadian politics</a> · <a href="briefing.html">Briefing</a> · <a href="/about/">About and how it works</a></nav>
 </div></div>
-<script>window.itlSearch = location.search; window.itlLive = (demo, node) => import('./src/static.js?v=355b4e7eab').then((m) => m.initLive({ demo, node, search: window.itlSearch }));</script>
+<script>window.itlSearch = location.search; window.itlLive = (demo, node) => import('./src/static.js?v=9d5b4dd352').then((m) => m.initLive({ demo, node, search: window.itlSearch }));</script>
 <script>
 (() => {
   const params = new URLSearchParams(location.search);
@@ -748,6 +751,83 @@
   };
   // Ottawa's federal buildings fly the Canadian flag.
   SCULPTURES['ca-federal'] = { ...SCULPTURES['federal-building'], body: SCULPTURES['federal-building'].body.replace(flag(70, 26), cflag(70, 26)) };
+  // Geopolitics: each conflict gets a symbol, not a landmark (Amir, 27 Nov
+  // 2026): the nuclear standoff, a drone, an aid crate… Ships for the seas.
+  const hull = (deck, sharp) => {
+    const a = sharp ? 100 : 102, b = sharp ? 118 : 114, c = sharp ? 112 : 110, dd = sharp ? 96 : 98;
+    return `
+      <polygon points="6,70 ${a},70 ${b},62 18,62" fill="url(#scT)" ${E}/>
+      <polygon points="6,70 ${a},70 ${dd},82 14,82" fill="#454D72" ${E}/>
+      <polygon points="${a},70 ${b},62 ${c},74 ${dd},82" fill="#363D5E" ${E}/>
+      <polygon points="12,79 ${dd + 1},79 ${dd},82 14,82" fill="#B8323A"/>
+      ${deck}`;
+  };
+  const bridge = (x, y0, w, h) => `<polygon points="${x},${y0} ${x + w},${y0} ${x + w + 6},${y0 - 4} ${x + 6},${y0 - 4}" fill="url(#scT)" ${E}/><polygon points="${x + w},${y0} ${x + w + 6},${y0 - 4} ${x + w + 6},${y0 + h - 4} ${x + w},${y0 + h}" fill="url(#scS)" ${E}/><rect x="${x}" y="${y0}" width="${w}" height="${h}" fill="url(#scF)" ${E}/>`;
+  const boxes = [[38, '#C9603F'], [50, '#3F6FB0'], [62, '#D5A23A'], [74, '#3F8F78'], [86, '#C9603F']].map(([x, c]) => `<rect x="${x}" y="52" width="11" height="12" fill="${c}" stroke="#2A2F4A" stroke-width=".4"/><polygon points="${x},52 ${x + 11},52 ${x + 15},49.5 ${x + 4},49.5" fill="${c}" opacity=".7"/>`).join('');
+  const plinth = (x0, x1, y) => `<polygon points="${x0},${y} ${x1},${y} ${x1 + 8},${y - 5} ${x0 + 8},${y - 5}" fill="url(#scT)" ${E}/><polygon points="${x1},${y} ${x1 + 8},${y - 5} ${x1 + 8},${y + 6} ${x1},${y + 11}" fill="url(#scS)" ${E}/><rect x="${x0}" y="${y}" width="${x1 - x0}" height="11" fill="url(#scF)" ${E}/>`;
+  const orbit = (rot) => `<g transform="rotate(${rot} 50 44)"><ellipse cx="50" cy="44" rx="36" ry="12" fill="none" stroke="#9AA3BD" stroke-width="4.2"/><ellipse cx="50" cy="44" rx="36" ry="12" fill="none" stroke="#FFFFFF" stroke-width="2"/></g>`;
+  const rotor = (x, y) => `<ellipse cx="${x}" cy="${y}" rx="15" ry="4.5" fill="#C9CEDD" opacity=".55" stroke="#8D95AD" stroke-width=".5"/><rect x="${x - 1.2}" y="${y - 1}" width="2.4" height="6" fill="#6B7390"/>`;
+  Object.assign(SCULPTURES, {
+    // A container ship in the Red Sea.
+    cargo: { w: 120, h: 90, base: [60, 84], body: hull(`${boxes}${bridge(14, 44, 20, 22)}<rect x="17" y="48" width="14" height="3" fill="url(#scW)"/>`) },
+    // A grey warship: pointed bow, mast amidships.
+    warship: { w: 120, h: 90, base: [60, 84], body: hull(`
+      ${bridge(40, 58, 30, 6)}${bridge(46, 48, 18, 10)}
+      <line x1="55" y1="44" x2="55" y2="22" stroke="#6B7390" stroke-width="1.4"/><line x1="49" y1="28" x2="61" y2="28" stroke="#6B7390" stroke-width="1"/>
+      <rect x="86" y="58" width="10" height="4" fill="url(#scS)" ${E}/><line x1="96" y1="59" x2="106" y2="56" stroke="#6B7390" stroke-width="1.4"/>`, true) },
+    // War in Iran: the nuclear standoff, an atom on a plinth.
+    atom: { w: 100, h: 112, base: [50, 104], body: `
+      ${plinth(26, 66, 92)}
+      <rect x="47" y="58" width="6" height="30" fill="url(#scC)" ${E}/>
+      ${orbit(0)}${orbit(60)}${orbit(-60)}
+      <circle cx="50" cy="44" r="8" fill="url(#scD)" ${E}/>
+      <circle cx="50" cy="44" r="3" fill="#E8C35A"/>` },
+    // Oil: a barrel with an oil drop.
+    barrel: { w: 80, h: 100, base: [40, 96], body: `
+      <rect x="20" y="30" width="40" height="62" fill="url(#scC)" ${E}/>
+      <ellipse cx="40" cy="92" rx="20" ry="5" fill="url(#scS)" ${E}/>
+      <rect x="20" y="30" width="40" height="62" fill="url(#scC)"/>
+      <path d="M20 46 H60 M20 76 H60" stroke="#9AA3BD" stroke-width="2"/>
+      <ellipse cx="40" cy="30" rx="20" ry="5.5" fill="url(#scT)" ${E}/>
+      <path d="M40 52 Q46 61 46 65 A6 6 0 0 1 34 65 Q34 61 40 52 Z" fill="#2A2F4A"/>` },
+    // Israel and Gaza: the humanitarian crisis, an aid crate.
+    'aid-crate': { w: 110, h: 90, base: [55, 84], body: `
+      <polygon points="14,40 30,30 96,30 80,40" fill="url(#scT)" ${E}/>
+      <polygon points="80,40 96,30 96,74 80,84" fill="url(#scS)" ${E}/>
+      <rect x="14" y="40" width="66" height="44" fill="url(#scF)" ${E}/>
+      <path d="M14 40 L80 84 M80 40 L14 84" stroke="#C9CEDD" stroke-width="3"/>
+      <rect x="14" y="54" width="66" height="13" fill="#3A7BD5"/>
+      <polygon points="80,54 96,44 96,57 80,67" fill="#2B5FA8"/>
+      <text x="47" y="64.5" text-anchor="middle" font-family="Figtree, system-ui, sans-serif" font-weight="800" font-size="9" letter-spacing="1.5" fill="#fff">AID</text>` },
+    // Syria: a broken column and a fallen drum, the war's ruins.
+    ruin: { w: 110, h: 100, base: [55, 94], body: `
+      ${plinth(18, 82, 82)}
+      <path d="M34 82 V34 L38 28 L42 33 L46 25 L50 31 V82 Z" fill="url(#scC)" ${E}/>
+      <rect x="31" y="78" width="22" height="4" fill="url(#scF)" ${E}/>
+      <ellipse cx="72" cy="76" rx="5" ry="7" fill="url(#scS)" ${E}/>
+      <rect x="56" y="69" width="16" height="14" fill="url(#scC)" ${E}/>
+      <ellipse cx="56" cy="76" rx="5" ry="7" fill="url(#scF)" ${E}/>` },
+    // Ukraine-Russia war: the drone, its defining weapon, hovering.
+    drone: { w: 110, h: 90, base: [55, 86], body: `
+      <path d="M22 40 L48 52 M88 40 L62 52 M26 62 L48 54 M84 62 L62 54" stroke="#6B7390" stroke-width="3"/>
+      ${rotor(22, 38)}${rotor(88, 38)}${rotor(26, 60)}${rotor(84, 60)}
+      <polygon points="44,50 66,50 72,46 50,46" fill="url(#scT)" ${E}/>
+      <polygon points="66,50 72,46 72,56 66,60" fill="url(#scS)" ${E}/>
+      <rect x="44" y="50" width="22" height="10" fill="url(#scF)" ${E}/>
+      <circle cx="55" cy="63" r="3" fill="#4A5070"/>` },
+    // NATO's eastern flank: a shield with the alliance's star.
+    shield: { w: 90, h: 108, base: [45, 102], body: `
+      ${plinth(20, 62, 90)}
+      <path d="M50 12 L76 20 V48 Q76 72 50 86 Z" fill="url(#scS)" ${E}/>
+      <path d="M45 10 L72 18 V46 Q72 70 45 86 Q18 70 18 46 V18 Z" fill="url(#scF)" stroke="#2B4A9A" stroke-width="2.4"/>
+      <polygon points="45,28 48,44 45,48 42,44" fill="#2B4A9A"/><polygon points="45,68 48,52 45,48 42,52" fill="#2B4A9A"/>
+      <polygon points="25,48 41,45 45,48 41,51" fill="#2B4A9A"/><polygon points="65,48 49,45 45,48 49,51" fill="#2B4A9A"/>` },
+    // China and Taiwan: a fighter jet, the drills and incursions.
+    jet: { w: 110, h: 96, base: [55, 92], body: `
+      <polygon points="55,8 60,30 60,44 96,66 96,72 60,62 60,74 72,84 72,88 55,84 38,88 38,84 50,74 50,62 14,72 14,66 50,44 50,30" fill="url(#scF)" ${E}/>
+      <polygon points="55,8 60,30 60,74 72,84 72,88 55,84" fill="#C9CEDD" opacity=".6"/>
+      <path d="M55 18 Q58 24 55 32 Q52 24 55 18 Z" fill="#7E88A6"/>` },
+  });
   const SCULPT_DEFS = `<defs>
     <linearGradient id="scF" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#E4E7F0"/></linearGradient>
     <linearGradient id="scS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#CDD2E1"/><stop offset="1" stop-color="#AEB5CA"/></linearGradient>
@@ -826,7 +906,7 @@
       // A place drawn as a model (the White House…): it grows with its count
       // like a bubble, standing on its spot; the ground glow is its "bubble".
       if (SCULPTURES[a.icon]) {
-        const size = Math.min(150 * s, Math.max(92 * s, 2.9 * r));
+        const size = view === 'world' ? Math.min(76, Math.max(62, 2.2 * r)) : Math.min(150 * s, Math.max(92 * s, 2.9 * r));
         const z = sculptSize(a.icon, size);
         const halo = Math.max(r, z.w * 0.55);
         return { a, x0, y0, x: x0, y: y0, r: halo, size, up: z.up, R: Math.max(z.w * 0.56, halo + 10 * s, 52 * s) };
@@ -864,6 +944,9 @@
     const box = cropOf(state.view);
     const s = box.w / m.width; // under 1 when a topic view crops the map
     const nodes = layout(d.areas, mapId, box, s);
+    const rel = mapId === 'world' || m.city ? null : relief(m, d, s);
+    // A model stands on top of its raised country.
+    if (rel) for (const n of nodes) { const up = rel.height[n.a.country]; if (up) { n.y -= up; n.y0 -= up; } }
     // Keep labels readable when the map is drawn small. On a phone the map
     // fills the screen and the camera (cam) shows part of it: text is sized
     // in screen pixels from the camera instead.
@@ -875,7 +958,7 @@
     const k = phone ? cam.h / frameSize().h : s * Math.min(2.6, Math.max(1, 720 / (document.querySelector('.map')?.clientWidth || window.innerWidth)));
     const bg = state.bg?.regions?.[regionOf(state.view)?.id];
     const cls = (name) => (bg?.focus?.includes(name) ? 'country focus' : bg?.watch?.includes(name) ? 'country watch' : 'country');
-    const countries = baseShapes(m, cls, true);
+    const countries = baseShapes(m, cls, true) + (rel ? rel.svg : '');
     const frames = mapId === 'world' ? regions().map((r) => lift(r, m, d) || (() => { const b = boxOf(r.id); return `<rect class="frame" data-frame="${esc(r.id)}" x="${b.x.toFixed(1)}" y="${b.y.toFixed(1)}" width="${b.w.toFixed(1)}" height="${b.h.toFixed(1)}" rx="6"/>`; })()).join('') : '';
     const extras = mapId === 'world' ? frames + portals() : m.city ? cityLabels(m, k, s) : graticule(m) + (bg?.labels || []).map((l) => {
       const [x, y] = state.api.project(m, l.lon, l.lat);
@@ -917,9 +1000,9 @@
     const what = mapId === 'world' ? 'region' : topicOf(state.view) ? 'story' : NAT ? 'arena' : 'topic';
     // In a topic, its own model stands in the middle of its stories (the Capitol among Congress's fights).
     const t = topicOf(state.view), tIcon = t && state.api.live.iconOf(t.id), tAt = tIcon && state.api.live.placeOf(t.id);
-    const backdrop = tAt && SCULPTURES[tIcon] ? (() => { const [x, y] = state.api.project(m, tAt.lon, tAt.lat); return sculpture(tIcon, x, y, 115 * s, 'sc backdrop'); })() : '';
+    const backdrop = tAt && SCULPTURES[tIcon] ? (() => { const [x, y] = state.api.project(m, tAt.lon, tAt.lat); return sculpture(tIcon, x, y - (rel?.height[state.api.live.countryOf(t.id)] || 0), 115 * s, 'sc backdrop'); })() : '';
     const landmarks = m.city ? m.city.monuments.filter((x) => /Monument/.test(x.name)).map((x) => sculpture('monument', x.xy[0], x.xy[1], 150 * s, 'sc landmark')).join('') : '';
-    return `<svg viewBox="${cam.x.toFixed(1)} ${cam.y.toFixed(1)} ${cam.w.toFixed(1)} ${cam.h.toFixed(1)}"${phone ? ' preserveAspectRatio="xMidYMid slice"' : ''} style="--s:${(phone ? k : s).toFixed(3)}" role="group" aria-label="Map of ${esc(topicOf(state.view)?.label || m.label)} with one bubble per ${what}">${NAT || mapId === 'world' ? SCULPT_DEFS : ''}${mapId === 'world' ? '<defs><linearGradient id="slabCa" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".6" stop-color="#FBE6E6"/><stop offset="1" stop-color="#F5C9C9"/></linearGradient><linearGradient id="slabG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".6" stop-color="#E6EAFB"/><stop offset="1" stop-color="#C9D1F5"/></linearGradient></defs>' : ''}${countries}${extras}${landmarks}${backdrop}${dots}${leaders}${arcs(d.links, nodes, s, k)}${bubbles}</svg>`;
+    return `<svg viewBox="${cam.x.toFixed(1)} ${cam.y.toFixed(1)} ${cam.w.toFixed(1)} ${cam.h.toFixed(1)}"${phone ? ' preserveAspectRatio="xMidYMid slice"' : ''} style="--s:${(phone ? k : s).toFixed(3)}" role="group" aria-label="Map of ${esc(topicOf(state.view)?.label || m.label)} with one bubble per ${what}">${NAT || mapId === 'world' || nodes.some((n) => n.up) || backdrop ? SCULPT_DEFS : ''}${mapId === 'world' ? '<defs><linearGradient id="slabCa" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".6" stop-color="#FBE6E6"/><stop offset="1" stop-color="#F5C9C9"/></linearGradient><linearGradient id="slabG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".6" stop-color="#E6EAFB"/><stop offset="1" stop-color="#C9D1F5"/></linearGradient></defs>' : ''}${countries}${extras}${landmarks}${backdrop}${dots}${leaders}${arcs(d.links, nodes, s, k)}${bubbles}</svg>`;
   }
 
   // A place drawn as a model: a glow on the ground in its status colour
@@ -936,7 +1019,7 @@
     const ly = n.y + ry + 16 * k;
     const meta = a.count ? `<text class="meta" style="font-size:${13 * k}px" x="${x}" y="${(ly + 15 * k).toFixed(1)}" text-anchor="middle">${plural(a.count, 'item')}${a.pace == null ? '' : ` · ${esc(paceText(a))}`}</text>` : '';
     const more = a.topic || (a.region && a.stories) ? `<text class="more" style="font-size:${12 * k}px" x="${x}" y="${(ly + (a.count ? 30 : 15) * k).toFixed(1)}" text-anchor="middle">${a.topic ? plural(a.stories, 'story') : plural(a.stories, NAT ? 'arena' : 'topic')} ›</text>` : '';
-    const btag = a.breaking || a.hot ? `<text class="btag${a.breaking ? '' : ' hot'}" style="font-size:${11 * k}px" x="${x}" y="${(n.y - n.up - 6 * k).toFixed(1)}" text-anchor="middle">${a.breaking ? 'BREAKING' : 'HOT'}</text>` : '';
+    const btag = a.breaking || a.hot ? `<text class="btag${a.breaking ? '' : ' hot'}" style="font-size:${11 * k}px" x="${x}" y="${(a.region ? ly + (a.count ? 30 : 15) * k : n.y - n.up - 6 * k).toFixed(1)}" text-anchor="middle">${a.breaking ? 'BREAKING' : 'HOT'}</text>` : '';
     return `<g class="bubble sculpt${a.count ? '' : ' quiet'}${state.area === a.id ? ' sel' : ''}" data-area="${esc(a.id)}" style="--i:${total - 1 - i}" tabindex="0" role="button" aria-label="${esc(label)}">
       ${ring}${ell('disc', ` style="fill:color-mix(in srgb, ${c} ${a.count ? 32 : 12}%, transparent);stroke:${c}${a.count ? '' : ';stroke-dasharray:3 3'}"`)}${flash}
       ${sculpture(a.icon, n.x, n.y, n.size)}
@@ -984,6 +1067,31 @@
     return `<g class="arcs">${out}</g>`;
   }
 
+  // Volume relief (Amir, 27 Nov 2026): on a region or topic map, each country
+  // our topics and stories stand on (hierarchy `country`) rises with how much
+  // is being said about it in the window; the busiest country is tallest.
+  // Returns the drawing and each country's height, so models can stand on top.
+  function relief(m, d, s) {
+    const vol = {};
+    for (const a of d.areas) if (a.country && a.count) vol[a.country] = (vol[a.country] || 0) + a.count;
+    const names = Object.keys(vol).filter((n) => m.countries.some((c) => c.name === n));
+    if (!names.length) return null;
+    const max = Math.max(...names.map((n) => vol[n]));
+    const height = {};
+    const svg = names.sort((p, q) => vol[p] - vol[q]).map((name) => {
+      const H = (6 + 34 * Math.sqrt(vol[name] / max)) * s;
+      height[name] = H;
+      const ds = m.countries.filter((c) => c.name === name).map((c) => c.d).join('');
+      // Copies of the outline stacked under the top face make the sides; a
+      // thick stroke fills the gaps, so tall countries need no more than ~18.
+      const step = Math.max(1, H / 18);
+      const sides = [];
+      for (let y = 0; y < H; y += step) sides.push(`<path d="${ds}" transform="translate(0 ${(-y).toFixed(1)})"/>`);
+      return `<g class="relief" aria-hidden="true"><path class="rshadow" d="${ds}" transform="translate(${(4 * s).toFixed(1)} ${(6 * s).toFixed(1)})"/><g class="rside" style="stroke-width:${(step * 1.6).toFixed(1)}px">${sides.join('')}</g><path class="rface" d="${ds}" transform="translate(0 ${(-H).toFixed(1)})"><title>${esc(name)}: ${plural(vol[name], 'item')} in the last ${state.window}</title></path></g>`;
+    }).join('');
+    return { svg, height };
+  }
+
   // On the world map, pointing at a region lifts the countries at its heart
   // and around it (backgrounders.json "focus" and "watch") off the map,
   // tinted in the region's status colour, like the raised United States.
@@ -997,7 +1105,10 @@
     const a = d.areas.find((x) => x.id === r.id);
     const c = COLOR[a?.count ? a.status : 'quiet'] || COLOR.reported;
     const all = shapes.map((x) => x.d).join('');
-    const sides = [4, 3, 2, 1].map((y) => `<path d="${all}" transform="translate(0 ${y})"/>`).join('');
+    // Always raised, higher the more is being said about the region.
+    const max = Math.max(1, ...regions().map((x) => d.areas.find((y) => y.id === x.id)?.count || 0));
+    const H = Math.round(3 + 14 * Math.sqrt((a?.count || 0) / max));
+    const sides = Array.from({ length: H }, (_, i) => `<path d="${all}" transform="translate(0 ${H - i})"/>`).join('');
     return `<g class="lift" data-frame="${esc(r.id)}" style="--lc:${c}" aria-hidden="true"><path class="liftshadow" d="${all}" transform="translate(2 7)"/><g class="liftside">${sides}</g><g class="lifttop"><path class="liftface" d="${all}"/></g></g>`;
   }
 
