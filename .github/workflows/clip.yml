@@ -3,7 +3,8 @@ name: Daily clip
 # Records "Today's loop" from the live site as a 1080 x 1920 video for TikTok,
 # YouTube Shorts and Instagram Reels, with a spoken voiceover of each story card
 # (Piper, free offline text-to-speech). The videos are attached to the run as a
-# download ("clips"); nothing is posted anywhere. Built from deploy/clip.yml in
+# download ("clips") and the latest set is also kept on the `clips` branch;
+# nothing is posted anywhere. Built from deploy/clip.yml in
 # the private repo; edit it there, not here. Run it from the Actions tab
 # ("Run workflow") or with: gh workflow run clip.yml
 
@@ -18,7 +19,7 @@ on:
         default: '9000'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   clip:
@@ -60,3 +61,11 @@ jobs:
           name: clips
           path: clips/
           retention-days: 14
+      - name: Keep the latest clips on the clips branch
+        continue-on-error: true
+        run: |
+          cd clips
+          git init -q -b clips
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' add -A
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -q -m "Clips $(TZ=America/Toronto date +%F)"
+          git push -q -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" clips
