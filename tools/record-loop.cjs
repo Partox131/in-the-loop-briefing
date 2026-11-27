@@ -47,7 +47,7 @@ const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'itl-loop-'));
       const cap = document.querySelector('.loopcap h2');
       if (document.querySelector('.clipend')) return { end: true };
       if (!cap) return null;
-      return { headline: cap.textContent.trim(), where: document.querySelector('.loophead strong')?.textContent.trim() || '', status: document.querySelector('.loopcap .chip')?.textContent.trim() || '', sources: Number((document.querySelector('.loopcap p')?.textContent.match(/(\d+) source/) || [])[1]) || 0 };
+      return { headline: (cap.dataset.full || cap.textContent).trim(), where: document.querySelector('.loophead strong')?.textContent.trim() || '', status: document.querySelector('.loopcap .chip')?.textContent.trim() || '', sources: Number((document.querySelector('.loopcap p')?.textContent.match(/(\d+) source/) || [])[1]) || 0 };
     }).catch(() => null);
     if (!c) return;
     const last = cues.at(-1);
