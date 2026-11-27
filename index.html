@@ -1986,7 +1986,8 @@
 
   // "Today in Washington": the day's three biggest stories, one after the
   // other. The camera flies to each one and a caption says what happened.
-  const STOP_MS = 6500;
+  // A recorded clip can hold each story longer (?clip=1&stop=9000) so a voiceover fits.
+  const STOP_MS = (CLIP && Math.min(15000, Math.max(3000, Number(new URLSearchParams(location.search).get('stop')) || 0))) || 6500;
   function startTour() {
     const list = state.api.live.tour({ now: new Date(), n: PHONE() ? LOOP_N : 3 });
     state.loopCover = null;
