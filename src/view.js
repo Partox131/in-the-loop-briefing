@@ -1,8 +1,8 @@
 // Turn a brief (see brief.js) into the JSON the briefing web page renders.
 // Kept separate from the server so it's easy to test and to reuse.
 
-import { alertOf, headlineOf, isTopic, segmentOf, stageTrack, trail } from './live.js?v=9d5b4dd352';
-import { TIER_NAME } from './voices.js?v=9d5b4dd352';
+import { alertOf, headlineOf, isTopic, segmentOf, stageTrack, trail } from './live.js?v=355b4e7eab';
+import { TIER_NAME } from './voices.js?v=355b4e7eab';
 
 const HOUR = 3_600_000;
 // Story statuses that make the Key developments list.
