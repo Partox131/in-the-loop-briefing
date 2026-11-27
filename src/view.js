@@ -1,10 +1,12 @@
 // Turn a brief (see brief.js) into the JSON the briefing web page renders.
 // Kept separate from the server so it's easy to test and to reuse.
 
-import { breakingCount, isTopic, segmentOf, stageTrack, trail } from './live.js?v=f214693485';
-import { TIER_NAME } from './voices.js?v=f214693485';
+import { breakingCount, headlineOf, isTopic, segmentOf, stageTrack, trail } from './live.js?v=8f2b475557';
+import { TIER_NAME } from './voices.js?v=8f2b475557';
 
 const HOUR = 3_600_000;
+// Story statuses that make the Key developments list.
+const DEVELOPMENT = new Set(['corroborated', 'official', 'disputed']);
 
 function postView(p) {
   return {
@@ -104,6 +106,8 @@ export function briefView(brief, h, { now = new Date() } = {}) {
     // outlets reporting it if it's breaking news right now, else 0
     breaking: breakingCount(s, now),
     lead: postView(s.lead),
+    // a clean one-line headline: article or link-card title, else the post's first sentence, no web addresses
+    headline: headlineOf(s.lead),
     topicId: s.lead.topicId,
     topicLabel: h.get(s.lead.topicId).label,
     lenses: [...new Set(s.posts.flatMap((p) => p.lenses || []))],
@@ -162,10 +166,13 @@ export function briefView(brief, h, { now = new Date() } = {}) {
     stories,
     activity: activity(brief.posts, now),
     coverage: coverage(brief.posts),
+    // Key developments: confirmed, official or disputed stories only (one
+    // independent source, or only a side's own claim, is not enough), the most
+    // widely covered first, each with a clean headline and its latest update time.
     developments: stories
-      .filter((s) => s.status !== 'reported')
-      .map((s) => ({ at: s.firstSeen, text: s.lead.text, status: s.status, url: s.lead.url }))
-      .sort((a, b) => Date.parse(b.at) - Date.parse(a.at))
+      .filter((s) => DEVELOPMENT.has(s.status))
+      .map((s) => ({ at: s.lastSeen, text: s.headline, status: s.status, url: s.lead.url, outlets: s.sources.length }))
+      .sort((a, b) => b.outlets - a.outlets || Date.parse(b.at) - Date.parse(a.at))
       .slice(0, 6),
     missingVoices: brief.missingVoices,
     errors: brief.errors,
