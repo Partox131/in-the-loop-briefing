@@ -23,6 +23,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'  # Kokoro needs Python < 3.13
       - name: Read the script in each voice
         env:
           VOICES: ${{ inputs.voices }}
