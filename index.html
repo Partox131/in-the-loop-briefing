@@ -22,7 +22,7 @@
 <meta name="twitter:image" content="https://inthelooplive.com/og-image.png">
 <title>In the Loop: live map of world news, US and Canadian politics</title>
 <script>if (/[?&](node|since)=/.test(location.search)) location.replace('briefing.html' + location.search + location.hash);</script>
-<script src="/alerts.js?v=a6243203bb" defer></script>
+<script src="/alerts.js?v=00824a0917" defer></script>
 <script src="analytics.js?v=26c3aada9a"></script>
 <script src="signup.js?v=75d20b6c98" defer></script>
 <link rel="manifest" href="/manifest.webmanifest">
@@ -35,7 +35,7 @@
     --bg: #F5F6F8; --raise: #FFFFFF; --ink: #1D2147; --muted: #5B6080; --line: #E2E5EF; --track: #E2E5EF;
     --loop: #3047D6; --on-loop: #FFFFFF; --bars: #B9C1E6;
     --reported: #8A5608; --reported-dot: #C27A10;
-    --confirmed: #0F6B5C; --disputed: #9B2C74; --new: #3047D6; --breaking: #C8102E;
+    --confirmed: #0F6B5C; --disputed: #9B2C74; --new: #3047D6; --breaking: #C8102E; --hot: #C2410C;
     --warn: #8A5608; --banner-bg: #FBEFD8;
     --display: 'Bricolage Grotesque', 'Figtree', system-ui, sans-serif;
     --body: 'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -47,7 +47,7 @@
       --bg: #12142B; --raise: #1B1E3B; --ink: #E7E9F5; --muted: #A3A8C8; --line: #2C3056; --track: #2A2E52;
       --loop: #7C8FFF; --on-loop: #12142B; --bars: #4A5390;
       --reported: #F0C27A; --reported-dot: #E0A040;
-      --confirmed: #7FD6C2; --disputed: #F0A8D6; --new: #9DB0FF; --breaking: #FF6B6B;
+      --confirmed: #7FD6C2; --disputed: #F0A8D6; --new: #9DB0FF; --breaking: #FF6B6B; --hot: #FFA05C;
       --warn: #F0C27A; --banner-bg: #3A2E14;
       --sea: #161935; --land: #23274A; --border: #343A6A;
       --sea-deep: #0A0B1C; --land-dim: #23274A; --focus-land: #353E85;
@@ -148,6 +148,12 @@
   .breaking .meta { color: var(--muted); font-size: 14px; }
   .breaking details { flex-basis: 100%; font-size: 14px; }
   .breaking ul { margin: 6px 0 0; padding-left: 18px; }
+  /* Hot: widely covered right now (orange), next to Breaking (red) */
+  .bring.hot { stroke: var(--hot); }
+  .bubble .btag.hot { fill: var(--hot); }
+  .breaking.hot { border-color: color-mix(in srgb, var(--hot) 45%, var(--line)); background: color-mix(in srgb, var(--hot) 8%, var(--raise)); }
+  .breaking.hot .tag { background: var(--hot); }
+  .breaking.hot .hl { text-decoration-color: color-mix(in srgb, var(--hot) 50%, transparent); }
   .bubble .more { font-size: 12px; fill: var(--loop); font-weight: 700; }
   .crumbs button { border: 0; background: none; padding: 0; color: inherit; font: inherit; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--line); }
   .crumbs button:hover { color: var(--ink); }
@@ -493,7 +499,7 @@
   <p>A live map of what credible outlets, reporters and analysts are saying about geopolitics, US politics and Canadian politics. Each story shows how many independent outlets carry it, whether it's confirmed or disputed, and what changed since you last looked. Sources include Bluesky, news outlets' feeds and official Telegram channels, refreshed every few minutes.</p>
   <nav aria-label="Regions and segments"><a href="/middle-east/">Middle East: the war with Iran, Gaza and Lebanon</a> · <a href="/eastern-europe/">Eastern Europe: the war in Ukraine and NATO's eastern flank</a> · <a href="/east-asia/">East Asia: China and Taiwan</a> · <a href="/us-politics/">US politics</a> · <a href="/canadian-politics/">Canadian politics</a> · <a href="briefing.html">Briefing</a> · <a href="/about/">About and how it works</a></nav>
 </div></div>
-<script>window.itlSearch = location.search; window.itlLive = (demo, node) => import('./src/static.js?v=bc7b86b967').then((m) => m.initLive({ demo, node, search: window.itlSearch }));</script>
+<script>window.itlSearch = location.search; window.itlLive = (demo, node) => import('./src/static.js?v=355b4e7eab').then((m) => m.initLive({ demo, node, search: window.itlSearch }));</script>
 <script>
 (() => {
   const params = new URLSearchParams(location.search);
@@ -585,7 +591,7 @@
   const COLOR = { corroborated: 'var(--confirmed)', reported: 'var(--reported-dot)', disputed: 'var(--disputed)', quiet: 'var(--muted)' };
   const paceText = (a) => (a.pace == null ? '' : `${a.pace}× usual`);
   // Needs history to compare with: the 24h window has none, so nothing pulses there.
-  const isHot = (a) => a.count >= 3 && a.pace != null && a.pace >= 1.5;
+  const isBusy = (a) => a.count >= 3 && a.pace != null && a.pace >= 1.5;
 
   // Small 3D models for US politics: white marble, lit from the top left,
   // drawn instead of a plain bubble (the White House, the Capitol…). Each
@@ -892,9 +898,9 @@
       const st = a.count ? a.status : 'quiet';
       const c = COLOR[st] || COLOR.reported;
       const x = n.x.toFixed(1), y = n.y.toFixed(1);
-      const label = `${a.region || a.topic ? 'Zoom into ' : ''}${a.label}: ${plural(a.count, 'item')} in the last ${state.window}${a.pace == null ? '' : `, ${paceText(a)}`}, ${STATUS[st]}${a.topic ? `, ${plural(a.stories, 'story')}` : ''}${a.track ? `, stage: ${a.track.label}` : ''}${a.breaking ? ', breaking news' : ''}`;
-      const ring = a.breaking ? `<circle class="bring" cx="${x}" cy="${y}" r="${n.r.toFixed(1)}"/>` : isHot(a) ? `<circle class="ring" cx="${x}" cy="${y}" r="${n.r.toFixed(1)}" style="stroke:${c}"/>` : '';
-      const btag = a.breaking ? `<text class="btag" style="font-size:${11 * k}px" x="${x}" y="${(n.y - n.r - 6 * k).toFixed(1)}" text-anchor="middle">BREAKING</text>` : '';
+      const label = `${a.region || a.topic ? 'Zoom into ' : ''}${a.label}: ${plural(a.count, 'item')} in the last ${state.window}${a.pace == null ? '' : `, ${paceText(a)}`}, ${STATUS[st]}${a.topic ? `, ${plural(a.stories, 'story')}` : ''}${a.track ? `, stage: ${a.track.label}` : ''}${a.breaking ? ', breaking news' : a.hot ? ', hot story' : ''}`;
+      const ring = a.breaking || a.hot ? `<circle class="bring${a.breaking ? '' : ' hot'}" cx="${x}" cy="${y}" r="${n.r.toFixed(1)}"/>` : isBusy(a) ? `<circle class="ring" cx="${x}" cy="${y}" r="${n.r.toFixed(1)}" style="stroke:${c}"/>` : '';
+      const btag = a.breaking || a.hot ? `<text class="btag${a.breaking ? '' : ' hot'}" style="font-size:${11 * k}px" x="${x}" y="${(n.y - n.r - 6 * k).toFixed(1)}" text-anchor="middle">${a.breaking ? 'BREAKING' : 'HOT'}</text>` : '';
       const flash = state.flashes.has(a.id) ? `<circle class="flash" cx="${x}" cy="${y}" r="${n.r.toFixed(1)}"/>` : '';
       const ly = n.y + n.r + 16 * k;
       const meta = a.count ? `<text class="meta" style="font-size:${13 * k}px" x="${x}" y="${(ly + 15 * k).toFixed(1)}" text-anchor="middle">${plural(a.count, 'item')}${a.pace == null ? '' : ` · ${esc(paceText(a))}`}</text>` : '';
@@ -923,14 +929,14 @@
     const st = a.count ? a.status : 'quiet';
     const c = COLOR[st] || COLOR.reported;
     const x = n.x.toFixed(1), y = n.y.toFixed(1), rx = n.r, ry = n.r * 0.36;
-    const label = `${a.region || a.topic ? 'Zoom into ' : ''}${a.label}: ${plural(a.count, 'item')} in the last ${state.window}${a.pace == null ? '' : `, ${paceText(a)}`}, ${STATUS[st]}${a.topic ? `, ${plural(a.stories, 'story')}` : ''}${a.breaking ? ', breaking news' : ''}`;
+    const label = `${a.region || a.topic ? 'Zoom into ' : ''}${a.label}: ${plural(a.count, 'item')} in the last ${state.window}${a.pace == null ? '' : `, ${paceText(a)}`}, ${STATUS[st]}${a.topic ? `, ${plural(a.stories, 'story')}` : ''}${a.breaking ? ', breaking news' : a.hot ? ', hot story' : ''}`;
     const ell = (cls, style = '') => `<ellipse class="${cls}" cx="${x}" cy="${y}" rx="${rx.toFixed(1)}" ry="${ry.toFixed(1)}"${style}/>`;
-    const ring = a.breaking ? ell('bring') : isHot(a) ? ell('ring', ` style="stroke:${c}"`) : '';
+    const ring = a.breaking ? ell('bring') : a.hot ? ell('bring hot') : isBusy(a) ? ell('ring', ` style="stroke:${c}"`) : '';
     const flash = state.flashes.has(a.id) ? ell('flash') : '';
     const ly = n.y + ry + 16 * k;
     const meta = a.count ? `<text class="meta" style="font-size:${13 * k}px" x="${x}" y="${(ly + 15 * k).toFixed(1)}" text-anchor="middle">${plural(a.count, 'item')}${a.pace == null ? '' : ` · ${esc(paceText(a))}`}</text>` : '';
     const more = a.topic || (a.region && a.stories) ? `<text class="more" style="font-size:${12 * k}px" x="${x}" y="${(ly + (a.count ? 30 : 15) * k).toFixed(1)}" text-anchor="middle">${a.topic ? plural(a.stories, 'story') : plural(a.stories, NAT ? 'arena' : 'topic')} ›</text>` : '';
-    const btag = a.breaking ? `<text class="btag" style="font-size:${11 * k}px" x="${x}" y="${(n.y - n.up - 6 * k).toFixed(1)}" text-anchor="middle">BREAKING</text>` : '';
+    const btag = a.breaking || a.hot ? `<text class="btag${a.breaking ? '' : ' hot'}" style="font-size:${11 * k}px" x="${x}" y="${(n.y - n.up - 6 * k).toFixed(1)}" text-anchor="middle">${a.breaking ? 'BREAKING' : 'HOT'}</text>` : '';
     return `<g class="bubble sculpt${a.count ? '' : ' quiet'}${state.area === a.id ? ' sel' : ''}" data-area="${esc(a.id)}" style="--i:${total - 1 - i}" tabindex="0" role="button" aria-label="${esc(label)}">
       ${ring}${ell('disc', ` style="fill:color-mix(in srgb, ${c} ${a.count ? 32 : 12}%, transparent);stroke:${c}${a.count ? '' : ';stroke-dasharray:3 3'}"`)}${flash}
       ${sculpture(a.icon, n.x, n.y, n.size)}
@@ -1365,14 +1371,19 @@
     </section>`;
   }
 
-  // Breaking news anywhere we follow: 3+ independent outlets within 90
-  // minutes, first reported under 3 hours ago (src/live.js breakingNews).
+  // Breaking and hot news anywhere we follow (src/live.js alertNews; Amir,
+  // 27 Nov 2026). Breaking: a new event, 2+ independent sources within 30
+  // minutes, for an hour. Hot: widely covered now, 4+ independent sources in
+  // 6 hours. One strip each, breaking first.
   function breakingStrip(d) {
-    const list = d.breaking || [];
-    if (!list.length) return '';
-    const item = (b) => `<button class="hl" data-pick="${esc(b.topicId)}">${esc(b.headline)}</button><span class="meta">${plural(b.outlets, 'outlet')} · first reported ${esc(ago(b.firstSeen))} · ${esc(b.topicLabel)}</span>`;
-    const [top, ...more] = list;
-    return `<div class="breaking" role="status" aria-label="Breaking news"><span class="tag">Breaking</span>${item(top)}${more.length ? `<details><summary>${plural(more.length, 'more breaking update')}</summary><ul>${more.map((b) => `<li>${item(b)}</li>`).join('')}</ul></details>` : ''}</div>`;
+    const strip = (list, hot) => {
+      if (!list.length) return '';
+      const item = (b) => `<button class="hl" data-pick="${esc(b.topicId)}">${esc(b.headline)}</button><span class="meta">${plural(b.outlets, 'source')} · first reported ${esc(ago(b.firstSeen))} · ${esc(b.topicLabel)}</span>`;
+      const [top, ...more] = list;
+      const word = hot ? 'Hot' : 'Breaking';
+      return `<div class="breaking${hot ? ' hot' : ''}" role="status" aria-label="${word} news"><span class="tag">${word}</span>${item(top)}${more.length ? `<details><summary>${plural(more.length, hot ? 'more hot story' : 'more breaking update')}</summary><ul>${more.map((b) => `<li>${item(b)}</li>`).join('')}</ul></details>` : ''}</div>`;
+    };
+    return strip(d.breaking || [], false) + strip(d.hot || [], true);
   }
 
   function statusText(d) {
@@ -1740,7 +1751,7 @@
     const d = state.data;
     const app = document.getElementById('app');
     const active = d.areas.filter((a) => a.count);
-    const hot = d.areas.filter(isHot).map((a) => a.label);
+    const hot = d.areas.filter(isBusy).map((a) => a.label);
     const world = state.view === 'world';
     const topic = topicOf(state.view);
     const region = regionOf(state.view);
@@ -1765,7 +1776,8 @@
               <span><i class="sw c-disputed"></i>Sources disagree</span>
               <span><i class="sw c-quiet" style="background:none;border:2px dashed var(--muted)"></i>Quiet</span>
               <span>Pulsing ring: at least 1.5× its usual pace</span>
-              <span><i class="sw" style="background:none;border:2px solid var(--breaking)"></i>Breaking: 3+ outlets within 90 min</span>
+              <span><i class="sw" style="background:none;border:2px solid var(--breaking)"></i>Breaking: a new event, 2+ sources within 30 min</span>
+              <span><i class="sw" style="background:none;border:2px solid var(--hot)"></i>Hot: 4+ sources in 6 hours</span>
               ${NAT ? '<span><i class="sw" style="background:none;border-radius:0;height:0;border-top:3px dashed var(--loop)"></i>Shared story</span><span><b style="color:var(--loop)">●●</b>● Where a fight stands</span>' : ''}
             </div>`,
       errs: `${d.errors?.length ? `<details class="footnote"><summary>${plural(d.errors.length, 'warning')}</summary><ul>${d.errors.map((e) => `<li>${esc(e)}</li>`).join('')}</ul></details>` : ''}`,

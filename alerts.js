@@ -1,4 +1,4 @@
-// Breaking news alerts: <itl-alerts></itl-alerts>, a bell button that opens a
+// Breaking and hot news alerts: <itl-alerts></itl-alerts>, a bell button that opens a
 // small panel where a reader picks what they want alerts for and turns push
 // notifications on or off. Our server sends them (scripts/push.js); the plan
 // is docs/research/push-notifications.md.
@@ -147,16 +147,16 @@ itl-alerts[hidden]{display:none}
 <ol><li>Tap the <b>Share</b> button in Safari.</li><li>Tap <b>Add to Home Screen</b>.</li><li>Open In the Loop from your home screen and tap the bell again.</li></ol>
 <div class="row"><button class="plain" data-close>Close</button></div>`;
     }
-    if (!supported) return `<h3>Breaking news alerts</h3><p>This browser can't show alerts from websites. Chrome, Edge, Firefox and Safari can.</p><div class="row"><button class="plain" data-close>Close</button></div>`;
+    if (!supported) return `<h3>News alerts</h3><p>This browser can't show alerts from websites. Chrome, Edge, Firefox and Safari can.</p><div class="row"><button class="plain" data-close>Close</button></div>`;
     const geo = s.topics.includes('geopolitics');
     const box = ([id, label, hint]) => `<label class="${REGIONS.includes(id) ? 'sub' : ''}"><input type="checkbox" name="${id}"${s.topics.includes(id) || (geo && REGIONS.includes(id)) ? ' checked' : ''}${geo && REGIONS.includes(id) ? ' disabled' : ''}><span>${esc(label)}${hint ? `<small>${esc(hint)}</small>` : ''}</span></label>`;
-    return `<h3>Breaking news alerts</h3>
-<p>We'll tell you when at least 3 independent outlets report something new within 90 minutes. A side's own claims never trigger an alert.</p>
+    return `<h3>News alerts</h3>
+<p><b>Breaking</b>: a new event, reported by at least 2 independent sources within 30 minutes. <b>Hot</b>: a story widely covered right now, by 4 or more independent sources. A side's own claims never trigger an alert.</p>
 <form>
 <fieldset><legend>Alert me about</legend>${TOPICS.map(box).join('')}</fieldset>
 <fieldset><legend>When</legend>
 <input type="hidden" name="max" value="${esc(s.max)}">
-<label><input type="checkbox" name="quiet"${s.quiet ? ' checked' : ''}><span>Quiet at night<small>Nothing between 11 PM and 7 AM; one morning alert for what broke overnight</small></span></label>
+<label><input type="checkbox" name="quiet"${s.quiet ? ' checked' : ''}><span>Quiet at night<small>Nothing between 11 PM and 7 AM; one morning alert for what happened overnight</small></span></label>
 </fieldset>
 <div class="row"><button type="submit"${ui.busy ? ' disabled' : ''}>${s.on ? 'Save' : 'Turn on alerts'}</button>${s.on ? `<button type="button" class="plain" data-off${ui.busy ? ' disabled' : ''}>Turn off alerts</button>` : ''}<button type="button" class="plain" data-close>Close</button></div>
 ${ui.msg ? `<p class="msg${ui.err ? ' err' : ''}" role="status">${esc(ui.msg)}</p>` : ''}
@@ -182,7 +182,7 @@ ${ui.msg ? `<p class="msg${ui.err ? ' err' : ''}" role="status">${esc(ui.msg)}</
     if (!dialog) {
       dialog = document.createElement('dialog');
       dialog.className = 'itl-al';
-      dialog.setAttribute('aria-label', 'Breaking news alerts');
+      dialog.setAttribute('aria-label', 'News alerts');
       document.body.appendChild(dialog);
       dialog.addEventListener('click', (e) => { if (e.target === dialog) dialog.close(); });
     }

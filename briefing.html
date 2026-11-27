@@ -32,7 +32,7 @@
     --bg: #F5F6F8; --raise: #FFFFFF; --ink: #1D2147; --muted: #5B6080; --line: #E2E5EF; --track: #E2E5EF;
     --loop: #3047D6; --on-loop: #FFFFFF; --bars: #B9C1E6; --sea: #E9ECF8;
     --reported: #8A5608; --reported-dot: #C27A10;
-    --confirmed: #0F6B5C; --disputed: #9B2C74; --new: #3047D6; --breaking: #C8102E;
+    --confirmed: #0F6B5C; --disputed: #9B2C74; --new: #3047D6; --breaking: #C8102E; --hot: #C2410C;
     --warn: #8A5608; --banner-bg: #FBEFD8;
     --display: 'Bricolage Grotesque', 'Figtree', system-ui, sans-serif;
     --body: 'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -43,7 +43,7 @@
       --bg: #12142B; --raise: #1B1E3B; --ink: #E7E9F5; --muted: #A3A8C8; --line: #2C3056; --track: #2A2E52;
       --loop: #7C8FFF; --on-loop: #12142B; --bars: #4A5390; --sea: #0D0F22;
       --reported: #F0C27A; --reported-dot: #E0A040;
-      --confirmed: #7FD6C2; --disputed: #F0A8D6; --new: #9DB0FF; --breaking: #FF6B6B;
+      --confirmed: #7FD6C2; --disputed: #F0A8D6; --new: #9DB0FF; --breaking: #FF6B6B; --hot: #FFA05C;
       --warn: #F0C27A; --banner-bg: #3A2E14;
       --r1: #7C8FFF; --r2: #7FD6C2; --r3: #E0A040; --r4: #F0A8D6; --r5: #A3A8C8; --r6: #C2CAFF;
     }
@@ -84,6 +84,7 @@
   h1 { margin: 0; font: 800 clamp(48px, 7vw, 80px)/1 var(--display); letter-spacing: -0.03em; }
   .sub { margin: 14px 0 0; color: var(--muted); font-size: 17px; max-width: 60ch; }
   .breakingtag { display: inline-block; margin-bottom: 8px; padding: 2px 10px; border-radius: 999px; background: var(--breaking); color: #fff; font-size: 13px; font-weight: 700; letter-spacing: .04em; }
+  .breakingtag.hot { background: var(--hot); }
   /* Where an ongoing fight stands (a court case, a bill): its steps. */
   .steps { margin: 12px 0 4px; max-width: 560px; }
   .steps ol { list-style: none; display: flex; margin: 6px 0 4px; padding: 0; }
@@ -200,7 +201,7 @@
 </head>
 <body>
 <div id="app"><div class="loading" role="status"><svg class="loopspin" viewBox="0 0 64 64" aria-hidden="true"><circle class="t" cx="32" cy="32" r="20"/><circle class="a" cx="32" cy="32" r="20"/><circle class="d" cx="32" cy="32" r="7"/></svg><span>Loading the latest…</span></div></div>
-<script>window.itlSearch = location.search; window.itlStatic = import('./src/static.js?v=bc7b86b967').then((m) => m.init({ search: window.itlSearch }));</script>
+<script>window.itlSearch = location.search; window.itlStatic = import('./src/static.js?v=355b4e7eab').then((m) => m.init({ search: window.itlSearch }));</script>
 <script>
 (() => {
   const params = new URLSearchParams(location.search);
@@ -384,7 +385,7 @@
       ? `<details><summary>${s.postCount - 1 > s.related.length ? `Top ${s.related.length} of ${s.postCount - 1} related posts` : plural(s.postCount - 1, 'related post')}</summary><div class="rel">${s.related.map((p) => `<div><strong>${esc(p.voice ? p.voice.name : '@' + p.handle)}</strong>${tagged(p.voice) ? stateTag(p.voice.country, false, p.voice.cred, p.voice.affiliation) : ''} <span class="muted">${esc(ago(p.createdAt))}</span><br>${esc(oneLine(p.text))} <a href="${safeUrl(p.url)}" target="_blank" rel="noopener">${p.telegram ? 'View on Telegram' : p.news ? 'Read article' : 'View post'}</a></div>`).join('')}</div></details>`
       : '';
     return `<article class="story">
-      <div>${s.breaking ? `<span class="breakingtag" title="First reported under 3 hours ago, by ${s.breaking} independent outlets within 90 minutes">Breaking · ${plural(s.breaking, 'outlet')}</span>` : ''}<div class="state ${s.status}"><span class="dot ${s.status}"></span>${s.status === 'claimed' ? esc(claimText(s)) : STATE_LABEL[s.status]}</div>${rail(s)}${isNew ? '<span class="newtag">New to you</span>' : ''}</div>
+      <div>${s.breaking ? `<span class="breakingtag" title="A new event: ${s.breaking} independent sources, the first two within 30 minutes">Breaking · ${plural(s.breaking, 'source')}</span>` : s.hot ? `<span class="breakingtag hot" title="Widely covered right now by ${s.hot} independent sources">Hot · ${plural(s.hot, 'source')}</span>` : ''}<div class="state ${s.status}"><span class="dot ${s.status}"></span>${s.status === 'claimed' ? esc(claimText(s)) : STATE_LABEL[s.status]}</div>${rail(s)}${isNew ? '<span class="newtag">New to you</span>' : ''}</div>
       <div>
         <h3><a href="${safeUrl(s.lead.url)}" target="_blank" rel="noopener">${esc(oneLine(s.lead.text, 280))}</a></h3>
         <p class="by">Led by ${who}, ${esc(ago(s.lead.createdAt))}${lift}. ${[s.postCount - s.articleCount ? plural(s.postCount - s.articleCount, 'post') : '', s.articleCount ? plural(s.articleCount, 'news article') : ''].filter(Boolean).join(' and ')} from ${plural(s.voiceCount, 'source')}.${topic}${s.history && Date.now() - Date.parse(s.history.firstSeen) > DAY ? ` Followed since ${esc(new Date(s.history.firstSeen).toLocaleDateString([], { weekday: 'short', day: 'numeric', month: 'short' }))}.` : ''}</p>

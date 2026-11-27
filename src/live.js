@@ -6,12 +6,12 @@
 // up through Jetstream: a WebSocket of new posts filtered to the voices'
 // accounts, which works straight from the browser. Read-only, no login.
 
-import { buildBrief } from './brief.js?v=bc7b86b967';
-import { KEEP_PER_VOICE } from './snapshot.js?v=bc7b86b967';
-import { rankPosts } from './rank.js?v=bc7b86b967';
-import { buildStorylines } from './storylines.js?v=bc7b86b967';
-import { byDid } from './voices.js?v=bc7b86b967';
-import { conflictOfNode } from './credibility.js?v=bc7b86b967';
+import { buildBrief } from './brief.js?v=355b4e7eab';
+import { KEEP_PER_VOICE } from './snapshot.js?v=355b4e7eab';
+import { rankPosts } from './rank.js?v=355b4e7eab';
+import { buildStorylines } from './storylines.js?v=355b4e7eab';
+import { byDid } from './voices.js?v=355b4e7eab';
+import { conflictOfNode, roleOf } from './credibility.js?v=355b4e7eab';
 
 const HOUR = 3_600_000;
 
@@ -192,7 +192,8 @@ export function liveView({ posts, hierarchy: h, node, now, windowHours = 1, look
       region: Boolean(n.map),
       // a small 3D model of the place (the White House…) instead of a plain bubble
       icon: n.icon,
-      breaking: 0, // set by makeLive.view from breakingNews
+      breaking: 0, // set by makeLive.view from alertNews
+      hot: 0,
       stories: mapChildren(h, id).length,
       count: recent.length,
       perHour: Math.round(perHour * 10) / 10,
@@ -371,61 +372,199 @@ export function regionSummary({ posts, hierarchy: h, node, now, recentHours = 6,
   };
 }
 
-// Breaking news (Amir, 24 Nov 2026): an update (one event, joined across
-// outlets) first seen under 3 hours ago that at least 3 independent outlets
-// reported within 90 minutes of the first report. State media from the same
-// country count as one outlet. Disputed updates are never breaking.
-export const BREAKING = { maxAgeHours: 3, withinMinutes: 90, outlets: 3 };
+// Breaking and Hot (Amir, 27 Nov 2026). The old single rule (3 outlets within
+// 90 minutes, 24 Nov) flagged what was really "hot": lots of outlets on the
+// same thing. Now there are two labels, both of which push:
+//
+//   Breaking  a new event in its first hour. The storyline (built over the
+//             last day, so an older story can't look new) starts with a report
+//             from an independent source, and at least 2 independent sources
+//             report an event (killed, strike, seized, resigns...) within 30
+//             minutes of that first report. Statements ("X says", "X urges"),
+//             plans and old news ("last week") don't count. It lasts 1 hour
+//             from the moment the second source came in.
+//   Hot       widely covered right now: 4+ independent sources in the last 6
+//             hours, or 3+ while its topic runs at 2x its usual pace, and a
+//             report in the last 2 hours. Statements can be hot.
+//
+// Independent sources are what can confirm a story (src/credibility.js roleOf):
+// outlets, reporters, OSINT and neutral officials. Analysts, partisan and
+// state-controlled outlets, and a side's own claims don't count; state media
+// from one country count once. Claimed and disputed storylines are neither.
+export const BREAKING = { lookbackHours: 24, withinMinutes: 30, witnesses: 2, lastsMinutes: 60 };
+export const HOT = { windowHours: 6, witnesses: 4, paceWitnesses: 3, pace: 2, paceHours: 2, paceMinPosts: 6, activeHours: 2 };
 
-/** Independent outlets: one per affiliation, one per country for state media. */
+/** Outlets: one per affiliation, one per country for state media (for counting reach). */
 export function outletKey(p) {
   const v = p.voice;
   if (!v) return p.did || p.handle || null;
   return v.stateAffiliated && v.country ? `state:${v.country}` : v.affiliation || p.did;
 }
 
-/** Is this storyline breaking now? Returns how many outlets have it, or 0. */
-export function breakingCount(s, now, rules = BREAKING) {
-  // Disputed updates never break, and neither do a side's own claims: breaking
-  // needs at least one independent source (source credibility plan, 26 Nov 2026).
-  if (s.status === 'disputed' || s.status === 'claimed') return 0;
-  const first = Date.parse(s.firstSeen);
-  if (!(now.getTime() - first < rules.maxAgeHours * HOUR)) return 0;
-  const early = new Set(s.posts.filter((p) => Date.parse(p.createdAt) - first <= rules.withinMinutes * 60_000).map(outletKey).filter(Boolean));
-  return early.size >= rules.outlets ? new Set(s.posts.map(outletKey).filter(Boolean)).size : 0;
+/** The independent source a post counts as, or null (analysts, echoes, claims, unknown accounts). */
+export function witnessOf(p, conflict) {
+  return roleOf(p, conflict ?? p.conflict).witness || null;
+}
+
+// Words that say something happened. Kept to concrete events; a story that
+// only has statements can still be hot.
+const EVENT_RE = new RegExp(
+  '\\b(?:' + [
+    'kill(?:s|ed|ing)?', 'dead', 'dies', 'died', 'death toll', 'wounded', 'injured', 'casualties',
+    'strikes?', 'struck', 'airstrikes?', 'attack(?:s|ed)?', 'explosions?', 'blasts?', 'explode[sd]?', 'bomb(?:s|ed|ing)?',
+    'shell(?:s|ed|ing)', 'shoots? down', 'shot down', 'intercept(?:s|ed)', 'downed', 'fired', 'launch(?:es|ed)',
+    'seiz(?:e|es|ed)', 'captur(?:e|es|ed)', 'hijack(?:s|ed)?', 'invad(?:e|es|ed)', 'incursion', 'raid(?:s|ed)?', 'ambush(?:es|ed)?',
+    'hostages?', 'crash(?:es|ed)?', 'sinks?', 'sank', 'sunk', 'hit(?:s)?', 'evacuat\\w*', 'earthquake',
+    'resign(?:s|ed)?', 'ousted', 'assassinat\\w*', 'arrest(?:s|ed)?', 'detain(?:s|ed)', 'coup', 'ceasefire', 'truce',
+    'clos(?:e|es|ed) (?:the |its |two |all )?(?:border|airspace|strait|crossings?|embassy)', 'violat(?:es|ed) (?:\\w+ )?airspace',
+    'deploy(?:s|ed)', 'mobiliz\\w*', 'declares?', 'released', 'freed',
+    'passe[sd]', 'vetoe[sd]', 'signs?', 'signed', 'blocks?', 'blocked', 'struck down', 'ruled?', 'rules', 'verdict', 'convicted', 'sentenced',
+    'indicted', 'impeach(?:ed)?', 'upholds?', 'upheld', 'overturn(?:s|ed)', 'strikes down', 'elected', 'wins', 'won', 'confirmed as', 'shutdown begins',
+  ].join('|') + ')\\b',
+  'i',
+);
+// Plans and maybes before the event word ("plans to", "threatens to").
+const MAYBE_RE = /\b(?:plans?|planning|threatens?|threatening|would|could|may|might|considering|weighs|mulls|proposes?|wants?|urges?|calls? for|vows?|warns?|if)\b/i;
+// Old news and anniversaries.
+const OLD_RE = /\b(?:last (?:week|month|year)|yesterday|earlier this (?:week|month|year)|years? ago|anniversary|posthumous\w*|in (?:january|february|march|april|may|june|july|august|september|october|november|december) 20\d\d|in 20\d\d)\b/i;
+
+/** The headline-ish text of a post (an article's title, a link card's title, or the post itself). */
+function eventText(p) {
+  const t = p.source === 'news' ? p.title || p.text : `${p.linkTitle || ''} ${p.text || ''}`;
+  return stripLinks(t).slice(0, 300);
+}
+
+/** Does this text report a concrete event that just happened? */
+export function isEventText(text) {
+  const t = String(text || '');
+  if (OLD_RE.test(t)) return false;
+  const m = EVENT_RE.exec(t);
+  if (!m) return false;
+  const maybe = MAYBE_RE.exec(t);
+  return !(maybe && maybe.index < m.index);
+}
+
+const timeOf = (p) => Date.parse(p.createdAt);
+
+/**
+ * Breaking? Returns {at (ms, when it broke), witnesses} or null.
+ * `s` must be built over the last day of posts, so an older story isn't new.
+ */
+export function breakingOf(s, now, rules = BREAKING) {
+  if (s.status === 'disputed' || s.status === 'claimed') return null;
+  const t = now.getTime();
+  const byTime = s.posts.filter((p) => !Number.isNaN(timeOf(p))).sort((a, b) => timeOf(a) - timeOf(b));
+  const conflict = s.conflict;
+  // The first independent report anchors it; a side's claims may come before.
+  const first = byTime.find((p) => witnessOf(p, conflict));
+  if (!first) return null;
+  const start = timeOf(first);
+  const seen = new Set();
+  let at = null;
+  for (const p of byTime) {
+    if (timeOf(p) < start) continue;
+    if (timeOf(p) - start > rules.withinMinutes * 60_000) break;
+    const w = witnessOf(p, conflict);
+    if (!w || !isEventText(eventText(p))) continue;
+    seen.add(w);
+    if (seen.size >= rules.witnesses) { at = timeOf(p); break; }
+  }
+  if (at == null || at > t + 5 * 60_000 || t - at >= rules.lastsMinutes * 60_000) return null;
+  return { at, witnesses: new Set(s.posts.map((p) => witnessOf(p, conflict)).filter(Boolean)).size };
 }
 
 /**
- * Breaking updates under a node, most outlets first. Each names the node its
- * posts are mostly about (a story, else a topic or region) so the map can
- * point at it.
+ * Hot? Returns {witnesses} or null. `topicPace` is how fast the storyline's
+ * topic runs against its usual (null when unknown).
  */
-export function breakingNews({ posts, hierarchy: h, node, now, rules = BREAKING }) {
+export function hotOf(s, now, { topicPace = null, rules = HOT } = {}) {
+  if (s.status === 'disputed' || s.status === 'claimed') return null;
+  const t = now.getTime();
+  const recent = s.posts.filter((p) => t - timeOf(p) < rules.windowHours * HOUR && timeOf(p) <= t + 5 * 60_000);
+  if (!recent.some((p) => t - timeOf(p) < rules.activeHours * HOUR)) return null;
+  const n = new Set(recent.map((p) => witnessOf(p, s.conflict)).filter(Boolean)).size;
+  if (n >= rules.witnesses || (n >= rules.paceWitnesses && topicPace != null && topicPace >= rules.pace)) return { witnesses: n };
+  return null;
+}
+
+/** 'breaking' | 'hot' | null, with the independent sources reporting it. */
+export function alertOf(s, now, { topicPace = null } = {}) {
+  const b = breakingOf(s, now);
+  if (b) return { kind: 'breaking', outlets: b.witnesses, at: b.at };
+  const hot = hotOf(s, now, { topicPace });
+  return hot ? { kind: 'hot', outlets: hot.witnesses } : null;
+}
+
+/** Outlets on a breaking storyline right now, or 0 (kept for older callers). */
+export function breakingCount(s, now) {
+  return breakingOf(s, now)?.witnesses || 0;
+}
+
+/** How fast each topic under a node runs: posts in the last `paceHours` per hour against the rest of the day. */
+function topicPaces(posts, h, now, rules = HOT, lookbackHours = BREAKING.lookbackHours) {
+  const t = now.getTime();
+  const counts = new Map();
+  for (const p of posts) {
+    const age = t - timeOf(p);
+    if (!(age < lookbackHours * HOUR)) continue;
+    for (const id of [p.topicId, ...h.ancestors(p.topicId)]) {
+      const c = counts.get(id) || { recent: 0, earlier: 0 };
+      if (age < rules.paceHours * HOUR) c.recent++; else c.earlier++;
+      counts.set(id, c);
+    }
+  }
+  const pace = new Map();
+  for (const [id, c] of counts) {
+    if (c.recent < rules.paceMinPosts) continue;
+    const usual = c.earlier / (lookbackHours - rules.paceHours);
+    pace.set(id, usual > 0 ? c.recent / rules.paceHours / usual : Infinity);
+  }
+  return pace;
+}
+
+/**
+ * Breaking and hot updates under a node: breaking first, then most sources.
+ * Each has `kind` ('breaking' | 'hot') and names the node its posts are mostly
+ * about (a story, else a topic or region) so the map can point at it.
+ */
+export function alertNews({ posts, hierarchy: h, node, now, lookbackHours = BREAKING.lookbackHours }) {
   const scope = new Set([node, ...h.descendants(node)]);
   const t = now.getTime();
-  // An update can start up to 3h ago and its posts come after that.
-  const recent = posts.filter((p) => scope.has(p.topicId) && t - Date.parse(p.createdAt) < rules.maxAgeHours * HOUR && Date.parse(p.createdAt) <= t + 5 * 60_000);
+  const recent = posts.filter((p) => scope.has(p.topicId) && t - timeOf(p) < lookbackHours * HOUR && timeOf(p) <= t + 5 * 60_000);
+  const paces = topicPaces(recent, h, now);
   return buildStorylines(recent)
-    .map((s) => ({ s, outlets: breakingCount(s, now, rules) }))
-    .filter((x) => x.outlets)
-    .sort((a, b) => b.outlets - a.outlets || Date.parse(b.s.firstSeen) - Date.parse(a.s.firstSeen))
-    .map(({ s, outlets }) => {
+    .map((s) => ({ s, a: alertOf(s, now, { topicPace: paces.get(mainTopic(s.posts)) ?? null }) }))
+    .filter((x) => x.a)
+    .sort((x, y) => Number(y.a.kind === 'breaking') - Number(x.a.kind === 'breaking') || y.a.outlets - x.a.outlets || Date.parse(y.s.firstSeen) - Date.parse(x.s.firstSeen))
+    .map(({ s, a }) => {
       const topicId = mainTopic(s.posts);
       return {
         id: s.lead.uri,
+        kind: a.kind,
         headline: headlineOf(s.lead),
         url: s.lead.url,
-        outlets,
-        // independent outlets by name, for push notifications ("including Reuters and BBC")
-        names: [...new Set(s.posts.filter((p) => p.voice && !p.voice.stateAffiliated).map((p) => p.voice.affiliation || p.voice.name).filter(Boolean))].slice(0, 3),
+        outlets: a.outlets,
+        // independent sources by name, for push notifications ("including Reuters and BBC")
+        names: [...new Set(s.posts.filter((p) => witnessOf(p, s.conflict) && !p.voice.stateAffiliated).map((p) => p.voice.affiliation || p.voice.name).filter(Boolean))].slice(0, 3),
         uris: s.posts.map((p) => p.uri),
         status: s.status,
         firstSeen: s.firstSeen,
+        ...(a.at ? { brokeAt: new Date(a.at).toISOString() } : {}),
         topicId,
         topicLabel: h.get(topicId).label,
         trail: trail(h, topicId).map((x) => x.id),
       };
     });
+}
+
+/** Only the breaking ones (see alertNews). */
+export function breakingNews(o) {
+  return alertNews(o).filter((x) => x.kind === 'breaking');
+}
+
+/** Only the hot ones (see alertNews). */
+export function hotNews(o) {
+  return alertNews(o).filter((x) => x.kind === 'hot');
 }
 
 /** Regions under a node that have their own map (Middle East, Eastern Europe…). */
@@ -492,6 +631,7 @@ export function makeLive({ client, hierarchy: h, voices, node = 'geopolitics', l
   let posts = [];
   let voiceIndex = new Map();
   let meta = { voices: 0, articles: 0, outlets: 0, newsUpdatedAt: null, missingVoices: [], errors: [] };
+  let alertCache = { key: null, list: [] };
 
   return {
     /** Full reload from Bluesky (author feeds of every voice). */
@@ -576,10 +716,17 @@ export function makeLive({ client, hierarchy: h, voices, node = 'geopolitics', l
       const home = world && h.get(node).map;
       const v = world && !home ? worldView({ ...args, node }) : liveView({ ...args, node: world ? node : region });
       const summary = world && !home ? null : regionSummary({ posts, hierarchy: h, node: world ? node : region, now, lookbackHours });
-      // Breaking news anywhere we follow (the strip), and which bubbles it sits under.
-      const breaking = breakingNews({ posts, hierarchy: h, node, now });
-      for (const a of v.areas) a.breaking = breaking.filter((b) => b.trail.includes(a.id)).length;
-      return { ...v, summary, breaking, ...meta };
+      // Breaking and hot news anywhere we follow (the strip), and which bubbles
+      // they sit under. Worked out over the last day, so kept for a minute.
+      const key = `${posts.length}|${posts.at(-1)?.uri}|${Math.floor(now.getTime() / 60_000)}`;
+      if (alertCache.key !== key) alertCache = { key, list: alertNews({ posts, hierarchy: h, node, now }) };
+      const breaking = alertCache.list.filter((b) => b.kind === 'breaking');
+      const hot = alertCache.list.filter((b) => b.kind === 'hot');
+      for (const a of v.areas) {
+        a.breaking = breaking.filter((b) => b.trail.includes(a.id)).length;
+        a.hot = hot.filter((b) => b.trail.includes(a.id)).length;
+      }
+      return { ...v, summary, breaking, hot, ...meta };
     },
   };
 }
