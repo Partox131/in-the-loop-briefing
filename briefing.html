@@ -30,7 +30,7 @@
 <style>
   :root {
     --bg: #F5F6F8; --raise: #FFFFFF; --ink: #1D2147; --muted: #5B6080; --line: #E2E5EF; --track: #E2E5EF;
-    --loop: #3047D6; --on-loop: #FFFFFF; --bars: #B9C1E6;
+    --loop: #3047D6; --on-loop: #FFFFFF; --bars: #B9C1E6; --sea: #E9ECF8;
     --reported: #8A5608; --reported-dot: #C27A10;
     --confirmed: #0F6B5C; --disputed: #9B2C74; --new: #3047D6; --breaking: #C8102E;
     --warn: #8A5608; --banner-bg: #FBEFD8;
@@ -41,7 +41,7 @@
   @media (prefers-color-scheme: dark) {
     :root {
       --bg: #12142B; --raise: #1B1E3B; --ink: #E7E9F5; --muted: #A3A8C8; --line: #2C3056; --track: #2A2E52;
-      --loop: #7C8FFF; --on-loop: #12142B; --bars: #4A5390;
+      --loop: #7C8FFF; --on-loop: #12142B; --bars: #4A5390; --sea: #0D0F22;
       --reported: #F0C27A; --reported-dot: #E0A040;
       --confirmed: #7FD6C2; --disputed: #F0A8D6; --new: #9DB0FF; --breaking: #FF6B6B;
       --warn: #F0C27A; --banner-bg: #3A2E14;
@@ -70,9 +70,17 @@
   .seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); font-weight: 600; }
 
   .hero { display: grid; grid-template-columns: minmax(260px, 420px) minmax(0, 1fr); gap: 24px 64px; align-items: center; padding: 16px 56px 40px; max-width: 1360px; margin: 0 auto; }
-  .dial { width: 100%; height: auto; display: block; }
-  .dial text { font-family: var(--body); fill: var(--muted); }
-  .dial .big { font: 800 64px var(--display); fill: var(--ink); }
+  .hero.one { grid-template-columns: minmax(0, 1fr); } .hero.one > div { max-width: 860px; }
+  /* Mini map of where this page's storylines are (replaced the 24-hour dial, Amir 27 Nov 2026). */
+  .mini { margin: 0; background: var(--raise); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
+  .mini a.mapbox { display: block; aspect-ratio: 4 / 3; background: var(--sea); }
+  .mini svg { display: block; width: 100%; height: 100%; }
+  .mini .land { fill: var(--bg); stroke: var(--line); }
+  .mini .water { fill: var(--sea); stroke: none; } .mini .park { fill: color-mix(in srgb, var(--confirmed) 10%, var(--bg)); stroke: none; }
+  .mini .pin text { font-family: var(--body); font-weight: 800; fill: #fff; }
+  .mini figcaption { display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 10px 14px; font-size: 14px; color: var(--muted); border-top: 1px solid var(--line); }
+  .mini figcaption a { color: var(--loop); font-weight: 600; text-decoration: none; white-space: nowrap; }
+  .mini figcaption a:hover { text-decoration: underline; }
   h1 { margin: 0; font: 800 clamp(48px, 7vw, 80px)/1 var(--display); letter-spacing: -0.03em; }
   .sub { margin: 14px 0 0; color: var(--muted); font-size: 17px; max-width: 60ch; }
   .breakingtag { display: inline-block; margin-bottom: 8px; padding: 2px 10px; border-radius: 999px; background: var(--breaking); color: #fff; font-size: 13px; font-weight: 700; letter-spacing: .04em; }
@@ -167,7 +175,7 @@
   @media (prefers-reduced-motion: reduce) { .loopspin .a, .loopspin .d { animation-duration: 4s; } }
   @media (max-width: 860px) {
     .hero { grid-template-columns: 1fr; }
-    .dial { max-width: 340px; margin: 0 auto; }
+    .mini { order: 2; width: 100%; max-width: 560px; }
   }
   @media (max-width: 640px) {
     header.top, .hero, main { padding-left: 16px; padding-right: 16px; }
@@ -197,7 +205,7 @@
 </head>
 <body>
 <div id="app"><div class="loading" role="status"><svg class="loopspin" viewBox="0 0 64 64" aria-hidden="true"><circle class="t" cx="32" cy="32" r="20"/><circle class="a" cx="32" cy="32" r="20"/><circle class="d" cx="32" cy="32" r="7"/></svg><span>Loading the latest…</span></div></div>
-<script>window.itlSearch = location.search; window.itlStatic = import('./src/static.js?v=8dcab853bf').then((m) => m.init({ search: window.itlSearch }));</script>
+<script>window.itlSearch = location.search; window.itlStatic = import('./src/static.js?v=f214693485').then((m) => m.init({ search: window.itlSearch }));</script>
 <script>
 (() => {
   const params = new URLSearchParams(location.search);
@@ -271,49 +279,48 @@
   const KIND = { new: 'New', disputed: 'Disputed', corroborated: 'Confirmed', official: 'Confirmed' };
   const DAY = 86400000;
 
-  // The 24-hour loop: now at the top, the past running anticlockwise.
-  const angleOf = (t, now) => 360 - (Math.min(DAY, Math.max(0, now - t)) / DAY) * 360;
-  const pt = (a, r) => { const t = (a * Math.PI) / 180; return [200 + r * Math.sin(t), 200 - r * Math.cos(t)].map((v) => v.toFixed(1)); };
+  // The mini map: the region's outlines (public/maps.json, loaded once, the
+  // live map shares the browser cache) with a pin per place that has storylines.
+  let mapsP = null;
+  const mapViews = () => (mapsP ||= fetch('maps.json').then((r) => (r.ok ? r.json() : null)).then((j) => j && j.views).catch(() => { mapsP = null; return null; }));
+  const PIN = { disputed: 'disputed', corroborated: 'confirmed', reported: 'reported-dot', claimed: 'reported-dot' };
 
-  function dial(d, c) {
-    const now = Date.parse(d.generatedAt);
-    const max = Math.max(1, ...d.activity.map((b) => b.count));
-    const bars = d.activity.map((b) => {
-      const a = angleOf(Date.parse(b.hour) + 1800000, now);
-      const len = b.count ? 6 + (b.count / max) * 44 : 0;
-      if (!len) return '';
-      const [x1, y1] = pt(a, 138); const [x2, y2] = pt(a, 138 - len);
-      return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--bars)" stroke-width="6" stroke-linecap="round"/>`;
+  function miniSvg(v, m) {
+    const P = (lon, lat) => [((lon - v.west) / (v.east - v.west)) * v.width, ((v.north - lat) / (v.north - v.south)) * v.height];
+    // Crop around the pins (and the place this page is about), 4:3, never tighter than 45% of the region.
+    const pts = [...m.pins, ...(m.focus ? [m.focus] : [])].map((p) => P(p.lon, p.lat));
+    const city = !v.countries.length;
+    let [x0, y0, x1, y1] = pts.length && !city ? [Math.min(...pts.map((p) => p[0])), Math.min(...pts.map((p) => p[1])), Math.max(...pts.map((p) => p[0])), Math.max(...pts.map((p) => p[1]))] : [0, 0, v.width, v.height];
+    let w = Math.max(x1 - x0, v.width * 0.45), h = Math.max(y1 - y0, (w * 3) / 4);
+    w = Math.max(w, (h * 4) / 3); w *= city ? 1 : 1.3; h = (w * 3) / 4;
+    let cx = (x0 + x1) / 2 - w / 2, cy = (y0 + y1) / 2 - h / 2;
+    cx = Math.min(Math.max(cx, Math.min(0, v.width - w)), Math.max(0, v.width - w));
+    cy = Math.min(Math.max(cy, Math.min(0, v.height - h)), Math.max(0, v.height - h));
+    const sw = w / 420; // one screen pixel, roughly
+    const shapes = city
+      ? ((v.city && v.city.shapes) || []).map((x) => x.kind.startsWith('road') ? `<path d="${x.d}" fill="none" stroke="var(--line)" stroke-width="${(x.kind === 'road major' ? 4 : 2) * sw}"/>` : `<path class="${x.kind === 'water' ? 'water' : x.kind === 'park' ? 'park' : 'land'}" d="${x.d}" stroke-width="${sw}"/>`).join('')
+      : [...v.countries, ...(v.states || [])].map((x) => `<path class="land" d="${x.d}" stroke-width="${(v.states && v.states.includes(x) ? 0.8 : 1.2) * sw}"/>`).join('');
+    const pins = m.pins.map((p) => {
+      const [x, y] = P(p.lon, p.lat);
+      const r = 11 * sw, here = m.focus && m.focus.id === p.id;
+      return `<g class="pin"><title>${esc(p.label)}: ${plural(p.count, 'storyline')}</title><circle cx="${x}" cy="${y}" r="${r * (1.5 + Math.min(p.count, 6) * 0.25)}" fill="var(--${PIN[p.status] || 'confirmed'})" opacity=".18"/><circle cx="${x}" cy="${y}" r="${r}" fill="var(--${PIN[p.status] || 'confirmed'})" stroke="${here ? 'var(--ink)' : 'var(--raise)'}" stroke-width="${3 * sw}"/><text x="${x}" y="${y + 4.5 * sw}" text-anchor="middle" font-size="${13 * sw}">${p.count}</text></g>`;
     }).join('');
-    let arc = '';
-    if (!c.first) {
-      const span = Math.min(DAY, now - c.at);
-      if (span >= DAY - 60000) arc = '<circle cx="200" cy="200" r="160" fill="none" stroke="var(--loop)" stroke-width="22"/>';
-      else if (span > 0) {
-        const [x, y] = pt(angleOf(c.at, now), 160);
-        arc = `<path d="M${x} ${y} A160 160 0 ${span > DAY / 2 ? 1 : 0} 1 200 40" fill="none" stroke="var(--loop)" stroke-width="22" stroke-linecap="round"/>`;
-      }
-    }
-    const dots = d.stories.filter((s) => now - Date.parse(s.firstSeen) < DAY).map((s) => {
-      const [x, y] = pt(angleOf(Date.parse(s.firstSeen), now), 160);
-      return `<circle cx="${x}" cy="${y}" r="9" fill="var(--${s.status === 'disputed' ? 'disputed' : s.status === 'reported' || s.status === 'claimed' ? 'reported-dot' : 'confirmed'})" stroke="var(--bg)" stroke-width="3"><title>${esc(title(s.lead.text))}</title></circle>`;
-    }).join('');
-    const marks = [[6, '6h ago'], [12, '12h ago'], [18, '18h ago']].map(([h, l]) => {
-      const [x, y] = pt(360 - h * 15, 194);
-      return `<text x="${x}" y="${y}" font-size="13" text-anchor="middle" dominant-baseline="middle">${l}</text>`;
-    }).join('');
-    const count = c.first ? d.stories.length : c.items.length;
-    const line1 = c.first ? (count === 1 ? 'storyline in the' : 'storylines in the') : (count === 1 ? 'change since you' : 'changes since you');
-    const line2 = c.first ? 'last 24 hours' : `looked at ${esc(clock(new Date(c.at).toISOString()))}`;
-    const label = c.first ? `${count} storylines in the last 24 hours.` : `${count} changes since you last looked, ${ago(new Date(c.at).toISOString())}.`;
-    return `<svg class="dial" viewBox="-30 -30 460 460" role="img" aria-label="The last 24 hours as a loop, now at the top. ${esc(label)}">
-      <circle cx="200" cy="200" r="160" fill="none" stroke="var(--track)" stroke-width="22"/>
-      ${arc}${bars}${dots}${marks}
-      <text x="200" y="12" font-size="13" text-anchor="middle" font-weight="600" style="fill:var(--ink)">Now</text>
-      <text class="big" x="200" y="190" text-anchor="middle">${count}</text>
-      <text x="200" y="222" font-size="17" text-anchor="middle">${line1}</text>
-      <text x="200" y="244" font-size="17" text-anchor="middle">${line2}</text>
-    </svg>`;
+    return `<svg viewBox="${cx.toFixed(1)} ${cy.toFixed(1)} ${w.toFixed(1)} ${h.toFixed(1)}" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${shapes}${pins}</svg>`;
+  }
+
+  function miniMap(d) {
+    const m = d.mini;
+    const n = m.pins.reduce((a, p) => a + p.count, 0);
+    const where = m.pins.length ? `${plural(n, 'storyline')} in ${plural(m.pins.length, 'place')}` : 'No storylines with a place yet';
+    return `<figure class="mini"><a class="mapbox" href="${mapHref(d)}" aria-label="Open on the live map. ${esc(where)}." data-view="${esc(m.view)}"></a><figcaption><span>${esc(where)}, last ${esc(state.since)}</span><a href="${mapHref(d)}">Open on the map →</a></figcaption></figure>`;
+  }
+
+  async function fillMini(d) {
+    const box = document.querySelector('.mini .mapbox');
+    if (!box) return;
+    const views = await mapViews();
+    const v = views && views[d.mini.view];
+    if (v && box.isConnected) box.innerHTML = miniSvg(v, d.mini);
   }
 
   function sinceList(d, c) {
@@ -483,8 +490,8 @@
         </div>
         <div class="seg" role="group" aria-label="Time window">${WINDOWS.map((w) => `<button data-since="${w}" aria-pressed="${w === state.since}">${w}</button>`).join('')}</div>
       </header>
-      <section class="hero">
-        ${dial(d, c)}
+      <section class="hero${d.mini ? '' : ' one'}">
+        ${d.mini ? miniMap(d) : ''}
         <div>
           ${d.node.kind ? `<p class="kind">${d.node.kind === 'story' ? `Story · ${esc(d.crumbs.at(-2)?.label || '')}` : d.node.kind === 'topic' ? 'Topic' : 'Region'}</p>` : ''}
           <h1>${esc(d.node.label)}</h1>
@@ -507,6 +514,7 @@
       </main>`;
     app.querySelectorAll('[data-lens]').forEach((b) => b.addEventListener('click', () => { window.itlTrack?.('briefing_filter', { filter: 'lens', value: b.dataset.lens, node: d.node.id }); state.lens = b.dataset.lens; render(); }));
     app.querySelectorAll('[data-since]').forEach((b) => b.addEventListener('click', () => { window.itlTrack?.('briefing_filter', { filter: 'since', value: b.dataset.since, node: d.node.id }); state.since = b.dataset.since; load(); }));
+    if (d.mini) fillMini(d);
     const mr = app.querySelector('#markread');
     if (mr) mr.addEventListener('click', () => { saveSeen(d.node.id, d); state.baseline = loadSeen(d.node.id); render(); });
   }

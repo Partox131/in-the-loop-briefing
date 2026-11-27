@@ -6,7 +6,7 @@
 // it, but higher nodes use a longer time window and only surface the top few
 // items per child. See docs/design/topic-tracking.md.
 
-import { compileMatcher, compileTerm, makeTopic } from './topic.js?v=8dcab853bf';
+import { compileMatcher, compileTerm, makeTopic } from './topic.js?v=f214693485';
 
 /**
  * @typedef {Object} TopicNode
