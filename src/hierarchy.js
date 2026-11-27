@@ -6,7 +6,22 @@
 // it, but higher nodes use a longer time window and only surface the top few
 // items per child. See docs/design/topic-tracking.md.
 
-import { compileMatcher, compileTerm, makeTopic } from './topic.js?v=8f2b475557';
+import { compileMatcher, compileTerm, makeTopic } from './topic.js?v=bc7b86b967';
+import { USA, WORLD } from './places.js?v=bc7b86b967';
+
+// "@world" / "@usa" in `abroad` stand for the place lists in src/places.js.
+const PLACE_LISTS = { '@world': WORLD, '@usa': USA };
+const expand = (terms) => (terms || []).flatMap((t) => PLACE_LISTS[t] || [t]);
+/**
+ * A term for `home`: lowercase terms as usual; "=US" matches exactly that case
+ * in the original text, so the country "US" is not the word "us".
+ */
+const compileHome = (term) => {
+  if (!term.startsWith('=')) return compileTerm(term);
+  const word = term.slice(1).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const re = new RegExp(`(^|[^\\p{L}\\p{N}_])${word}(?![\\p{L}\\p{N}_])`, 'u');
+  return (text, tags, raw) => re.test(raw);
+};
 
 /**
  * @typedef {Object} TopicNode
@@ -30,6 +45,14 @@ export function makeHierarchy(spec) {
     // gate: terms a post must also contain to count anywhere under this node
     // (Geopolitics uses it so "Taiwan" film-award news stays off the map).
     const gate = n.gate?.length ? n.gate.map(compileTerm) : null;
+    // abroad + home: a post that names somewhere else (the UK, Venice) only
+    // counts under this gated node if it also names a `home` term, something
+    // unmistakably from here ("Trump", "Congress"). Words like "immigration"
+    // or "2028" pass a gate in any country; this keeps UK migration figures
+    // and the 2028 Venice Biennale out of US politics. Applies to the
+    // segment's own sources too (a Canadian outlet's story about Trump alone).
+    const abroad = n.abroad?.length ? expand(n.abroad).map(compileTerm) : null;
+    const home = (n.home || []).map(compileHome);
     // spots: the cities a story spans (strikes inside Russia hit many), each a
     // small dot on the map when posts name it: { name, lon, lat, terms }.
     const spots = (n.spots || []).map((x) => ({ name: x.name, lon: x.lon, lat: x.lat, test: (x.terms || [x.name]).map(compileTerm) }));
@@ -40,7 +63,7 @@ export function makeHierarchy(spec) {
     // about: one hand-written line saying what a topic or story is (shown on the map and story page).
     // ownSources: a segment whose sources only cover it (Canadian outlets): their
     // posts pass its gate without naming Canada, and stay out of other segments.
-    nodes.set(id, { id, label: n.label || id, about: n.about || '', spots, stages, parents, topic, gate, ownSources: Boolean(n.ownSources), lenses: n.lenses || {}, place: n.place || null, map: n.map || null, icon: n.icon || null });
+    nodes.set(id, { id, label: n.label || id, about: n.about || '', spots, stages, parents, topic, gate, ownSources: Boolean(n.ownSources), lenses: n.lenses || {}, abroad, home, place: n.place || null, map: n.map || null, icon: n.icon || null });
   }
   const children = new Map([...nodes.keys()].map((id) => [id, []]));
   for (const n of nodes.values()) {
@@ -122,9 +145,15 @@ export function makeHierarchy(spec) {
     out = out.filter((m) => under(m.id, root));
     const gates = gated.filter((g) => under(root, g) || under(g, root));
     if (!gates.length || !out.length) return out;
-    const text = (post.text || '').toLowerCase();
+    const raw = post.text || '';
+    const text = raw.toLowerCase();
     const tags = new Set((post.tags || []).map((t) => t.toLowerCase()));
-    return out.filter((m) => gates.every((g) => !under(m.id, g) || ownedBy(source, g) || get(g).gate.some((test) => test(text, tags))));
+    const local = (g) => {
+      const { abroad, home } = get(g);
+      return !abroad || !abroad.some((test) => test(text, tags)) || home.some((test) => test(text, tags, raw));
+    };
+    const pass = new Map(gates.map((g) => [g, (ownedBy(source, g) || get(g).gate.some((test) => test(text, tags))) && local(g)]));
+    return out.filter((m) => gates.every((g) => !under(m.id, g) || pass.get(g)));
   };
 
   /**
