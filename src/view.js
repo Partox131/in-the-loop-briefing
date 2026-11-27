@@ -1,8 +1,8 @@
 // Turn a brief (see brief.js) into the JSON the briefing web page renders.
 // Kept separate from the server so it's easy to test and to reuse.
 
-import { breakingCount, headlineOf, isTopic, segmentOf, stageTrack, trail } from './live.js?v=bc7b86b967';
-import { TIER_NAME } from './voices.js?v=bc7b86b967';
+import { alertOf, headlineOf, isTopic, segmentOf, stageTrack, trail } from './live.js?v=355b4e7eab';
+import { TIER_NAME } from './voices.js?v=355b4e7eab';
 
 const HOUR = 3_600_000;
 // Story statuses that make the Key developments list.
@@ -93,7 +93,7 @@ export function briefView(brief, h, { now = new Date() } = {}) {
     crumbs.unshift({ id: n.id, label: n.label });
     if (!n.parents.length) break;
   }
-  const stories = brief.stories.map((s) => ({
+  const stories = brief.stories.map((s) => ({ s, alert: alertOf(s, now) })).map(({ s, alert }) => ({
     // Stable id for "since you last checked": the storyline's earliest post.
     id: [...s.posts].sort((a, b) => Date.parse(a.createdAt) - Date.parse(b.createdAt))[0].uri,
     status: s.status,
@@ -103,8 +103,9 @@ export function briefView(brief, h, { now = new Date() } = {}) {
     sides: s.sides || [],
     firstClaim: s.firstClaim || null,
     firstWitness: s.firstWitness || null,
-    // outlets reporting it if it's breaking news right now, else 0
-    breaking: breakingCount(s, now),
+    // independent sources reporting it if it's breaking (or hot) right now, else 0
+    breaking: alert?.kind === 'breaking' ? alert.outlets : 0,
+    hot: alert?.kind === 'hot' ? alert.outlets : 0,
     lead: postView(s.lead),
     // a clean one-line headline: article or link-card title, else the post's first sentence, no web addresses
     headline: headlineOf(s.lead),
@@ -123,8 +124,9 @@ export function briefView(brief, h, { now = new Date() } = {}) {
     disagreements: s.disagreements.map(disagreementView),
     related: s.posts.slice(1, 4).map(postView),
   }));
-  // Breaking news goes first (stable: the rest keep their ranking).
-  stories.sort((a, b) => Number(b.breaking > 0) - Number(a.breaking > 0));
+  // Breaking news goes first, then hot (stable: the rest keep their ranking).
+  const rank = (x) => (x.breaking ? 2 : x.hot ? 1 : 0);
+  stories.sort((a, b) => rank(b) - rank(a));
   // Where the node sits on the live map: region > broad topic > story.
   const onMap = trail(h, id);
   const seg = segmentOf(h, id);

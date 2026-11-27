@@ -12,12 +12,12 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { BskyClient } from '../src/bsky.js?v=bc7b86b967';
-import { buildBrief } from '../src/brief.js?v=bc7b86b967';
-import { makeHierarchy } from '../src/hierarchy.js?v=bc7b86b967';
-import { newsPosts } from '../src/news.js?v=bc7b86b967';
-import { makeVoice } from '../src/voices.js?v=bc7b86b967';
-import { breakingNews, regionSummary, regionsOf } from '../src/live.js?v=bc7b86b967';
+import { BskyClient } from '../src/bsky.js?v=355b4e7eab';
+import { buildBrief } from '../src/brief.js?v=355b4e7eab';
+import { makeHierarchy } from '../src/hierarchy.js?v=355b4e7eab';
+import { newsPosts } from '../src/news.js?v=355b4e7eab';
+import { makeVoice } from '../src/voices.js?v=355b4e7eab';
+import { alertNews, regionSummary, regionsOf } from '../src/live.js?v=355b4e7eab';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const HOUR = 3_600_000;
@@ -35,7 +35,8 @@ export function areasOf(h) {
 const STATUS_WORD = { corroborated: 'confirmed by several outlets', official: 'confirmed officially', disputed: 'disputed', reported: 'reported, not yet confirmed', claimed: "one side's claim" };
 
 /** Shape one area's summary for the drafts: plain fields, outlet names, no post bodies. */
-export function socialArea(area, sum, breaking) {
+export function socialArea(area, sum, alerts) {
+  const pick = (b) => ({ headline: b.headline, url: b.url || null, outlets: b.outlets, names: b.names, place: b.topicLabel, firstSeen: b.firstSeen });
   const names = (s) => (s.sources || []).map((x) => (typeof x === 'string' ? x : x.name || x.affiliation || x.handle)).filter(Boolean);
   return {
     ...area,
@@ -56,7 +57,9 @@ export function socialArea(area, sum, breaking) {
       firstSeen: s.firstSeen,
       lastSeen: s.lastSeen,
     })),
-    breaking: breaking.slice(0, 3).map((b) => ({ headline: b.headline, url: b.url || null, outlets: b.outlets, names: b.names, place: b.topicLabel, firstSeen: b.firstSeen })),
+    // breaking: a new event in its first hour; hot: widely covered now (src/live.js alertNews)
+    breaking: alerts.filter((b) => (b.kind || 'breaking') === 'breaking').slice(0, 3).map(pick),
+    hot: alerts.filter((b) => b.kind === 'hot').slice(0, 3).map(pick),
   };
 }
 
@@ -85,7 +88,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   const brief = await buildBrief({ client: new BskyClient(), hierarchy, node: 'politics', voices, now, since: new Date(now - 24 * HOUR), search: false, news: newsPosts(newsDoc), perVoice: 150 });
   const areas = areasOf(hierarchy).map((a) => socialArea(a,
     regionSummary({ posts: brief.posts, hierarchy, node: a.id, now, topN: 8 }),
-    breakingNews({ posts: brief.posts, hierarchy, node: a.id, now })));
+    alertNews({ posts: brief.posts, hierarchy, node: a.id, now })));
   const doc = { generatedAt: now.toISOString(), site: SITE, hours: 24, areas, errors: brief.errors.length };
   mkdirSync(o.out, { recursive: true });
   writeFileSync(join(o.out, 'social.json'), JSON.stringify(doc, null, 2) + '\n');

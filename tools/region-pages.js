@@ -9,7 +9,7 @@
 // server's snapshot and rewrites them with the last 24 hours. No AI: the
 // summary is counts and the lead headlines of the biggest stories, as on the map.
 
-import { isTopic, mapChildren, regionsOf } from '../src/live.js?v=bc7b86b967';
+import { isTopic, mapChildren, regionsOf } from '../src/live.js?v=355b4e7eab';
 
 export const SITE = 'https://inthelooplive.com/';
 
@@ -259,7 +259,9 @@ export function renderAbout({ counts, analytics = '' }) {
   <li><span class="st official">Official</span>: an official account (a government, army or agency) is a source.</li>
   <li><span class="st reported">Reported once</span>: one source so far. Worth watching, not yet confirmed.</li>
   <li><span class="st disputed">Sources disagree</span>: credible sources contradict each other on the facts.</li>
-  <li><b>Breaking</b>: first seen less than 3 hours ago and reported by at least 3 independent outlets within 90 minutes. State media from the same country count as one outlet, and a disputed story is never breaking.</li>
+  <li><b>Breaking</b>: a new event (a strike, an arrest, a resignation, a vote), reported by at least 2 independent sources within 30 minutes of the first report. It stays breaking for an hour. Statements, plans and old news are never breaking.</li>
+  <li><b>Hot</b>: a story widely covered right now: at least 4 independent sources in the last 6 hours, or 3 while its topic is running at twice its usual pace.</li>
+  <li>Independent sources are outlets, reporters and neutral officials. Analysts, partisan and state-controlled outlets don't count, state media from one country count once, and a side's own claims or a disputed story are never breaking or hot.</li>
 </ul>
 
 <h2>Political lean</h2>
@@ -296,7 +298,7 @@ export function renderPrivacy({ analytics = '', updated = '26 November 2026' } =
 <p>We haven't started sending yet. When we do, you'll first get one email asking you to confirm; if you don't, you won't hear from us again. Every email will have a one-click unsubscribe link, and will say who it's from.</p>
 <p>When we start sending, the emails will go out through an email delivery service, which will process your address only to deliver them. We'll name it here before the first email.</p>
 
-<h2>Breaking news alerts</h2>
+<h2>News alerts</h2>
 <p>If you turn on alerts (the bell on the map), your browser gives us an address at its push service (Google, Mozilla, Apple or Microsoft) that only lets us send notifications to that browser. We keep it on our own server in Canada with the topics you picked, your time zone (so quiet hours work) and which alerts we sent you, for 30 days. It isn't linked to your name, email or IP address. The alerts themselves are encrypted so the push service can't read them.</p>
 <p>To stop them, open the bell and press "Turn off alerts", or block notifications for this site in your browser; either way we delete the address.</p>
 
