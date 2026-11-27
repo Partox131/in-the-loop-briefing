@@ -264,6 +264,8 @@
     "parent": "politics",
     "segment": true,
     "gate": ["congress", "congressional", "congressman", "congresswoman", "senate", "senator", "senators", "house speaker", "speaker johnson", "house republicans", "house democrats", "republican", "republicans", "democrat", "democrats", "democratic party", "gop", "maga", "white house", "trump administration", "oval office", "executive order", "executive orders", "supreme court", "scotus", "federal judge", "district judge", "appeals court", "justice department", "department of justice", "doj", "fbi", "attorney general", "federal reserve", "fed chair", "governor", "governors", "state legislature", "midterm", "midterms", "2028", "primary", "redistricting", "gerrymander*", "impeach*", "filibuster", "capitol hill", "war powers", "house votes", "house vote", "house passes", "senate votes", "senate vote", "senate passes", "shutdown", "appropriations", "tariff", "tariffs", "immigration", "deportation", "deportations", "ice agents", "national guard", "#uspol", "#uspolitics"],
+    "abroad": ["@world", "canada", "canada's", "canadian", "canadians", "ottawa", "carney", "poilievre", "queen's park", "ontario", "quebec", "alberta", "british columbia"],
+    "home": ["=US", "=U.S.", "u.s.", "usa", "united states", "america", "american", "americans", "washington", "d.c.", "trump", "vance", "biden", "obama", "white house", "oval office", "pentagon", "congress", "congressional", "capitol hill", "house republicans", "house democrats", "house speaker", "speaker johnson", "senate votes", "senate vote", "senate passes", "house votes", "house vote", "house passes", "war powers", "republican", "republicans", "democrat", "democrats", "democratic party", "gop", "maga", "scotus", "doj", "fbi", "ice agents", "border patrol", "federal reserve", "midterm", "midterms", "#uspol", "#uspolitics", "alabama", "alaska", "arizona", "arkansas", "california", "colorado", "connecticut", "delaware", "florida", "hawaii", "idaho", "illinois", "indiana", "iowa", "kansas", "kentucky", "louisiana", "maine", "maryland", "massachusetts", "michigan", "minnesota", "mississippi", "missouri", "montana", "nebraska", "nevada", "new hampshire", "new jersey", "new mexico", "new york", "north carolina", "north dakota", "ohio", "oklahoma", "oregon", "pennsylvania", "rhode island", "south carolina", "south dakota", "tennessee", "texas", "utah", "vermont", "virginia", "washington state", "west virginia", "wisconsin", "wyoming", "chicago", "los angeles", "minneapolis", "portland", "atlanta", "philadelphia", "new york city", "nyc"],
     "map": "usa"
   },
   "washington": {
@@ -428,6 +430,13 @@
     "include": ["federal reserve", "the fed", "fed chair", "fomc", "interest rate", "interest rates", "rate cut", "rate cuts", "rate hike"],
     "place": { "lon": -77.0457, "lat": 38.8928 }
   },
+  "economic-data": {
+    "label": "Economic data",
+    "about": "Official numbers on jobs, prices and growth, and the fights over them.",
+    "parent": "agencies",
+    "include": ["gdp", "jobs report", "jobs numbers", "unemployment rate", "inflation data", "inflation report", "consumer price index", "economic data", "bureau of labor statistics", "commerce department", "department of commerce", "labor department", "department of labor", "census bureau"],
+    "place": { "lon": -77.0325, "lat": 38.8939 }
+  },
   "elections": {
     "label": "Elections",
     "icon": "ballot-box",
@@ -441,6 +450,7 @@
     "about": "Who is running for president in 2028, the primaries and the polls.",
     "parent": "elections",
     "include": ["2028", "presidential race", "presidential campaign", "presidential primary", "presidential bid", "running for president", "iowa caucus", "new hampshire primary"],
+    "require": ["president", "presidential", "presidency", "white house", "campaign", "candidate", "candidates", "nominee", "nomination", "primary", "primaries", "caucus", "run", "running", "bid", "democrat", "democrats", "democratic", "republican", "republicans", "gop", "maga", "election", "ticket", "voters", "poll", "polls", "trump", "vance", "newsom", "#2028"],
     "place": { "lon": -93.6, "lat": 41.6 },
     "spots": [
       { "name": "Iowa", "lon": -93.6, "lat": 41.9, "terms": ["iowa"] },
@@ -508,6 +518,8 @@
     "segment": true,
     "ownSources": true,
     "gate": ["canada", "canada's", "canadian", "canadians", "ottawa", "#cdnpoli", "#canpoli", "#onpoli", "#abpoli", "#bcpoli", "#qcpoli", "#skpoli", "#mbpoli", "#nspoli", "parliament hill", "carney", "poilievre", "bloc québécois", "bloc quebecois", "ndp", "elections canada", "bank of canada", "supreme court of canada", "rcmp", "csis", "cusma", "ontario", "quebec", "québec", "alberta", "british columbia", "b.c.", "manitoba", "saskatchewan", "nova scotia", "new brunswick", "newfoundland", "prince edward island", "p.e.i.", "yukon", "nunavut", "northwest territories", "queen's park", "doug ford", "danielle smith", "david eby", "wab kinew", "scott moe", "tim houston"],
+    "abroad": ["@world", "@usa"],
+    "home": ["canada", "canada's", "canadian", "canadians", "ottawa", "#cdnpoli", "#canpoli", "#onpoli", "#abpoli", "#bcpoli", "#qcpoli", "#skpoli", "#mbpoli", "#nspoli", "parliament hill", "carney", "poilievre", "bloc québécois", "bloc quebecois", "ndp", "elections canada", "bank of canada", "supreme court of canada", "rcmp", "csis", "cusma", "ontario", "quebec", "québec", "alberta", "british columbia", "b.c.", "manitoba", "saskatchewan", "nova scotia", "new brunswick", "newfoundland", "prince edward island", "p.e.i.", "yukon", "nunavut", "northwest territories", "queen's park", "doug ford", "danielle smith", "david eby", "wab kinew", "scott moe", "tim houston", "premier", "premiers", "house of commons", "question period", "the liberals", "poilievre", "leblanc", "eby", "kinew", "elbows up", "51st state"],
     "map": "canada"
   },
   "ottawa": {
