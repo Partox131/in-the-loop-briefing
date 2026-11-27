@@ -12,7 +12,6 @@
     }
   },
   "middle-east": {
-    "icon": "atom",
     "label": "Middle East",
     "parent": "geopolitics",
     "include": ["middle east", "#MiddleEast"],
@@ -21,7 +20,6 @@
     "place": {"lon": 44, "lat": 29}
   },
   "hormuz": {
-    "icon": "barrel",
     "label": "Strait of Hormuz",
     "about": "Iran's threats to the shipping lane that carries about a fifth of the world's oil, and the tankers, navies and prices caught up in it.",
     "parents": ["iran-war", "oil"],
@@ -30,8 +28,6 @@
     "place": {"lon": 56.4, "lat": 26.5}
   },
   "iran-war": {
-    "icon": "atom",
-    "country": "Iran",
     "label": "War in Iran",
     "about": "The war between Israel, the United States and Iran, and the fighting it pulls in around the region.",
     "parents": ["middle-east", "oil"],
@@ -41,7 +37,6 @@
     "place": {"lon": 53.7, "lat": 32.4}
   },
   "iran-strikes": {
-    "country": "Iran",
     "label": "Strikes on Iranian sites",
     "about": "Israeli and US strikes on Iran's nuclear sites, bases and cities, and the damage they do.",
     "parent": "iran-war",
@@ -60,15 +55,12 @@
     "place": {"lon": 51.7, "lat": 33.7}
   },
   "israel-gaza": {
-    "icon": "aid-crate",
-    "country": "Israel",
     "label": "Israel and Gaza",
     "about": "Israel's war with Hamas in Gaza, the West Bank, and the fighting with Hezbollah in Lebanon.",
     "parent": "middle-east",
     "place": {"lon": 35.0, "lat": 32.2}
   },
   "gaza": {
-    "country": "Palestine",
     "label": "Gaza",
     "about": "The war in Gaza, the ceasefire and the aid getting in, or not.",
     "parent": "israel-gaza",
@@ -77,7 +69,6 @@
     "place": {"lon": 34.4, "lat": 31.4}
   },
   "west-bank": {
-    "country": "Palestine",
     "label": "West Bank",
     "about": "Raids, settler attacks and arrests in the occupied West Bank.",
     "parent": "israel-gaza",
@@ -86,7 +77,6 @@
     "place": {"lon": 35.25, "lat": 32.0}
   },
   "lebanon": {
-    "country": "Lebanon",
     "label": "Lebanon",
     "about": "Israel's strikes on Hezbollah in Lebanon and the fragile ceasefire there.",
     "parent": "israel-gaza",
@@ -95,8 +85,6 @@
     "place": {"lon": 35.9, "lat": 33.9}
   },
   "syria": {
-    "icon": "ruin",
-    "country": "Syria",
     "label": "Syria",
     "about": "Syria after Assad: the new government, Israeli strikes and fighting between armed groups.",
     "parent": "middle-east",
@@ -105,7 +93,6 @@
     "place": {"lon": 38.5, "lat": 35.0}
   },
   "iraq": {
-    "country": "Iraq",
     "label": "Iraq",
     "about": "Iran-backed militias in Iraq, their attacks and the strikes on them.",
     "parent": "iran-war",
@@ -114,8 +101,6 @@
     "place": {"lon": 43.7, "lat": 33.2}
   },
   "red-sea": {
-    "icon": "cargo",
-    "country": "Yemen",
     "label": "Yemen and Red Sea",
     "about": "The Houthis in Yemen, their attacks on ships and Israel, and the strikes on them.",
     "parent": "middle-east",
@@ -124,14 +109,12 @@
     "place": {"lon": 43.5, "lat": 15.4}
   },
   "eastern-europe": {
-    "icon": "drone",
     "label": "Eastern Europe",
     "parent": "geopolitics",
     "map": "eastern-europe",
     "place": {"lon": 30, "lat": 52}
   },
   "ukraine-front": {
-    "country": "Ukraine",
     "label": "Front line",
     "about": "The ground war in eastern and southern Ukraine: who is advancing where.",
     "parent": "ukraine-war",
@@ -150,7 +133,6 @@
     "place": {"lon": 37.6, "lat": 48.2}
   },
   "ukraine-cities": {
-    "country": "Ukraine",
     "label": "Strikes on Ukrainian cities",
     "about": "Russian missile and drone attacks on Ukrainian cities and the power grid.",
     "parent": "ukraine-war",
@@ -171,7 +153,6 @@
     "place": {"lon": 30.5, "lat": 50.45}
   },
   "black-sea": {
-    "icon": "warship",
     "label": "Black Sea and Crimea",
     "about": "The fight at sea and in occupied Crimea: ships, ports and the Kerch bridge.",
     "parent": "ukraine-war",
@@ -180,7 +161,6 @@
     "place": {"lon": 34, "lat": 44.9}
   },
   "russia-strikes": {
-    "country": "Russia",
     "label": "Strikes inside Russia",
     "about": "Ukrainian drone and missile strikes on Russian refineries, bases and border regions.",
     "parent": "ukraine-war",
@@ -200,8 +180,6 @@
     "place": {"lon": 39.5, "lat": 53.5}
   },
   "ukraine-war": {
-    "icon": "drone",
-    "country": "Ukraine",
     "label": "Ukraine–Russia war",
     "about": "Russia's full-scale war on Ukraine, on the ground, in the air and at sea.",
     "parent": "eastern-europe",
@@ -210,7 +188,6 @@
     "place": {"lon": 31.5, "lat": 49}
   },
   "baltic": {
-    "country": "Estonia",
     "label": "Baltic states and Baltic Sea",
     "about": "Russian pressure on Estonia, Latvia and Lithuania: sabotage, cables, airspace.",
     "parent": "nato-east",
@@ -220,7 +197,6 @@
     "place": {"lon": 24.5, "lat": 58.5}
   },
   "poland": {
-    "country": "Poland",
     "label": "Poland",
     "about": "Drones, sabotage and the border with Belarus and Russia.",
     "parent": "nato-east",
@@ -230,7 +206,6 @@
     "place": {"lon": 19.5, "lat": 52.2}
   },
   "nordics": {
-    "country": "Finland",
     "label": "Nordics",
     "about": "Finland, Sweden, Norway and Denmark facing Russia: drones, cables and defence build-up.",
     "parent": "nato-east",
@@ -240,8 +215,6 @@
     "place": {"lon": 24.9, "lat": 60.6}
   },
   "nato-east": {
-    "icon": "shield",
-    "country": "Lithuania",
     "label": "NATO's eastern flank",
     "about": "How NATO countries bordering Russia are being tested, and how the alliance answers.",
     "parent": "eastern-europe",
@@ -250,22 +223,18 @@
     "place": {"lon": 21.5, "lat": 55.3}
   },
   "east-asia": {
-    "icon": "jet",
     "label": "East Asia",
     "parent": "geopolitics",
     "map": "east-asia",
     "place": {"lon": 118, "lat": 30}
   },
   "china-taiwan": {
-    "icon": "jet",
-    "country": "China",
     "label": "China and Taiwan",
     "about": "China's pressure on Taiwan, and the rivalry between Beijing and Washington around it.",
     "parent": "east-asia",
     "place": {"lon": 119, "lat": 27.5}
   },
   "taiwan": {
-    "country": "Taiwan",
     "label": "Taiwan",
     "about": "Chinese military drills around Taiwan and the island's politics and defence.",
     "parent": "china-taiwan",
@@ -282,7 +251,6 @@
     "place": {"lon": 116.4, "lat": 39.9}
   },
   "south-china-sea": {
-    "icon": "warship",
     "label": "South China Sea",
     "about": "China's stand-offs with the Philippines and others over reefs and shoals.",
     "parent": "east-asia",

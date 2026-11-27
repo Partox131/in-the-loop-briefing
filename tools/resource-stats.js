@@ -19,12 +19,12 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { BskyClient } from '../src/bsky.js?v=9d5b4dd352';
-import { buildBrief } from '../src/brief.js?v=9d5b4dd352';
-import { makeHierarchy } from '../src/hierarchy.js?v=9d5b4dd352';
-import { newsPosts } from '../src/news.js?v=9d5b4dd352';
-import { TIER_NAME, makeVoice } from '../src/voices.js?v=9d5b4dd352';
-import { stateCountry } from '../src/flags.js?v=9d5b4dd352';
+import { BskyClient } from '../src/bsky.js?v=355b4e7eab';
+import { buildBrief } from '../src/brief.js?v=355b4e7eab';
+import { makeHierarchy } from '../src/hierarchy.js?v=355b4e7eab';
+import { newsPosts } from '../src/news.js?v=355b4e7eab';
+import { TIER_NAME, makeVoice } from '../src/voices.js?v=355b4e7eab';
+import { stateCountry } from '../src/flags.js?v=355b4e7eab';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const HOUR = 3_600_000;

@@ -6,8 +6,8 @@
 // it, but higher nodes use a longer time window and only surface the top few
 // items per child. See docs/design/topic-tracking.md.
 
-import { compileMatcher, compileTerm, makeTopic } from './topic.js?v=9d5b4dd352';
-import { USA, WORLD } from './places.js?v=9d5b4dd352';
+import { compileMatcher, compileTerm, makeTopic } from './topic.js?v=355b4e7eab';
+import { USA, WORLD } from './places.js?v=355b4e7eab';
 
 // "@world" / "@usa" in `abroad` stand for the place lists in src/places.js.
 const PLACE_LISTS = { '@world': WORLD, '@usa': USA };
@@ -60,11 +60,10 @@ export function makeHierarchy(spec) {
     // each with the words reports use when it gets there: [{ label, terms }].
     const stages = (n.stages || []).map((x) => ({ label: x.label, test: (x.terms || [x.label]).map(compileTerm) }));
     // icon: a small 3D model drawn instead of a plain bubble (the White House…), see public/live.html SCULPTURES.
-    // country: the country a geopolitics topic or story stands on; on the map that country rises with how much is said about it.
     // about: one hand-written line saying what a topic or story is (shown on the map and story page).
     // ownSources: a segment whose sources only cover it (Canadian outlets): their
     // posts pass its gate without naming Canada, and stay out of other segments.
-    nodes.set(id, { id, label: n.label || id, about: n.about || '', spots, stages, parents, topic, gate, ownSources: Boolean(n.ownSources), lenses: n.lenses || {}, abroad, home, place: n.place || null, map: n.map || null, icon: n.icon || null, country: n.country || null });
+    nodes.set(id, { id, label: n.label || id, about: n.about || '', spots, stages, parents, topic, gate, ownSources: Boolean(n.ownSources), lenses: n.lenses || {}, abroad, home, place: n.place || null, map: n.map || null, icon: n.icon || null });
   }
   const children = new Map([...nodes.keys()].map((id) => [id, []]));
   for (const n of nodes.values()) {
