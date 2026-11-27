@@ -1,0 +1,62 @@
+name: Daily clip
+
+# Records "Today's loop" from the live site as a 1080 x 1920 video for TikTok,
+# YouTube Shorts and Instagram Reels, with a spoken voiceover of each story card
+# (Piper, free offline text-to-speech). The videos are attached to the run as a
+# download ("clips"); nothing is posted anywhere. Built from deploy/clip.yml in
+# the private repo; edit it there, not here. Run it from the Actions tab
+# ("Run workflow") or with: gh workflow run clip.yml
+
+on:
+  workflow_dispatch:
+    inputs:
+      segments:
+        description: 'Segments to record: geo, us, ca (comma-separated)'
+        default: 'geo'
+      stop:
+        description: 'Milliseconds per story card'
+        default: '9000'
+
+permissions:
+  contents: read
+
+jobs:
+  clip:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install Playwright, ffmpeg and Piper
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg >/dev/null
+          npm install --no-save --silent playwright@1.49.1
+          npx playwright install --with-deps chromium >/dev/null
+          curl -sL https://github.com/rhasspy/piper/releases/download/2023.11.14-2/piper_linux_x86_64.tar.gz | tar xz -C "$RUNNER_TEMP"
+          curl -sL -o "$RUNNER_TEMP/voice.onnx" https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/en/en_US/ryan/high/en_US-ryan-high.onnx
+          curl -sL -o "$RUNNER_TEMP/voice.onnx.json" https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/en/en_US/ryan/high/en_US-ryan-high.onnx.json
+      - name: Record and add the voiceover
+        env:
+          PIPER: ${{ runner.temp }}/piper/piper
+          VOICE: ${{ runner.temp }}/voice.onnx
+        run: |
+          mkdir -p clips
+          day=$(TZ=America/Toronto date +%F)
+          for seg in $(echo "${{ inputs.segments || 'geo' }}" | tr ',' ' '); do
+            case "$seg" in
+              us) q="?segment=us"; word="in US politics" ;;
+              ca) q="?segment=ca"; word="in Canadian politics" ;;
+              *)  q="?";           word="around the world" ;;
+            esac
+            url="https://inthelooplive.com/${q}&stop=${{ inputs.stop || '9000' }}&noloop"
+            node tools/record-loop.cjs "$url" "clips/silent-$seg-$day.mp4" || continue
+            node tools/voiceover.cjs "clips/silent-$seg-$day.mp4" "clips/loop-$seg-$day.mp4" "$word" || true
+          done
+          ls -la clips
+      - uses: actions/upload-artifact@v4
+        with:
+          name: clips
+          path: clips/
+          retention-days: 14
