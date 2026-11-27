@@ -98,11 +98,6 @@
   .about { margin: 12px 0 0; font-size: 19px; max-width: 56ch; color: var(--ink); }
   .recap { margin: 12px 0 0; font-size: 16px; max-width: 64ch; padding: 10px 14px; border-left: 3px solid var(--loop); background: color-mix(in srgb, var(--loop) 6%, transparent); border-radius: 0 10px 10px 0; }
   .sub a { color: inherit; }
-  .since { margin-top: 26px; max-width: 640px; }
-  .since h2 { margin: 0 0 12px; font-size: 15px; font-weight: 600; color: var(--muted); }
-  .since ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; font-size: 18px; }
-  .since li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; align-items: baseline; }
-  .since li strong { font-weight: 700; }
   .actions { margin-top: 22px; display: flex; flex-wrap: wrap; gap: 12px; }
   .btn { border: 0; background: var(--loop); color: var(--on-loop); border-radius: 999px; padding: 11px 20px; font-weight: 600; min-height: 44px; }
   .btn.quiet { background: var(--track); color: var(--ink); }
@@ -257,26 +252,12 @@
   const oneLine = (t, n = 220) => { const s = String(t || '').replace(/\s+/g, ' ').trim(); return s.length > n ? s.slice(0, n - 1) + '…' : s; };
   const title = (t) => oneLine(String(t || '').split(/(?<=[.!?])\s/)[0], 140);
 
-  // "Since you last checked" lives in this browser only.
+  // What this browser saw on its last visit (marks new storylines on the cards).
   const storeKey = (node) => `itl:seen:${node}`;
   const loadSeen = (node) => { try { return JSON.parse(localStorage.getItem(storeKey(node))) || null; } catch { return null; } };
   const saveSeen = (node, d) => { try { localStorage.setItem(storeKey(node), JSON.stringify({ at: Date.now(), status: Object.fromEntries(d.stories.map((s) => [s.id, s.status])) })); } catch {} };
 
-  function changes(d) {
-    const seen = state.baseline;
-    if (!seen) return { first: true, items: d.stories.slice(0, 3).map((s) => ({ tag: 'new', s })) };
-    const items = [];
-    for (const s of d.stories) {
-      const before = seen.status[s.id];
-      if (!before) items.push({ tag: 'new', s });
-      else if (before !== s.status && s.status === 'disputed') items.push({ tag: 'disputed', s });
-      else if (before !== s.status && (s.status === 'corroborated' || s.status === 'official')) items.push({ tag: s.status, s });
-    }
-    return { first: false, at: seen.at, items };
-  }
-
   const STATE_LABEL = { disputed: 'Sources disagree', corroborated: 'Confirmed', reported: 'Reported once', official: 'Official statement', claimed: 'Claimed by one side' };
-  const KIND = { new: 'New', disputed: 'Disputed', corroborated: 'Confirmed', official: 'Confirmed' };
   const DAY = 86400000;
 
   // The mini map: the region's outlines (public/maps.json, loaded once, the
@@ -323,14 +304,6 @@
     if (v && box.isConnected) box.innerHTML = miniSvg(v, d.mini);
   }
 
-  function sinceList(d, c) {
-    const items = c.first ? d.stories.slice(0, 3).map((s) => ({ tag: s.status === 'disputed' ? 'disputed' : 'new', s })) : c.items;
-    const head = c.first ? 'Where things stand' : `Since you last checked, ${esc(ago(new Date(c.at).toISOString()))}`;
-    const rows = items.length
-      ? `<ul>${items.map((i) => `<li><span class="dot ${i.tag}"></span><span><strong>${KIND[i.tag]}:</strong> ${esc(title(i.s.lead.text))}</span></li>`).join('')}</ul>`
-      : '<p style="margin:0" class="muted">Nothing new or changed.</p>';
-    return `<section class="since" aria-labelledby="since"><h2 id="since">${head}</h2>${rows}${c.first ? '' : '<div class="actions"><button class="btn quiet" id="markread">Mark all as read</button></div>'}</section>`;
-  }
 
   function disagreement(x) {
     if (x.type === 'numbers') {
@@ -476,7 +449,6 @@
     const app = document.getElementById('app');
     const crumbs = d.crumbs.map((c, i) => (i === d.crumbs.length - 1 ? `<span class="here" aria-current="page">${esc(c.label)}</span>` : `<a href="${href(c.id)}">${esc(c.label)}</a><span aria-hidden="true">/</span>`)).join('');
     const seen = state.baseline;
-    const c = changes(d);
     const visible = d.stories.filter((s) => state.lens === 'all' || s.lenses.includes(state.lens));
     const broader = d.parent ? ` <a href="${href(d.parent.id)}">Show broader: ${esc(d.parent.label)}</a>.` : '';
     const narrower = d.children.length ? ` Narrower: ${d.children.map((x) => `<a href="${href(x.id)}">${esc(x.label)}</a>`).join(', ')}.` : '';
@@ -499,7 +471,6 @@
           ${d.track ? `<div class="steps" aria-label="Where it stands: ${esc(d.track.label)}, step ${d.track.at + 1} of ${d.track.stages.length}"><span class="kind">Where it stands</span><ol>${d.track.stages.map((x, i) => `<li class="${i < d.track.at ? 'done' : i === d.track.at ? 'cur' : ''}">${esc(x)}</li>`).join('')}</ol><p>Based on what these reports say, not an official record.</p></div>` : ''}
           ${recapLine(d)}
           <p class="sub">${spikeLine(d)} Following ${plural(d.stats.voices, 'Bluesky voice')}${d.stats.articles ? ` and ${plural(d.stats.articles, 'news article')} from ${plural(d.stats.outlets, 'outlet')}` : ''}, updated ${esc(ago(d.generatedAt))}.${broader}${narrower}</p>
-          ${sinceList(d, c)}
         </div>
       </section>
       <main>
@@ -515,8 +486,6 @@
     app.querySelectorAll('[data-lens]').forEach((b) => b.addEventListener('click', () => { window.itlTrack?.('briefing_filter', { filter: 'lens', value: b.dataset.lens, node: d.node.id }); state.lens = b.dataset.lens; render(); }));
     app.querySelectorAll('[data-since]').forEach((b) => b.addEventListener('click', () => { window.itlTrack?.('briefing_filter', { filter: 'since', value: b.dataset.since, node: d.node.id }); state.since = b.dataset.since; load(); }));
     if (d.mini) fillMini(d);
-    const mr = app.querySelector('#markread');
-    if (mr) mr.addEventListener('click', () => { saveSeen(d.node.id, d); state.baseline = loadSeen(d.node.id); render(); });
   }
 
   async function load() {
@@ -535,8 +504,8 @@
         if (!res.ok) throw new Error(body.error || res.statusText);
       }
       // Compare against what this browser saw last time; on a first visit, remember now.
-      if (!state.data || state.data.node.id !== body.node.id) state.baseline = loadSeen(body.node.id);
-      if (!state.baseline && !loadSeen(body.node.id)) saveSeen(body.node.id, body);
+      // Story cards mark what's new since the last visit; each visit becomes the next one's baseline.
+      if (!state.data || state.data.node.id !== body.node.id) { state.baseline = loadSeen(body.node.id); saveSeen(body.node.id, body); }
       state.data = body;
       state.node = body.node.id;
       render();
