@@ -6,12 +6,12 @@
 // up through Jetstream: a WebSocket of new posts filtered to the voices'
 // accounts, which works straight from the browser. Read-only, no login.
 
-import { buildBrief } from './brief.js?v=f214693485';
-import { KEEP_PER_VOICE } from './snapshot.js?v=f214693485';
-import { rankPosts } from './rank.js?v=f214693485';
-import { buildStorylines } from './storylines.js?v=f214693485';
-import { byDid } from './voices.js?v=f214693485';
-import { conflictOfNode } from './credibility.js?v=f214693485';
+import { buildBrief } from './brief.js?v=8f2b475557';
+import { KEEP_PER_VOICE } from './snapshot.js?v=8f2b475557';
+import { rankPosts } from './rank.js?v=8f2b475557';
+import { buildStorylines } from './storylines.js?v=8f2b475557';
+import { byDid } from './voices.js?v=8f2b475557';
+import { conflictOfNode } from './credibility.js?v=8f2b475557';
 
 const HOUR = 3_600_000;
 
@@ -288,10 +288,24 @@ function mainTopic(posts) {
   return [...counts].sort((a, b) => b[1] - a[1])[0]?.[0] || null;
 }
 
+/**
+ * Text without web addresses: posts often end with a link ("… reut.rs/49j0Gtm",
+ * "https://aje.news/w1pb…"), which reads as clutter in a headline.
+ */
+export function stripLinks(text) {
+  return String(text || '')
+    .replace(/(?:https?:\/\/)?(?:www\.)?(?:[a-z0-9-]+\.)+[a-z]{2,}\/\S*/gi, ' ')
+    .replace(/https?:\/\/\S+/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .replace(/\s+([.,;:!?])/g, '$1')
+    .replace(/[\s:,;\-–—|]+$/, '')
+    .trim();
+}
+
 /** A story's headline: an article's title, a link card's title, or a post's first sentence. */
 export function headlineOf(p) {
   const raw = (p.source !== 'news' && p.linkTitle) || p.text || '';
-  const t = String(raw).replace(/\s+/g, ' ').trim();
+  const t = stripLinks(raw);
   const m = t.match(/^(.{20,180}?[.!?])(?=\s|$)/);
   const out = m ? m[1] : t;
   return out.length > 180 ? `${out.slice(0, 179)}…` : out;
