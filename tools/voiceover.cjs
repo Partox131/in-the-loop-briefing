@@ -22,10 +22,19 @@ const STATUS_LINE = {
   'Sources disagree': () => 'Sources disagree.',
 };
 
+/** Drops what outlets tack onto a title: " | The Jerusalem Post", " – Europe live", " - Reuters". */
+function cleanHeadline(h) {
+  let s = String(h || '').replace(/…$/, '').replace(/\s+/g, ' ').trim();
+  s = s.replace(/\s+\|\s+[^|]{2,60}$/, '');
+  s = s.replace(/\s+[–—-]\s+[^–—-]{0,40}\blive( blog| updates)?$/i, '');
+  s = s.replace(/\s+[–—-]\s+(Reuters|AP|AP News|BBC News|CBC News|CNN|Al Jazeera|The Guardian|NPR|Politico|Axios)$/i, '');
+  return s.trim();
+}
+
 /** What to say for one card: plain words a speech engine reads well. */
 function lineFor(c, segWord = 'around the world') {
   if (c.end) return `That's today's loop. Follow what's moving ${segWord}, live, at in the loop live dot com.`;
-  const head = String(c.headline).replace(/…$/, '').replace(/\s+/g, ' ').trim().replace(/([^.!?])$/, '$1.');
+  const head = cleanHeadline(c.headline).replace(/([^.!?])$/, '$1.');
   const status = STATUS_LINE[c.status]?.(c.sources) || '';
   const where = c.where && !head.toLowerCase().startsWith(c.where.toLowerCase()) ? `${c.where}. ` : '';
   return `${where}${head} ${status}`.trim();
@@ -62,7 +71,7 @@ function main() {
   console.log(`Wrote ${out}`);
 }
 
-module.exports = { lineFor };
+module.exports = { lineFor, cleanHeadline };
 if (require.main === module) {
   try { main(); } catch (e) { console.error(e.message); process.exit(1); }
 }
