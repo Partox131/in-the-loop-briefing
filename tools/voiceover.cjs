@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 // Adds a spoken voiceover to a clip from scripts/record-loop.cjs, reading
 // its <clip>.cues.json: each story card is read out as it appears ("Strait of
-// Hormuz. Tanker seized ... Confirmed by 4 sources."), then a closing line on
-// the end card. Uses Piper, a free open-source text-to-speech engine that runs
+// Hormuz. Tanker seized ..."), then a closing line on the end card. Confirmed
+// stories get no status line (Amir, 27 Nov 2026); a story that is not
+// confirmed keeps a short caveat, so the voice never states a claim as fact. Uses Piper, a free open-source text-to-speech engine that runs
 // offline (https://github.com/rhasspy/piper), and ffmpeg. No AI writes the
 // words: they are the card's own text.
 //
@@ -16,9 +17,7 @@ const os = require('node:os');
 const path = require('node:path');
 
 const STATUS_LINE = {
-  Confirmed: (n) => (n > 1 ? `Confirmed by ${n} sources.` : 'Confirmed.'),
-  Official: () => 'Confirmed officially.',
-  'Reported once': () => 'Reported, not yet confirmed.',
+  'Reported once': () => 'Not yet confirmed.',
   'Claimed by one side': () => "That's one side's claim.",
   'Sources disagree': () => 'Sources disagree.',
 };
