@@ -1,8 +1,8 @@
 // Turn a brief (see brief.js) into the JSON the briefing web page renders.
 // Kept separate from the server so it's easy to test and to reuse.
 
-import { breakingCount, isTopic, segmentOf, stageTrack, trail } from './live.js?v=8dcab853bf';
-import { TIER_NAME } from './voices.js?v=8dcab853bf';
+import { breakingCount, isTopic, segmentOf, stageTrack, trail } from './live.js?v=f214693485';
+import { TIER_NAME } from './voices.js?v=f214693485';
 
 const HOUR = 3_600_000;
 
@@ -136,6 +136,8 @@ export function briefView(brief, h, { now = new Date() } = {}) {
     map: !kind
       ? (seg && seg !== 'geo' ? { view: 'world', area: null, segment: seg } : null)
       : { ...(kind === 'story' ? { view: onMap.at(-2).id, area: id } : { view: h.get(id).place ? id : 'world', area: null }), segment: seg },
+    // The mini map at the top of the page (in place of the 24-hour dial, Amir 27 Nov 2026).
+    mini: miniMap(h, onMap, id, kind, stories),
     // "What changed", built from the data (no AI).
     recap: {
       updates: stories.length,
@@ -167,5 +169,42 @@ export function briefView(brief, h, { now = new Date() } = {}) {
       .slice(0, 6),
     missingVoices: brief.missingVoices,
     errors: brief.errors,
+  };
+}
+
+// Where a topic sits: its own place, or the nearest one above it inside the
+// same region (a story with no place of its own sits at its topic or region).
+function placeIn(h, id, regionId) {
+  for (let n = h.get(id); n; n = n.parents.length ? h.get(n.parents[0]) : null) {
+    if (n.place) return n;
+    if (n.id === regionId) return null;
+  }
+  return null;
+}
+
+const STATUS_RANK = { disputed: 3, corroborated: 2, official: 2, claimed: 1, reported: 1 };
+
+/**
+ * The mini map: the region's map view, the place this page is about, and one
+ * pin per place with how many storylines sit there and the strongest status
+ * among them (disputed > confirmed > reported). Null off the map.
+ */
+export function miniMap(h, onMap, id, kind, stories) {
+  if (!kind) return null;
+  const region = h.get(onMap[0].id);
+  const pins = new Map();
+  for (const s of stories) {
+    const at = s.topicId && h.nodes.has(s.topicId) ? placeIn(h, s.topicId, region.id) : null;
+    if (!at) continue;
+    const pin = pins.get(at.id) || { id: at.id, label: at.label, lon: at.place.lon, lat: at.place.lat, count: 0, status: 'reported' };
+    pin.count += 1;
+    if ((STATUS_RANK[s.status] || 0) > (STATUS_RANK[pin.status] || 0)) pin.status = s.status === 'official' ? 'corroborated' : s.status;
+    pins.set(at.id, pin);
+  }
+  const here = kind === 'region' ? null : placeIn(h, id, region.id);
+  return {
+    view: region.map,
+    focus: here ? { id: here.id, lon: here.place.lon, lat: here.place.lat } : null,
+    pins: [...pins.values()].sort((a, b) => b.count - a.count),
   };
 }

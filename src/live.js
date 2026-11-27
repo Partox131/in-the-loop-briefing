@@ -6,12 +6,12 @@
 // up through Jetstream: a WebSocket of new posts filtered to the voices'
 // accounts, which works straight from the browser. Read-only, no login.
 
-import { buildBrief } from './brief.js?v=8dcab853bf';
-import { KEEP_PER_VOICE } from './snapshot.js?v=8dcab853bf';
-import { rankPosts } from './rank.js?v=8dcab853bf';
-import { buildStorylines } from './storylines.js?v=8dcab853bf';
-import { byDid } from './voices.js?v=8dcab853bf';
-import { conflictOfNode } from './credibility.js?v=8dcab853bf';
+import { buildBrief } from './brief.js?v=f214693485';
+import { KEEP_PER_VOICE } from './snapshot.js?v=f214693485';
+import { rankPosts } from './rank.js?v=f214693485';
+import { buildStorylines } from './storylines.js?v=f214693485';
+import { byDid } from './voices.js?v=f214693485';
+import { conflictOfNode } from './credibility.js?v=f214693485';
 
 const HOUR = 3_600_000;
 

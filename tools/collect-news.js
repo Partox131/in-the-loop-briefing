@@ -16,8 +16,8 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { makeHierarchy } from '../src/hierarchy.js?v=8dcab853bf';
-import { makeOutlets, mergeArticles, parseFeed, parseGdelt, parseTelegram, telegramOutlets } from '../src/news.js?v=8dcab853bf';
+import { makeHierarchy } from '../src/hierarchy.js?v=f214693485';
+import { makeOutlets, mergeArticles, parseFeed, parseGdelt, parseTelegram, telegramOutlets } from '../src/news.js?v=f214693485';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const UA = 'InTheLoopNewsCollector/0.1 (+https://inthelooplive.com/)';
