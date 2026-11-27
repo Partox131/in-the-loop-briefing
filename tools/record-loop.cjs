@@ -56,7 +56,7 @@ const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'itl-loop-'));
   await cdp.send('Page.startScreencast', { format: 'jpeg', quality: 90, maxWidth: 1080, maxHeight: 1920, everyNthFrame: 1 });
   const started = Date.now();
   await page.waitForSelector('.clipend', { timeout: 120_000 }).catch(() => console.error('No end card after 2 minutes; keeping what was recorded.'));
-  await page.waitForTimeout(2500);
+  await page.waitForTimeout(6000); // room for the closing line
   await cdp.send('Page.stopScreencast');
   clearInterval(poll);
   done = true;

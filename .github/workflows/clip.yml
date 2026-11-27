@@ -20,7 +20,10 @@ on:
         default: '9000'
       music:
         description: 'Background music: pulse, drift, tension, bright or none'
-        default: 'pulse'
+        default: 'tension'
+      voice:
+        description: 'Voice: kokoro:<name> (af_heart, af_bella, am_michael, am_fenrir, bf_emma, bm_george) or piper:<name> (ryan, lessac)'
+        default: 'kokoro:af_heart'
 
 permissions:
   contents: write
@@ -34,24 +37,23 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Install Playwright, ffmpeg and Piper
+      - name: Install Playwright, ffmpeg and the voice
+        env:
+          VOICE_IN: ${{ inputs.voice || 'kokoro:af_heart' }}
         run: |
-          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg >/dev/null
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg espeak-ng >/dev/null
           npm install --no-save --silent playwright@1.49.1
           npx playwright install --with-deps chromium >/dev/null
-          curl -sL https://github.com/rhasspy/piper/releases/download/2023.11.14-2/piper_linux_x86_64.tar.gz | tar xz -C "$RUNNER_TEMP"
-          curl -sL -o "$RUNNER_TEMP/voice.onnx" https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/en/en_US/ryan/high/en_US-ryan-high.onnx
           pip install --quiet numpy
-          curl -sL -o "$RUNNER_TEMP/voice.onnx.json" https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/en/en_US/ryan/high/en_US-ryan-high.onnx.json
+          bash tools/setup-voice.sh "$VOICE_IN" "$RUNNER_TEMP"
       - name: Record and add the voiceover
         env:
-          PIPER: ${{ runner.temp }}/piper/piper
-          VOICE: ${{ runner.temp }}/voice.onnx
-          MUSIC: ${{ inputs.music || 'pulse' }}
+          MUSIC: ${{ inputs.music || 'tension' }}
         run: |
+          set -a; . "$RUNNER_TEMP/voice.env"; set +a
           mkdir -p clips
           day=$(TZ=America/Toronto date +%F)
-          case "$MUSIC" in pulse|drift|tension|bright|none) music="$MUSIC" ;; *) music=pulse ;; esac
+          case "$MUSIC" in pulse|drift|tension|bright|none) music="$MUSIC" ;; *) music=tension ;; esac
           if [ "$music" != none ]; then python3 tools/make-music.py "$RUNNER_TEMP/music" "$music"; fi
           for seg in $(echo "${{ inputs.segments || 'geo' }}" | tr ',' ' '); do
             case "$seg" in

@@ -1,0 +1,51 @@
+name: Voice samples
+
+# Reads the same short script in each voice, so Amir can pick the clip's
+# narrator. The MP3s go to the `voice-samples` branch and the run's download.
+# Built from deploy/voice-samples.yml in the private repo; edit it there.
+
+on:
+  workflow_dispatch:
+    inputs:
+      voices:
+        description: 'Voices, comma-separated'
+        default: 'kokoro:af_heart,kokoro:af_bella,kokoro:am_michael,kokoro:am_fenrir,kokoro:bf_emma,kokoro:bm_george,piper:ryan,piper:lessac'
+
+permissions:
+  contents: write
+
+jobs:
+  samples:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Read the script in each voice
+        env:
+          VOICES: ${{ inputs.voices }}
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg espeak-ng >/dev/null
+          mkdir -p samples
+          text="Strait of Hormuz. Two Italians killed in Iranian drone attack on Kuwait, officials say. Iraq. Thousands protest in Irbil as Baghdad moves to seize Kurdish oil and border control. That's today's loop. Follow what's moving around the world, live, at in the loop live dot com."
+          for v in $(echo "$VOICES" | tr ',' ' '); do
+            bash tools/setup-voice.sh "$v" "$RUNNER_TEMP" || continue
+            ( set -a; . "$RUNNER_TEMP/voice.env"; set +a; node tools/voiceover.cjs --sample "$text" "$RUNNER_TEMP/s.wav" ) || continue
+            ffmpeg -v error -y -i "$RUNNER_TEMP/s.wav" -af loudnorm=I=-16:TP=-1.5 -b:a 160k "samples/voice-${v/:/-}.mp3"
+          done
+          ls -la samples
+      - uses: actions/upload-artifact@v4
+        with:
+          name: voice-samples
+          path: samples/
+          retention-days: 14
+      - name: Keep them on the voice-samples branch
+        continue-on-error: true
+        run: |
+          cd samples
+          git init -q -b voice-samples
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' add -A
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -q -m "Voice samples"
+          git push -q -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" voice-samples
