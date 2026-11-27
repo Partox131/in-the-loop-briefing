@@ -10,6 +10,10 @@ name: Daily clip
 # ("Run workflow") or with: gh workflow run clip.yml
 
 on:
+  # Every morning at 5:30 AM Toronto (10:30 UTC; 6:30 AM in summer), before
+  # the 6:43 AM drafts run picks the video up for the Daily posts page.
+  schedule:
+    - cron: '30 10 * * *'
   workflow_dispatch:
     inputs:
       segments:
