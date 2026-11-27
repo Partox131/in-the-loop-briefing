@@ -154,8 +154,10 @@
   .footnote { margin-top: 28px; font-size: 14px; color: var(--muted); max-width: 72ch; }
   .loading { padding: 64px 32px; text-align: center; color: var(--muted); }
   /* Loading: the Live dial "catching up" (Amir picked it, 26 Nov 2026). The arc closes the loop, then reopens a turn further on. */
-  .loading:has(.loopspin) { min-height: 50vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; box-sizing: border-box; }
+  /* First-load screen fills the window with a big dial (Amir, 27 Nov 2026); anything after it (the crawler text on the map page) sits below the fold. */
+  .loading:has(.loopspin) { min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 28px; padding: 32px; box-sizing: border-box; font-size: 17px; }
   .loopspin { width: 64px; height: 64px; flex: none; overflow: visible; }
+  .loading > .loopspin { width: clamp(120px, 30vmin, 200px); height: auto; aspect-ratio: 1; }
   .loopspin .t { fill: none; stroke: var(--ink); stroke-opacity: .2; stroke-width: 9; }
   .loopspin .a { fill: none; stroke: var(--loop); stroke-width: 9; stroke-linecap: round; stroke-dasharray: 94.25 125.66; transform-origin: 32px 32px; transform: rotate(-90deg); animation: loopcatch 1.6s cubic-bezier(.45, 0, .25, 1) infinite; }
   .loopspin .d { fill: var(--ink); transform-origin: 32px 32px; animation: loopbreathe 1.6s ease-in-out infinite; }
