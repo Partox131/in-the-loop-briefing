@@ -2,7 +2,8 @@ name: Daily clip
 
 # Records "Today's loop" from the live site as a 1080 x 1920 video for TikTok,
 # YouTube Shorts and Instagram Reels, with a spoken voiceover of each story card
-# (Piper, free offline text-to-speech). The videos are attached to the run as a
+# (Piper, free offline text-to-speech) and a music bed we make ourselves
+# (scripts/make-music.py: pulse, drift, tension or bright). The videos are attached to the run as a
 # download ("clips") and the latest set is also kept on the `clips` branch;
 # nothing is posted anywhere. Built from deploy/clip.yml in
 # the private repo; edit it there, not here. Run it from the Actions tab
@@ -17,6 +18,9 @@ on:
       stop:
         description: 'Milliseconds per story card'
         default: '9000'
+      music:
+        description: 'Background music: pulse, drift, tension, bright or none'
+        default: 'pulse'
 
 permissions:
   contents: write
@@ -37,14 +41,18 @@ jobs:
           npx playwright install --with-deps chromium >/dev/null
           curl -sL https://github.com/rhasspy/piper/releases/download/2023.11.14-2/piper_linux_x86_64.tar.gz | tar xz -C "$RUNNER_TEMP"
           curl -sL -o "$RUNNER_TEMP/voice.onnx" https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/en/en_US/ryan/high/en_US-ryan-high.onnx
+          pip install --quiet numpy
           curl -sL -o "$RUNNER_TEMP/voice.onnx.json" https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/en/en_US/ryan/high/en_US-ryan-high.onnx.json
       - name: Record and add the voiceover
         env:
           PIPER: ${{ runner.temp }}/piper/piper
           VOICE: ${{ runner.temp }}/voice.onnx
+          MUSIC: ${{ inputs.music || 'pulse' }}
         run: |
           mkdir -p clips
           day=$(TZ=America/Toronto date +%F)
+          case "$MUSIC" in pulse|drift|tension|bright|none) music="$MUSIC" ;; *) music=pulse ;; esac
+          if [ "$music" != none ]; then python3 tools/make-music.py "$RUNNER_TEMP/music" "$music"; fi
           for seg in $(echo "${{ inputs.segments || 'geo' }}" | tr ',' ' '); do
             case "$seg" in
               us) q="?segment=us"; word="in US politics" ;;
@@ -53,7 +61,13 @@ jobs:
             esac
             url="https://inthelooplive.com/${q}&stop=${{ inputs.stop || '9000' }}&noloop"
             node tools/record-loop.cjs "$url" "clips/silent-$seg-$day.mp4" || continue
-            node tools/voiceover.cjs "clips/silent-$seg-$day.mp4" "clips/loop-$seg-$day.mp4" "$word" || true
+            node tools/voiceover.cjs "clips/silent-$seg-$day.mp4" "clips/voice-$seg-$day.mp4" "$word" || continue
+            mv "clips/voice-$seg-$day.script.txt" "clips/loop-$seg-$day.script.txt"
+            if [ "$music" != none ]; then
+              node tools/add-music.cjs "clips/voice-$seg-$day.mp4" "$RUNNER_TEMP/music/$music.wav" "clips/loop-$seg-$day.mp4" && rm "clips/voice-$seg-$day.mp4"
+            else
+              mv "clips/voice-$seg-$day.mp4" "clips/loop-$seg-$day.mp4"
+            fi
           done
           ls -la clips
       - uses: actions/upload-artifact@v4
