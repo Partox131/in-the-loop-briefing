@@ -566,7 +566,7 @@
   };
   const tagged = (x) => x && (x.stateAffiliated || x.cred?.short === 'partisan');
   const safeUrl = (u) => (/^https:\/\//.test(u || '') ? esc(u) : '#');
-  const oneLine = (t, n = 200) => { const s = String(t || '').replace(/\s+/g, ' ').trim(); return s.length > n ? s.slice(0, n - 1) + '…' : s; };
+  const oneLine = (t, n = 200) => { const s = String(t || '').replace(/\s+/g, ' ').trim(); return s.length > n ? s.slice(0, n - 1).replace(/[\s,;:–-]+\S*$/, '') + '…' : s; };
   const ago = (iso) => {
     const m = Math.round((Date.now() - Date.parse(iso)) / 60000);
     if (m < 1) return 'just now';
@@ -1672,7 +1672,7 @@
         <div class="loophead"><span><strong>${esc(where)}</strong>${region && region !== where ? `<small>${esc(region)}</small>` : ''}</span>${CLIP ? '' : '<button class="loopx" aria-label="Close Today\'s loop">✕</button>'}</div>
         <div class="loopcap">
           <span class="chip c-${esc(x.status)}">${esc(STATUS[x.status] || x.status)}</span>
-          <h2>${esc(oneLine(x.headline, 140))}</h2>
+          <h2${CLIP ? ` data-full="${esc(String(x.headline || '').replace(/\s+/g, ' ').trim())}"` : ''}>${esc(oneLine(x.headline, 140))}</h2>
           <p>${plural(outlets, 'source')} · ${plural(x.posts, 'item')} · latest ${esc(ago(x.lastSeen))}</p>
           ${CLIP ? '<span class="loopread">inthelooplive.com</span>' : `<a class="loopread" href="${storyHref(x.topicId)}">Swipe up or tap to read the story ↑</a>`}
           <span class="loopcount">${t.i + 1} of ${t.list.length} · Today's loop</span>
