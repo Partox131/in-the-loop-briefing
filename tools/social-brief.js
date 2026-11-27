@@ -84,7 +84,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   const now = new Date();
   const brief = await buildBrief({ client: new BskyClient(), hierarchy, node: 'politics', voices, now, since: new Date(now - 24 * HOUR), search: false, news: newsPosts(newsDoc), perVoice: 150 });
   const areas = areasOf(hierarchy).map((a) => socialArea(a,
-    regionSummary({ posts: brief.posts, hierarchy, node: a.id, now }),
+    regionSummary({ posts: brief.posts, hierarchy, node: a.id, now, topN: 8 }),
     breakingNews({ posts: brief.posts, hierarchy, node: a.id, now })));
   const doc = { generatedAt: now.toISOString(), site: SITE, hours: 24, areas, errors: brief.errors.length };
   mkdirSync(o.out, { recursive: true });
