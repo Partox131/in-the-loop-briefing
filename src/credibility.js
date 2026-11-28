@@ -14,7 +14,7 @@
 // outlet's feed, Bluesky account and Telegram channel count as one source.
 // Anything not listed is independent (tier 4 accounts are official).
 
-import { copyKeyOf, wireOf } from './copies.js?v=d783955726';
+import { copyKeyOf, wireOf } from './copies.js?v=2440a9a4e1';
 
 /** Independence classes, most independent first. `short` is the label next to the source. */
 export const CLASSES = {
@@ -24,6 +24,9 @@ export const CLASSES = {
   'state-controlled': { label: 'State-controlled', short: 'state', note: 'The government or military sets the line' },
   official: { label: 'Official', short: 'official', note: 'Speaks for a government, army or institution' },
   partisan: { label: 'Partisan', short: 'partisan', note: 'Openly aligned with one side, not state-run' },
+  // Anonymous OSINT and aggregator accounts (Amir, 28 Nov 2026): often fast,
+  // sometimes wrong, owners unknown. Shown, labelled, never confirm.
+  unverified: { label: 'Unverified', short: 'unverified', note: 'Anonymous account: who runs it and how it checks is unknown' },
 };
 
 /**
@@ -87,6 +90,34 @@ export const SOURCE_CLASS = {
   LRT: { independence: 'public' },
   // Partisan, no state
   'Quds News Network': { independence: 'partisan', partyTo: ['israel-gaza'], side: 'PS' },
+  'Palestine News Network': { independence: 'partisan', partyTo: ['israel-gaza'], side: 'PS' },
+  // Added 28 Nov 2026 (World Monitor review): partisan Telegram channels.
+  'The Cradle': { independence: 'partisan' },
+  'Abu Ali Express': { independence: 'partisan', partyTo: ['israel-gaza', 'lebanon', 'iran-war'], side: 'IL' },
+  'Fotros Resistance': { independence: 'partisan', partyTo: ['israel-gaza', 'lebanon', 'iran-war', 'yemen'] },
+  'Resistance Trench': { independence: 'partisan', partyTo: ['israel-gaza', 'lebanon', 'iran-war', 'yemen'] },
+  // Anonymous OSINT and aggregator Telegram channels: shown, never confirm.
+  'Clash Report': { independence: 'unverified' },
+  OSINTdefender: { independence: 'unverified' },
+  Liveuamap: { independence: 'unverified' },
+  'WarFront Witness': { independence: 'unverified' },
+  'Middle East Spectator': { independence: 'unverified' },
+  'Middle East Now': { independence: 'unverified' },
+  'The Defender Dome': { independence: 'unverified' },
+  WarfareAnalysis: { independence: 'unverified' },
+  'Rerum Novarum': { independence: 'unverified' },
+  'Geopolitics Watch': { independence: 'unverified' },
+  'DD Geopolitics': { independence: 'unverified' },
+  'Geopolitics Prime': { independence: 'unverified' },
+  'OSIntOps News': { independence: 'unverified' },
+  'OSINT Live': { independence: 'unverified' },
+  'Alsaa Live News': { independence: 'unverified' },
+  'Lebanese News and Updates': { independence: 'unverified' },
+  // State media and officials added 28 Nov 2026
+  'Mehr News': { independence: 'state-controlled' },
+  WAM: { independence: 'state-controlled' },
+  CNA: { independence: 'state-funded' },
+  'US Government': { independence: 'official' },
 };
 
 const PARTY_CLASSES = new Set(['state-funded', 'state-controlled', 'official']);
@@ -252,7 +283,8 @@ export function roleOf(p, conflict, { copies = true } = {}) {
   if (v.tier === 3) return {};
   // State-controlled and partisan media never confirm, even about other
   // countries' wars: TASS repeating the IRGC adds reach, not proof.
-  if (['state-controlled', 'partisan'].includes(v.independence || independenceOf(v))) return { echo: v.country || v.affiliation };
+  // Nor do anonymous accounts: fast, but nobody knows who checks them.
+  if (['state-controlled', 'partisan', 'unverified'].includes(v.independence || independenceOf(v))) return { echo: v.country || v.affiliation };
   // A reprint of agency copy (or of another outlet's story) counts as that
   // story's source, not as a second one (src/copies.js).
   const copy = copies ? copyKeyOf(p) || wireOf(p) : null;

@@ -1224,10 +1224,649 @@
         "https://policyoptions.irpp.org/feed/"
       ],
       "lean": "centre"
+    },
+    {
+      "domain": "naharnet.com",
+      "name": "Naharnet",
+      "affiliation": "Naharnet",
+      "region": "Lebanon",
+      "topics": [
+        "middle-east"
+      ],
+      "feeds": [
+        "https://www.naharnet.com/tags/lebanon/en/feed.atom"
+      ]
+    },
+    {
+      "domain": "syriadirect.org",
+      "name": "Syria Direct",
+      "affiliation": "Syria Direct",
+      "region": "Syria",
+      "topics": [
+        "middle-east"
+      ],
+      "feeds": [
+        "https://syriadirect.org/feed/"
+      ]
+    },
+    {
+      "domain": "syrianobserver.com",
+      "name": "The Syrian Observer",
+      "affiliation": "The Syrian Observer",
+      "region": "Syria",
+      "topics": [
+        "middle-east"
+      ],
+      "feeds": [
+        "https://syrianobserver.com/feed"
+      ]
+    },
+    {
+      "domain": "sanaacenter.org",
+      "name": "Sana'a Center",
+      "affiliation": "Sana'a Center",
+      "region": "Yemen",
+      "tier": 3,
+      "topics": [
+        "middle-east"
+      ],
+      "feeds": [
+        "https://sanaacenter.org/feed/"
+      ],
+      "note": "Think tank: analysis, counts as an analyst"
+    },
+    {
+      "domain": "gulfnews.com",
+      "name": "Gulf News",
+      "affiliation": "Gulf News",
+      "region": "UAE",
+      "topics": [
+        "middle-east"
+      ],
+      "feeds": [
+        "https://gulfnews.com/feed/"
+      ]
+    },
+    {
+      "domain": "khaleejtimes.com",
+      "name": "Khaleej Times",
+      "affiliation": "Khaleej Times",
+      "region": "UAE",
+      "topics": [
+        "middle-east"
+      ],
+      "feeds": [
+        "https://www.khaleejtimes.com/api/v1/collections/top-section.rss"
+      ]
+    },
+    {
+      "domain": "dohanews.co",
+      "name": "Doha News",
+      "affiliation": "Doha News",
+      "region": "Qatar",
+      "topics": [
+        "middle-east"
+      ],
+      "feeds": [
+        "https://dohanews.co/feed/"
+      ]
+    },
+    {
+      "domain": "english.pnn.ps",
+      "name": "Palestine News Network",
+      "affiliation": "Palestine News Network",
+      "region": "Palestine",
+      "topics": [
+        "middle-east"
+      ],
+      "feeds": [
+        "https://english.pnn.ps/feed"
+      ]
+    },
+    {
+      "domain": "en.mehrnews.com",
+      "name": "Mehr News",
+      "affiliation": "Mehr News",
+      "region": "Iran",
+      "stateAffiliated": true,
+      "country": "IR",
+      "topics": [
+        "middle-east"
+      ],
+      "feeds": [
+        "https://en.mehrnews.com/rss"
+      ]
+    },
+    {
+      "domain": "en.irna.ir",
+      "name": "IRNA",
+      "affiliation": "IRNA",
+      "region": "Iran",
+      "stateAffiliated": true,
+      "country": "IR",
+      "topics": [
+        "middle-east"
+      ],
+      "feeds": [
+        "https://en.irna.ir/rss"
+      ]
+    },
+    {
+      "domain": "themoscowtimes.com",
+      "name": "The Moscow Times",
+      "affiliation": "The Moscow Times",
+      "region": "Russia",
+      "topics": [
+        "eastern-europe"
+      ],
+      "feeds": [
+        "https://www.themoscowtimes.com/rss/news"
+      ]
+    },
+    {
+      "domain": "yle.fi",
+      "name": "Yle News",
+      "affiliation": "Yle News",
+      "region": "Finland",
+      "topics": [
+        "nato-east"
+      ],
+      "feeds": [
+        "https://yle.fi/rss/news"
+      ]
+    },
+    {
+      "domain": "eng.lsm.lv",
+      "name": "LSM English",
+      "affiliation": "LSM English",
+      "region": "Latvia",
+      "topics": [
+        "nato-east"
+      ],
+      "feeds": [
+        "https://eng.lsm.lv/rss/"
+      ]
+    },
+    {
+      "domain": "gov.uk",
+      "name": "UK Ministry of Defence",
+      "affiliation": "UK Ministry of Defence",
+      "region": "UK",
+      "tier": 4,
+      "topics": [
+        "geopolitics"
+      ],
+      "feeds": [
+        "https://www.gov.uk/government/organisations/ministry-of-defence.atom"
+      ]
+    },
+    {
+      "domain": "english.kyodonews.net",
+      "name": "Kyodo News",
+      "affiliation": "Kyodo News",
+      "region": "Japan",
+      "topics": [
+        "east-asia"
+      ],
+      "feeds": [
+        "https://english.kyodonews.net/list/feed/rss4kyodonews-fzone"
+      ]
+    },
+    {
+      "domain": "japantoday.com",
+      "name": "Japan Today",
+      "affiliation": "Japan Today",
+      "region": "Japan",
+      "topics": [
+        "east-asia"
+      ],
+      "feeds": [
+        "https://japantoday.com/feed/atom"
+      ]
+    },
+    {
+      "domain": "koreaherald.com",
+      "name": "The Korea Herald",
+      "affiliation": "The Korea Herald",
+      "region": "South Korea",
+      "topics": [
+        "east-asia"
+      ],
+      "feeds": [
+        "https://www.koreaherald.com/rss/newsAll"
+      ]
+    },
+    {
+      "domain": "koreatimes.co.kr",
+      "name": "Korea Times",
+      "affiliation": "Korea Times",
+      "region": "South Korea",
+      "topics": [
+        "east-asia"
+      ],
+      "feeds": [
+        "https://feed.koreatimes.co.kr/k/allnews.xml"
+      ]
+    },
+    {
+      "domain": "channelnewsasia.com",
+      "name": "CNA",
+      "affiliation": "CNA",
+      "region": "Singapore",
+      "stateAffiliated": true,
+      "country": "SG",
+      "topics": [
+        "east-asia"
+      ],
+      "feeds": [
+        "https://www.channelnewsasia.com/api/v1/rss-outbound-feed?_format=xml"
+      ]
+    },
+    {
+      "domain": "breakingdefense.com",
+      "name": "Breaking Defense",
+      "affiliation": "Breaking Defense",
+      "region": "US",
+      "topics": [
+        "geopolitics"
+      ],
+      "feeds": [
+        "https://breakingdefense.com/feed/"
+      ]
+    },
+    {
+      "domain": "defensenews.com",
+      "name": "Defense News",
+      "affiliation": "Defense News",
+      "region": "US",
+      "topics": [
+        "geopolitics"
+      ],
+      "feeds": [
+        "https://www.defensenews.com/arc/outboundfeeds/rss/?outputType=xml"
+      ]
+    },
+    {
+      "domain": "defenseone.com",
+      "name": "Defense One",
+      "affiliation": "Defense One",
+      "region": "US",
+      "topics": [
+        "geopolitics"
+      ],
+      "feeds": [
+        "https://www.defenseone.com/rss/all/"
+      ]
+    },
+    {
+      "domain": "twz.com",
+      "name": "The War Zone",
+      "affiliation": "The War Zone",
+      "region": "US",
+      "topics": [
+        "geopolitics"
+      ],
+      "feeds": [
+        "https://www.twz.com/feed"
+      ]
+    },
+    {
+      "domain": "militarytimes.com",
+      "name": "Military Times",
+      "affiliation": "Military Times",
+      "region": "US",
+      "topics": [
+        "geopolitics"
+      ],
+      "feeds": [
+        "https://www.militarytimes.com/arc/outboundfeeds/rss/?outputType=xml"
+      ]
+    },
+    {
+      "domain": "taskandpurpose.com",
+      "name": "Task & Purpose",
+      "affiliation": "Task & Purpose",
+      "region": "US",
+      "topics": [
+        "geopolitics"
+      ],
+      "feeds": [
+        "https://taskandpurpose.com/feed/"
+      ]
+    },
+    {
+      "domain": "gcaptain.com",
+      "name": "gCaptain",
+      "affiliation": "gCaptain",
+      "region": "US",
+      "topics": [
+        "geopolitics"
+      ],
+      "feeds": [
+        "https://gcaptain.com/feed/"
+      ],
+      "note": "Shipping news: Hormuz, Red Sea"
+    },
+    {
+      "domain": "oryxspioenkop.com",
+      "name": "Oryx",
+      "affiliation": "Oryx",
+      "region": "international",
+      "tier": 5,
+      "topics": [
+        "geopolitics"
+      ],
+      "feeds": [
+        "https://www.oryxspioenkop.com/feeds/posts/default?alt=rss"
+      ],
+      "note": "OSINT: equipment losses verified from photos"
+    },
+    {
+      "domain": "foreignpolicy.com",
+      "name": "Foreign Policy",
+      "affiliation": "Foreign Policy",
+      "region": "US",
+      "topics": [
+        "geopolitics"
+      ],
+      "feeds": [
+        "https://foreignpolicy.com/feed/"
+      ]
+    },
+    {
+      "domain": "crisisgroup.org",
+      "name": "International Crisis Group",
+      "affiliation": "International Crisis Group",
+      "region": "international",
+      "tier": 3,
+      "topics": [
+        "geopolitics"
+      ],
+      "feeds": [
+        "https://www.crisisgroup.org/rss"
+      ]
+    },
+    {
+      "domain": "warontherocks.com",
+      "name": "War on the Rocks",
+      "affiliation": "War on the Rocks",
+      "region": "US",
+      "tier": 3,
+      "topics": [
+        "geopolitics"
+      ],
+      "feeds": [
+        "https://warontherocks.com/feed/"
+      ]
+    },
+    {
+      "domain": "csis.org",
+      "name": "CSIS",
+      "affiliation": "CSIS",
+      "region": "US",
+      "tier": 3,
+      "topics": [
+        "geopolitics"
+      ],
+      "feeds": [
+        "https://www.csis.org/rss.xml"
+      ]
+    },
+    {
+      "domain": "atlanticcouncil.org",
+      "name": "Atlantic Council",
+      "affiliation": "Atlantic Council",
+      "region": "US",
+      "tier": 3,
+      "topics": [
+        "geopolitics"
+      ],
+      "feeds": [
+        "https://www.atlanticcouncil.org/feed/"
+      ]
+    },
+    {
+      "domain": "dfrlab.org",
+      "name": "DFRLab",
+      "affiliation": "Atlantic Council",
+      "region": "US",
+      "tier": 3,
+      "topics": [
+        "geopolitics"
+      ],
+      "feeds": [
+        "https://dfrlab.org/feed/"
+      ]
+    },
+    {
+      "domain": "rand.org",
+      "name": "RAND",
+      "affiliation": "RAND",
+      "region": "US",
+      "tier": 3,
+      "topics": [
+        "geopolitics"
+      ],
+      "feeds": [
+        "https://www.rand.org/pubs/articles.xml"
+      ]
+    },
+    {
+      "domain": "jamestown.org",
+      "name": "Jamestown Foundation",
+      "affiliation": "Jamestown Foundation",
+      "region": "US",
+      "tier": 3,
+      "topics": [
+        "geopolitics"
+      ],
+      "feeds": [
+        "https://jamestown.org/feed/"
+      ]
+    },
+    {
+      "domain": "foreignaffairs.com",
+      "name": "Foreign Affairs",
+      "affiliation": "Foreign Affairs",
+      "region": "US",
+      "tier": 3,
+      "topics": [
+        "geopolitics"
+      ],
+      "feeds": [
+        "https://www.foreignaffairs.com/rss.xml"
+      ]
+    },
+    {
+      "domain": "responsiblestatecraft.org",
+      "name": "Responsible Statecraft",
+      "affiliation": "Responsible Statecraft",
+      "region": "US",
+      "tier": 3,
+      "topics": [
+        "geopolitics"
+      ],
+      "feeds": [
+        "https://responsiblestatecraft.org/feed/"
+      ]
+    },
+    {
+      "domain": "stimson.org",
+      "name": "Stimson Center",
+      "affiliation": "Stimson Center",
+      "region": "US",
+      "tier": 3,
+      "topics": [
+        "geopolitics"
+      ],
+      "feeds": [
+        "https://www.stimson.org/feed/"
+      ]
+    },
+    {
+      "domain": "whitehouse.gov",
+      "name": "White House",
+      "affiliation": "US Government",
+      "region": "US",
+      "tier": 4,
+      "stateAffiliated": true,
+      "country": "US",
+      "topics": [
+        "geopolitics"
+      ],
+      "feeds": [
+        "https://www.whitehouse.gov/briefings-statements/feed/",
+        "https://www.whitehouse.gov/presidential-actions/feed/"
+      ]
+    },
+    {
+      "domain": "war.gov",
+      "name": "Pentagon",
+      "affiliation": "US Government",
+      "region": "US",
+      "tier": 4,
+      "stateAffiliated": true,
+      "country": "US",
+      "topics": [
+        "geopolitics"
+      ],
+      "feeds": [
+        "https://www.war.gov/DesktopModules/ArticleCS/RSS.ashx?ContentType=1&Site=945"
+      ]
+    },
+    {
+      "domain": "iaea.org",
+      "name": "IAEA",
+      "affiliation": "IAEA",
+      "region": "international",
+      "tier": 4,
+      "topics": [
+        "geopolitics"
+      ],
+      "feeds": [
+        "https://www.iaea.org/feeds/topnews"
+      ]
+    },
+    {
+      "domain": "who.int",
+      "name": "WHO",
+      "affiliation": "World Health Organization",
+      "region": "international",
+      "tier": 4,
+      "topics": [
+        "geopolitics"
+      ],
+      "feeds": [
+        "https://www.who.int/rss-feeds/news-english.xml"
+      ]
+    },
+    {
+      "domain": "ottawacitizen.com",
+      "name": "Ottawa Citizen",
+      "affiliation": "Ottawa Citizen",
+      "region": "Canada",
+      "lean": "centre-right",
+      "topics": [
+        "ca-politics"
+      ],
+      "feeds": [
+        "https://ottawacitizen.com/feed/"
+      ]
+    },
+    {
+      "domain": "vancouversun.com",
+      "name": "Vancouver Sun",
+      "affiliation": "Vancouver Sun",
+      "region": "Canada",
+      "lean": "centre-right",
+      "topics": [
+        "ca-politics"
+      ],
+      "feeds": [
+        "https://vancouversun.com/feed/"
+      ]
+    },
+    {
+      "domain": "calgaryherald.com",
+      "name": "Calgary Herald",
+      "affiliation": "Calgary Herald",
+      "region": "Canada",
+      "lean": "centre-right",
+      "topics": [
+        "ca-politics"
+      ],
+      "feeds": [
+        "https://calgaryherald.com/feed/"
+      ]
+    },
+    {
+      "domain": "edmontonjournal.com",
+      "name": "Edmonton Journal",
+      "affiliation": "Edmonton Journal",
+      "region": "Canada",
+      "lean": "centre-right",
+      "topics": [
+        "ca-politics"
+      ],
+      "feeds": [
+        "https://edmontonjournal.com/feed/"
+      ]
+    },
+    {
+      "domain": "theprovince.com",
+      "name": "The Province",
+      "affiliation": "The Province",
+      "region": "Canada",
+      "lean": "centre-right",
+      "topics": [
+        "ca-politics"
+      ],
+      "feeds": [
+        "https://theprovince.com/feed/"
+      ]
+    },
+    {
+      "domain": "winnipegfreepress.com",
+      "name": "Winnipeg Free Press",
+      "affiliation": "Winnipeg Free Press",
+      "region": "Canada",
+      "lean": "centre",
+      "topics": [
+        "ca-politics"
+      ],
+      "feeds": [
+        "https://www.winnipegfreepress.com/feed"
+      ]
+    },
+    {
+      "domain": "financialpost.com",
+      "name": "Financial Post",
+      "affiliation": "Financial Post",
+      "region": "Canada",
+      "lean": "centre-right",
+      "topics": [
+        "ca-politics"
+      ],
+      "feeds": [
+        "https://financialpost.com/feed/"
+      ]
+    },
+    {
+      "domain": "thenarwhal.ca",
+      "name": "The Narwhal",
+      "affiliation": "The Narwhal",
+      "region": "Canada",
+      "lean": "centre-left",
+      "topics": [
+        "ca-politics"
+      ],
+      "feeds": [
+        "https://thenarwhal.ca/feed/"
+      ]
     }
   ],
   "telegram": {
-    "_about": "Public Telegram channels read from their web preview (https://t.me/s/<channel>) by scripts/collect-news.js. English channels only (Amir, 23 Nov 2026: the Ukrainian ones were removed because non-English posts crowded the pages; they are backlogged in docs/workstreams/sources.md); more candidates in docs/research/telegram.md. Only channels with Telegram's verified badge or long-known official ones; no channels of designated armed groups, no anonymous aggregators. affiliation matches the outlet's feed/Bluesky voice so they count as one source. tier: 1 outlet, 4 official, 5 OSINT. Posts are kept as short excerpts with a link; Telegram's terms ban any AI use of its content.",
+    "_about": "Public Telegram channels read from their web preview (https://t.me/s/<channel>) by scripts/collect-news.js. English channels only (Amir, 23 Nov 2026: the Ukrainian ones were removed because non-English posts crowded the pages; they are backlogged in docs/workstreams/sources.md); more candidates in docs/research/telegram.md. Since 28 Nov 2026 (Amir, World Monitor review) partisan channels and anonymous OSINT aggregators are included too, labelled 'partisan' or 'unverified' in src/credibility.js: they show, but never confirm a story. Still no channels run by designated armed groups themselves (IRGC, Hezbollah, Houthis); all of those found are Persian or Arabic anyway. affiliation matches the outlet's feed/Bluesky voice so they count as one source. tier: 1 outlet, 4 official, 5 OSINT. Posts are kept as short excerpts with a link; Telegram's terms ban any AI use of its content.",
     "channels": [
       {
         "channel": "idfofficial",
@@ -1324,6 +1963,320 @@
         "verified": true,
         "stateAffiliated": true,
         "country": "RU"
+      },
+      {
+        "channel": "france24_en",
+        "name": "France 24",
+        "affiliation": "France 24",
+        "region": "France",
+        "tier": 1,
+        "language": "English",
+        "topics": [
+          "geopolitics"
+        ],
+        "verified": true,
+        "stateAffiliated": true,
+        "country": "FR"
+      },
+      {
+        "channel": "wamnews_en",
+        "name": "Emirates News Agency (WAM)",
+        "affiliation": "WAM",
+        "region": "UAE",
+        "tier": 1,
+        "language": "English",
+        "topics": [
+          "middle-east"
+        ],
+        "verified": true,
+        "stateAffiliated": true,
+        "country": "AE"
+      },
+      {
+        "channel": "MiddleEastEye_TG",
+        "name": "Middle East Eye",
+        "affiliation": "Middle East Eye",
+        "region": "UK",
+        "tier": 1,
+        "language": "English",
+        "topics": [
+          "middle-east"
+        ],
+        "verified": true
+      },
+      {
+        "channel": "cnalatest",
+        "name": "CNA",
+        "affiliation": "CNA",
+        "region": "Singapore",
+        "tier": 1,
+        "language": "English",
+        "topics": [
+          "east-asia"
+        ],
+        "verified": true,
+        "stateAffiliated": true,
+        "country": "SG"
+      },
+      {
+        "channel": "thecradlemedia",
+        "name": "The Cradle",
+        "affiliation": "The Cradle",
+        "region": "Lebanon",
+        "tier": 1,
+        "language": "English",
+        "topics": [
+          "middle-east"
+        ],
+        "verified": true,
+        "note": "Openly sympathetic to the Iran-led \"axis of resistance\": partisan, never confirms"
+      },
+      {
+        "channel": "englishabuali",
+        "name": "Abu Ali Express (English)",
+        "affiliation": "Abu Ali Express",
+        "region": "Israel",
+        "tier": 5,
+        "language": "English",
+        "topics": [
+          "middle-east"
+        ],
+        "verified": false,
+        "note": "Israeli blogger, close to the IDF line: partisan, never confirms"
+      },
+      {
+        "channel": "FotrosResistancee",
+        "name": "Fotros Resistance",
+        "affiliation": "Fotros Resistance",
+        "region": "Middle East",
+        "tier": 5,
+        "language": "English",
+        "topics": [
+          "middle-east"
+        ],
+        "verified": false,
+        "note": "Pro-\"resistance\" aggregator: partisan, never confirms"
+      },
+      {
+        "channel": "RezistanceTrench1",
+        "name": "Resistance Trench",
+        "affiliation": "Resistance Trench",
+        "region": "Middle East",
+        "tier": 5,
+        "language": "English",
+        "topics": [
+          "middle-east"
+        ],
+        "verified": false,
+        "note": "Pro-\"resistance\" aggregator: partisan, never confirms"
+      },
+      {
+        "channel": "ClashReport",
+        "name": "Clash Report",
+        "affiliation": "Clash Report",
+        "region": "international",
+        "tier": 5,
+        "language": "English",
+        "topics": [
+          "geopolitics"
+        ],
+        "verified": false,
+        "note": "Anonymous OSINT/aggregator account: labelled unverified, never confirms"
+      },
+      {
+        "channel": "OSINTdefender",
+        "name": "OSINTdefender",
+        "affiliation": "OSINTdefender",
+        "region": "international",
+        "tier": 5,
+        "language": "English",
+        "topics": [
+          "geopolitics"
+        ],
+        "verified": false,
+        "note": "Anonymous OSINT/aggregator account: labelled unverified, never confirms"
+      },
+      {
+        "channel": "LiveUAMap",
+        "name": "Liveuamap",
+        "affiliation": "Liveuamap",
+        "region": "international",
+        "tier": 5,
+        "language": "English",
+        "topics": [
+          "geopolitics"
+        ],
+        "verified": false,
+        "note": "Anonymous OSINT/aggregator account: labelled unverified, never confirms"
+      },
+      {
+        "channel": "wfwitness",
+        "name": "WarFront Witness",
+        "affiliation": "WarFront Witness",
+        "region": "international",
+        "tier": 5,
+        "language": "English",
+        "topics": [
+          "geopolitics"
+        ],
+        "verified": false,
+        "note": "Anonymous OSINT/aggregator account: labelled unverified, never confirms"
+      },
+      {
+        "channel": "Middle_East_Spectator",
+        "name": "Middle East Spectator",
+        "affiliation": "Middle East Spectator",
+        "region": "Middle East",
+        "tier": 5,
+        "language": "English",
+        "topics": [
+          "middle-east"
+        ],
+        "verified": false,
+        "note": "Anonymous OSINT/aggregator account: labelled unverified, never confirms"
+      },
+      {
+        "channel": "MiddleEastNow_Breaking",
+        "name": "Middle East Now",
+        "affiliation": "Middle East Now",
+        "region": "Middle East",
+        "tier": 5,
+        "language": "English",
+        "topics": [
+          "middle-east"
+        ],
+        "verified": false,
+        "note": "Anonymous OSINT/aggregator account: labelled unverified, never confirms"
+      },
+      {
+        "channel": "DefenderDome",
+        "name": "The Defender Dome",
+        "affiliation": "The Defender Dome",
+        "region": "international",
+        "tier": 5,
+        "language": "English",
+        "topics": [
+          "geopolitics"
+        ],
+        "verified": false,
+        "note": "Anonymous OSINT/aggregator account: labelled unverified, never confirms"
+      },
+      {
+        "channel": "warfareanalysis",
+        "name": "WarfareAnalysis",
+        "affiliation": "WarfareAnalysis",
+        "region": "international",
+        "tier": 5,
+        "language": "English",
+        "topics": [
+          "geopolitics"
+        ],
+        "verified": false,
+        "note": "Anonymous OSINT/aggregator account: labelled unverified, never confirms"
+      },
+      {
+        "channel": "rnintel",
+        "name": "Rerum Novarum",
+        "affiliation": "Rerum Novarum",
+        "region": "international",
+        "tier": 5,
+        "language": "English",
+        "topics": [
+          "geopolitics"
+        ],
+        "verified": false,
+        "note": "Anonymous OSINT/aggregator account: labelled unverified, never confirms"
+      },
+      {
+        "channel": "GeoPWatch",
+        "name": "Geopolitics Watch",
+        "affiliation": "Geopolitics Watch",
+        "region": "international",
+        "tier": 5,
+        "language": "English",
+        "topics": [
+          "geopolitics"
+        ],
+        "verified": false,
+        "note": "Anonymous OSINT/aggregator account: labelled unverified, never confirms"
+      },
+      {
+        "channel": "DDGeopolitics",
+        "name": "DD Geopolitics",
+        "affiliation": "DD Geopolitics",
+        "region": "international",
+        "tier": 5,
+        "language": "English",
+        "topics": [
+          "geopolitics"
+        ],
+        "verified": false,
+        "note": "Anonymous OSINT/aggregator account: labelled unverified, never confirms"
+      },
+      {
+        "channel": "geopolitics_prime",
+        "name": "Geopolitics Prime",
+        "affiliation": "Geopolitics Prime",
+        "region": "international",
+        "tier": 5,
+        "language": "English",
+        "topics": [
+          "geopolitics"
+        ],
+        "verified": false,
+        "note": "Anonymous OSINT/aggregator account: labelled unverified, never confirms"
+      },
+      {
+        "channel": "Osintlatestnews",
+        "name": "OSIntOps News",
+        "affiliation": "OSIntOps News",
+        "region": "international",
+        "tier": 5,
+        "language": "English",
+        "topics": [
+          "geopolitics"
+        ],
+        "verified": false,
+        "note": "Anonymous OSINT/aggregator account: labelled unverified, never confirms"
+      },
+      {
+        "channel": "osintlive",
+        "name": "OSINT Live",
+        "affiliation": "OSINT Live",
+        "region": "international",
+        "tier": 5,
+        "language": "English",
+        "topics": [
+          "geopolitics"
+        ],
+        "verified": false,
+        "note": "Anonymous OSINT/aggregator account: labelled unverified, never confirms"
+      },
+      {
+        "channel": "Alsaa_plus_EN",
+        "name": "Alsaa Live News",
+        "affiliation": "Alsaa Live News",
+        "region": "Middle East",
+        "tier": 5,
+        "language": "English",
+        "topics": [
+          "middle-east"
+        ],
+        "verified": false,
+        "note": "Anonymous OSINT/aggregator account: labelled unverified, never confirms"
+      },
+      {
+        "channel": "LebUpdate",
+        "name": "Lebanese News and Updates",
+        "affiliation": "Lebanese News and Updates",
+        "region": "Lebanon",
+        "tier": 5,
+        "language": "English",
+        "topics": [
+          "middle-east"
+        ],
+        "verified": false,
+        "note": "Anonymous OSINT/aggregator account: labelled unverified, never confirms"
       }
     ]
   }

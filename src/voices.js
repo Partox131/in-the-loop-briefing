@@ -5,8 +5,8 @@
 // A voice file lists accounts by handle (easier to curate); at runtime we
 // resolve handles to DIDs, which is what we key on (handles can change).
 
-import { stateCountry } from './flags.js?v=d783955726';
-import { credibilityTag, independenceOf, partiesOf } from './credibility.js?v=d783955726';
+import { stateCountry } from './flags.js?v=2440a9a4e1';
+import { credibilityTag, independenceOf, partiesOf } from './credibility.js?v=2440a9a4e1';
 
 /** Base weight per tier. Officials and OSINT are useful but never promoted alone. */
 export const TIER_WEIGHT = { 1: 1.0, 2: 0.9, 3: 0.7, 4: 0.6, 5: 0.5 };
@@ -57,7 +57,8 @@ export function makeVoice(v) {
     cred: credibilityTag({ affiliation: v.affiliation || v.name || handle, tier, country: stateCountry(v) }),
     topics: v.topics || [],
     domainVerified,
-    weight: TIER_WEIGHT[tier] * (domainVerified ? 1 : 0.9),
+    // Anonymous accounts rank lower, so they don't crowd the feeds (28 Nov 2026).
+    weight: TIER_WEIGHT[tier] * (domainVerified ? 1 : 0.9) * (independenceOf({ affiliation: v.affiliation || v.name || handle, tier }) === 'unverified' ? 0.6 : 1),
   };
 }
 

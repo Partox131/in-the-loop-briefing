@@ -12,13 +12,13 @@
 //                                                      ▼
 //                     breadth quota (fewer items per child higher up)
 
-import { ago, bold, cyan, dim, formatPost, green, magenta, yellow } from './format.js?v=d783955726';
-import { applyQuota, rankPosts } from './rank.js?v=d783955726';
-import { searchTopic } from './search.js?v=d783955726';
-import { KEEP_PER_VOICE } from './snapshot.js?v=d783955726';
-import { buildStorylines } from './storylines.js?v=d783955726';
-import { byDid, resolveVoices, TIER_NAME, voicesFor } from './voices.js?v=d783955726';
-import { conflictOfNode } from './credibility.js?v=d783955726';
+import { ago, bold, cyan, dim, formatPost, green, magenta, yellow } from './format.js?v=2440a9a4e1';
+import { applyQuota, rankPosts } from './rank.js?v=2440a9a4e1';
+import { searchTopic } from './search.js?v=2440a9a4e1';
+import { KEEP_PER_VOICE } from './snapshot.js?v=2440a9a4e1';
+import { buildStorylines } from './storylines.js?v=2440a9a4e1';
+import { byDid, resolveVoices, TIER_NAME, voicesFor } from './voices.js?v=2440a9a4e1';
+import { conflictOfNode } from './credibility.js?v=2440a9a4e1';
 
 /**
  * @param {object} o

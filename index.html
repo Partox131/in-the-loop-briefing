@@ -501,7 +501,7 @@
   <p>A live map of what credible outlets, reporters and analysts are saying about geopolitics, US politics and Canadian politics. Each story shows how many independent outlets carry it, whether it's confirmed or disputed, and what changed since you last looked. Sources include Bluesky, news outlets' feeds and official Telegram channels, refreshed every few minutes.</p>
   <nav aria-label="Regions and segments"><a href="/middle-east/">Middle East: the war with Iran, Gaza and Lebanon</a> · <a href="/eastern-europe/">Eastern Europe: the war in Ukraine and NATO's eastern flank</a> · <a href="/east-asia/">East Asia: China and Taiwan</a> · <a href="/us-politics/">US politics</a> · <a href="/canadian-politics/">Canadian politics</a> · <a href="briefing.html">Briefing</a> · <a href="/about/">About and how it works</a></nav>
 </div></div>
-<script>window.itlSearch = location.search; window.itlLive = (demo, node) => import('./src/static.js?v=d783955726').then((m) => m.initLive({ demo, node, search: window.itlSearch }));</script>
+<script>window.itlSearch = location.search; window.itlLive = (demo, node) => import('./src/static.js?v=2440a9a4e1').then((m) => m.initLive({ demo, node, search: window.itlSearch }));</script>
 <script>
 (() => {
   const params = new URLSearchParams(location.search);
@@ -572,7 +572,7 @@
     const word = cred?.short && cred.short !== 'state' ? cred.short : long ? 'state-affiliated' : 'state';
     return ` <span class="statetag" title="${esc(title)}">${img}${word}</span>`;
   };
-  const tagged = (x) => x && (x.stateAffiliated || x.cred?.short === 'partisan');
+  const tagged = (x) => x && (x.stateAffiliated || ['partisan', 'unverified'].includes(x.cred?.short));
   const safeUrl = (u) => (/^https:\/\//.test(u || '') ? esc(u) : '#');
   const oneLine = (t, n = 200) => { const s = String(t || '').replace(/\s+/g, ' ').trim(); return s.length > n ? s.slice(0, n - 1).replace(/[\s,;:–-]+\S*$/, '') + '…' : s; };
   const ago = (iso) => {
@@ -1295,7 +1295,7 @@
     const by = (x) => {
       const n = x.sources.length;
       // The chip already says the status; this says who.
-      if (n === 1 && x.sources[0]) return `by ${esc(x.sources[0])}${x.flags?.[x.sources[0]] || x.creds?.[x.sources[0]]?.short === 'partisan' ? stateTag(x.flags?.[x.sources[0]], false, x.creds?.[x.sources[0]]) : ''}`;
+      if (n === 1 && x.sources[0]) return `by ${esc(x.sources[0])}${x.flags?.[x.sources[0]] || ['partisan', 'unverified'].includes(x.creds?.[x.sources[0]]?.short) ? stateTag(x.flags?.[x.sources[0]], false, x.creds?.[x.sources[0]]) : ''}`;
       return `${x.status === 'corroborated' ? 'by ' : ''}${plural(n, 'source')}`;
     };
     const story = (x) => `<div class="row"><span class="chip c-${esc(x.status)}">${esc(storyStatus(x))}</span><span>${by(x)}</span>${x.place ? `<span class="area-tag">${esc(x.place.label)}</span>` : ''}<span>latest ${esc(ago(x.lastSeen))}</span></div>`;
@@ -1329,7 +1329,7 @@
     const st = a.count ? a.status : 'quiet';
     const stories = a.storylines.length
       ? `<ul class="plain">${a.storylines.map((s) => `<li>
-          <div class="row"><span class="chip c-${esc(s.status)}">${esc(storyStatus(s))}</span><span>${esc(ago(s.firstSeen))}</span><span>${plural(s.posts, 'item')}${s.articles ? ` (${s.articles} ${s.articles === 1 ? 'article' : 'articles'})` : ''}${s.sources.length ? ` · ${s.sources.slice(0, 3).map((n) => esc(n) + (s.flags?.[n] || s.creds?.[n]?.short === 'partisan' ? stateTag(s.flags?.[n], false, s.creds?.[n]) : '')).join(', ')}` : ''}</span></div>
+          <div class="row"><span class="chip c-${esc(s.status)}">${esc(storyStatus(s))}</span><span>${esc(ago(s.firstSeen))}</span><span>${plural(s.posts, 'item')}${s.articles ? ` (${s.articles} ${s.articles === 1 ? 'article' : 'articles'})` : ''}${s.sources.length ? ` · ${s.sources.slice(0, 3).map((n) => esc(n) + (s.flags?.[n] || ['partisan', 'unverified'].includes(s.creds?.[n]?.short) ? stateTag(s.flags?.[n], false, s.creds?.[n]) : '')).join(', ')}` : ''}</span></div>
           <a class="txt" href="${safeUrl(s.url)}" target="_blank" rel="noopener">${esc(oneLine(s.text, 220))}</a>
         </li>`).join('')}</ul>`
       : `<p class="muted" style="margin:0">Nothing from tracked voices in the last ${esc(state.window)}.</p>`;
