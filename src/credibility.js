@@ -14,7 +14,7 @@
 // outlet's feed, Bluesky account and Telegram channel count as one source.
 // Anything not listed is independent (tier 4 accounts are official).
 
-import { copyKeyOf, wireOf } from './copies.js?v=8159273ad1';
+import { copyKeyOf, wireOf } from './copies.js?v=d783955726';
 
 /** Independence classes, most independent first. `short` is the label next to the source. */
 export const CLASSES = {
