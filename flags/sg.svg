@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="flag-icons-sg" viewBox="0 0 640 480">
+  <path fill="#fff" d="M0 0h640v480H0z"/>
+  <path fill="#df0000" d="M0 0h640v240H0z"/>
+  <circle cx="146" cy="120" r="74" fill="#fff"/>
+  <circle cx="176" cy="120" r="70" fill="#df0000"/>
+  <g fill="#fff">
+    <path id="s" d="m0-14 3.3 10.1H14L5.4 2.3 8.7 12.4 0 6.2l-8.7 6.2 3.3-10.1L-14-3.9h10.7z" transform="translate(206 72)"/>
+    <use href="#s" transform="translate(-34 26)"/>
+    <use href="#s" transform="translate(34 26)"/>
+    <use href="#s" transform="translate(-21 66)"/>
+    <use href="#s" transform="translate(21 66)"/>
+  </g>
+</svg>
