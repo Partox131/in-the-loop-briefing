@@ -39,22 +39,68 @@ function stem(w) {
     .replace(/(ing|ed)$/, (m, _s, i, str) => (str.length - m.length >= 4 ? '' : m));
 }
 
-/** Content words of a text, in order, lower-cased and stemmed. */
-export function wordsOf(text) {
-  const clean = String(text || '')
+// "Iranian" and "Iran", "Russia's" and "Russian" name the same side: fold
+// the demonyms of the places we cover into the country, so one outlet's
+// "Iranian drone" matches another's "Iran drone".
+const DEMONYMS = {
+  iranian: 'iran', israeli: 'israel', russian: 'russia', ukrainian: 'ukraine', chinese: 'china',
+  taiwanese: 'taiwan', american: 'america', lebanese: 'lebanon', syrian: 'syria', iraqi: 'iraq',
+  yemeni: 'yemen', palestinian: 'palestine', saudi: 'saudi', qatari: 'qatar', emirati: 'uae',
+  turkish: 'turkey', polish: 'poland', belarusian: 'belarus', korean: 'korea', japanese: 'japan',
+  canadian: 'canada', british: 'britain', french: 'france', german: 'germany', european: 'europe',
+};
+
+// How much more a name or a number counts than an ordinary word (World
+// Monitor's story matching does the same): "Turkey raises rates to 50%" and
+// "Argentina raises rates to 50%" share most words, but not the country.
+export const BOOST = { name: 3, number: 2 };
+
+/**
+ * Content words of a text, in order, each with how much it counts: a word
+ * capitalised mid-sentence (a name) or a number counts more. In a headline
+ * written In Title Case every word is capitalised, so nothing is boosted.
+ */
+function tokensOf(text) {
+  const raw = String(text || '')
     .replace(/https?:\/\/\S+/g, ' ')
-    .replace(/[#@]/g, ' ')
-    .toLowerCase();
+    .replace(/[#@]/g, ' ');
+  const found = [...raw.matchAll(WORD_RE)];
+  const caps = found.filter((m) => /^\p{Lu}/u.test(m[0])).length;
+  const titleCase = found.length >= 4 && caps / found.length > 0.6;
   const out = [];
-  for (const m of clean.matchAll(WORD_RE)) {
-    const w = m[0].replace(/['’-]+$/, '');
+  for (const m of found) {
+    let w = m[0].toLowerCase().replace(/['’-]+$/, '');
     if (w.length < 3 && !/\d/.test(w)) continue;
     if (STOP.has(w)) continue;
     // Years and tiny numbers are everywhere; bigger numbers ("12 killed") are useful.
     if (/^\d+$/.test(w) && (Number(w) < 3 || /^20\d\d$/.test(w))) continue;
-    out.push(stem(w));
+    w = w.replace(/['’]s$/, '');
+    w = DEMONYMS[w] || DEMONYMS[w.replace(/s$/, '')] || stem(w);
+    const before = raw.slice(0, m.index).trimEnd();
+    const sentenceStart = !before || /[.!?:;\n"“]$/.test(before);
+    const boost = /\d/.test(w) ? BOOST.number : !titleCase && !sentenceStart && /^\p{Lu}/u.test(m[0]) ? BOOST.name : 1;
+    out.push({ w, boost });
   }
   return out;
+}
+
+/** Content words of a text, in order, lower-cased and stemmed. */
+export function wordsOf(text) {
+  return tokensOf(text).map((t) => t.w);
+}
+
+// "… - Reuters", "… | AP News", "… - The Times of Israel": the outlet's name
+// after a headline says who published it, not what happened.
+const WIRE_SUFFIX = /\s+[-|–—]\s*(?:AP News|AP|Associated Press|Reuters|AFP)\s*$/i;
+
+/** A headline without the outlet's own name tacked on the end. */
+export function stripOutletSuffix(head, name) {
+  let h = String(head || '').replace(WIRE_SUFFIX, '');
+  if (name) {
+    const esc = String(name).replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/^the\s+/i, '');
+    h = h.replace(new RegExp(`\\s+[-|–—]\\s*(?:the\\s+)?${esc}(?:\\s+news)?\\s*$`, 'i'), '');
+  }
+  return h;
 }
 
 /**
@@ -65,9 +111,9 @@ export function wordsOf(text) {
 export function aboutText(p) {
   if (p.source === 'news') {
     const summary = p.title && p.text?.startsWith(p.title) ? p.text.slice(p.title.length) : '';
-    return { head: p.title || p.text || '', body: summary.slice(0, 240) };
+    return { head: stripOutletSuffix(p.title || p.text || '', p.displayName), body: summary.slice(0, 240) };
   }
-  return { head: p.linkTitle || '', body: String(p.text || '').slice(0, 300) };
+  return { head: stripOutletSuffix(p.linkTitle || ''), body: String(p.text || '').slice(0, 300) };
 }
 
 /** Words and word pairs of a post's headline (or the start of its text). */
@@ -79,18 +125,44 @@ function headTermsOf(p) {
   return out;
 }
 
+/**
+ * The names in a post's headline (words capitalised mid-sentence, so none in
+ * a headline written In Title Case), and every word of the post.
+ */
+function namesOf(p) {
+  const { head, body } = aboutText(p);
+  const names = new Set(tokensOf(head || body.slice(0, 140)).filter((t) => t.boost === BOOST.name).map((t) => t.w));
+  const words = new Set([...wordsOf(head), ...wordsOf(body)]);
+  return { names, words };
+}
+
+/**
+ * Two reports name different places or people in their headlines: each names
+ * someone or somewhere the other never mentions ("strike on Zaporizhzhia" and
+ * "strike on Kryvyi Rih" the same night are two events). Only names the other
+ * side doesn't mention at all count, so "Beirut" vs "Lebanon" doesn't block
+ * when the Beirut report also says "Lebanese".
+ */
+export function namesConflict(a, b) {
+  const extra = (x, y) => [...x.names].some((n) => !y.words.has(n));
+  return extra(a, b) && extra(b, a);
+}
+
 /** Term counts for a post: words and adjacent word pairs, the headline counting double. */
 function termsOf(p) {
   const counts = new Map();
-  const add = (words, weight) => {
-    words.forEach((w, i) => {
-      counts.set(w, (counts.get(w) || 0) + weight);
-      if (i > 0) counts.set(`${words[i - 1]} ${w}`, (counts.get(`${words[i - 1]} ${w}`) || 0) + weight);
+  counts.names = new Set(); // names and numbers: kept even when no other post uses them
+  const add = (tokens, weight) => {
+    tokens.forEach(({ w, boost }, i) => {
+      if (boost > 1) counts.names.add(w);
+      // Names and numbers count more on their own; word pairs keep one weight.
+      counts.set(w, (counts.get(w) || 0) + weight * boost);
+      if (i > 0) counts.set(`${tokens[i - 1].w} ${w}`, (counts.get(`${tokens[i - 1].w} ${w}`) || 0) + weight);
     });
   };
   const { head, body } = aboutText(p);
-  add(wordsOf(head), 2);
-  add(wordsOf(body), 1);
+  add(tokensOf(head), 2);
+  add(tokensOf(body), 1);
   return counts;
 }
 
@@ -147,12 +219,15 @@ export function vectorize(posts, { maxShare = 0.12, rareShare = 0.03 } = {}) {
     const head = headTermsOf(posts[i]);
     for (const [k, c] of t) {
       const d = df.get(k);
-      if (d < 2 && n > 3) continue; // a word nobody else uses can't link anything
+      // A word nobody else uses can't link anything, but a name or number only
+      // this post has still sets it apart ("Turkey" vs "Argentina raises rates").
+      const only = d < 2 && n > 3;
+      if (only && !t.names.has(k)) continue;
       if (d > cap || own?.has(k)) continue;
       const idf = Math.log((n + 1) / d);
       // Pairs ("drone strike", "kharkiv region") are stronger evidence than single words.
       v.set(k, Math.sqrt(c) * idf * (k.includes(' ') ? 1.5 : 1));
-      if (d <= rare) {
+      if (d <= rare && !only) {
         v.rare.add(k);
         if (head.has(k)) v.head.add(k);
       }
@@ -218,7 +293,13 @@ export function mergeSimilar(groups, opts = {}) {
       for (const k of pv.head) head.add(k);
     }
     const times = posts.map(timeOf);
-    return { posts, v, rare, head, sources: new Set(posts.map(sourceOf)), first: Math.min(...times), last: Math.max(...times) };
+    const named = { names: new Set(), words: new Set() };
+    for (const p of posts) {
+      const n = namesOf(p);
+      for (const k of n.names) named.names.add(k);
+      for (const k of n.words) named.words.add(k);
+    }
+    return { posts, v, rare, head, named, sources: new Set(posts.map(sourceOf)), first: Math.min(...times), last: Math.max(...times) };
   });
   items.sort((a, b) => a.first - b.first);
 
@@ -239,6 +320,8 @@ export function mergeSimilar(groups, opts = {}) {
         // and at least one of them in both headlines (not only in a summary).
         if (!s.parts.some((part) => sharedDetails(it.rare, part.rare) >= minShared)) continue;
         if (!s.parts.some((part) => overlaps(it.head, part.head))) continue;
+        // Different places or people in the headlines: a different event.
+        if (namesConflict(it.named, s.named)) continue;
         best = s;
         bestSim = sim;
       }
@@ -247,12 +330,15 @@ export function mergeSimilar(groups, opts = {}) {
       best.posts.push(...it.posts);
       for (const [k, x] of it.v) best.v.set(k, (best.v.get(k) || 0) + x);
       best.parts.push(it);
+      for (const k of it.named.words) best.named.words.add(k);
       for (const src of it.sources) best.sources.add(src);
       best.first = Math.min(best.first, it.first);
       best.last = Math.max(best.last, it.last);
       best.matched = true;
     } else {
-      stories.push({ ...it, posts: [...it.posts], v: new Map(it.v), parts: [it], sources: new Set(it.sources), matched: false });
+      // A storyline keeps its first report's names and everyone's words.
+      const named = { names: new Set(it.named.names), words: new Set(it.named.words) };
+      stories.push({ ...it, posts: [...it.posts], v: new Map(it.v), parts: [it], named, sources: new Set(it.sources), matched: false });
     }
   }
   return stories.map((s) => ({ posts: s.posts, matched: s.matched }));
