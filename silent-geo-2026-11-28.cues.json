@@ -1,0 +1,44 @@
+{
+  "duration": 63.821001052856445,
+  "cues": [
+    {
+      "t": 2.9159719944000244,
+      "headline": "Israeli strike on Gaza kills two medics from Doctors Without Borders",
+      "where": "Gaza",
+      "status": "Confirmed",
+      "sources": 6
+    },
+    {
+      "t": 13.887972116470337,
+      "headline": "Middle East latest: Saudi Arabia intercepts Houthi ballistic missile targeting Al Shuqaiq",
+      "where": "Yemen and Red Sea",
+      "status": "Confirmed",
+      "sources": 5
+    },
+    {
+      "t": 24.569972038269043,
+      "headline": "An adviser to Iran’s supreme leader warned Iraq not to become a “tool of Trump’s policies” after US President Donald Trump on Friday praised Baghdad’s efforts to “stop the smuggli…",
+      "where": "Iraq",
+      "status": "Confirmed",
+      "sources": 5
+    },
+    {
+      "t": 35.505972146987915,
+      "headline": "Ukraine’s attack on Russian ship in Libya ‘not coordinated with partners,’ Zelensky says.",
+      "where": "Ukraine–Russia war",
+      "status": "Confirmed",
+      "sources": 5
+    },
+    {
+      "t": 46.78697204589844,
+      "headline": "US military maintained a \"strict\" blockade of Iranian ports by firing at a ship that violated the naval containment on Thursday.",
+      "where": "War in Iran",
+      "status": "Confirmed",
+      "sources": 4
+    },
+    {
+      "t": 57.81797218322754,
+      "end": true
+    }
+  ]
+}
