@@ -14,6 +14,8 @@
 // outlet's feed, Bluesky account and Telegram channel count as one source.
 // Anything not listed is independent (tier 4 accounts are official).
 
+import { copyKeyOf, wireOf } from './copies.js?v=8159273ad1';
+
 /** Independence classes, most independent first. `short` is the label next to the source. */
 export const CLASSES = {
   independent: { label: 'Independent', short: '', note: 'Editorially independent' },
@@ -237,8 +239,10 @@ export function attributedSides(p, conflict) {
  *   { echo: 'RU' }           state-controlled or partisan media from outside
  *                            the conflict: shows reach, never confirms
  *   {}                       neither (analysts, or no voice)
+ * A copy of agency or another outlet's text counts as that source's witness
+ * (src/copies.js); pass { copies: false } for the item's own source.
  */
-export function roleOf(p, conflict) {
+export function roleOf(p, conflict, { copies = true } = {}) {
   const v = p.voice;
   if (!v) return {};
   if (conflict && (v.partyTo || []).includes(conflict)) return { claim: v.country || SOURCE_CLASS[v.affiliation]?.side || v.affiliation };
@@ -249,5 +253,9 @@ export function roleOf(p, conflict) {
   // State-controlled and partisan media never confirm, even about other
   // countries' wars: TASS repeating the IRGC adds reach, not proof.
   if (['state-controlled', 'partisan'].includes(v.independence || independenceOf(v))) return { echo: v.country || v.affiliation };
+  // A reprint of agency copy (or of another outlet's story) counts as that
+  // story's source, not as a second one (src/copies.js).
+  const copy = copies ? copyKeyOf(p) || wireOf(p) : null;
+  if (copy) return { witness: copy };
   return { witness: v.stateAffiliated && v.country ? `state:${v.country}` : v.affiliation };
 }

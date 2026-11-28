@@ -6,8 +6,8 @@
 // it, but higher nodes use a longer time window and only surface the top few
 // items per child. See docs/design/topic-tracking.md.
 
-import { compileMatcher, compileTerm, makeTopic } from './topic.js?v=355b4e7eab';
-import { USA, WORLD } from './places.js?v=355b4e7eab';
+import { compileMatcher, compileTerm, makeTopic } from './topic.js?v=8159273ad1';
+import { USA, WORLD } from './places.js?v=8159273ad1';
 
 // "@world" / "@usa" in `abroad` stand for the place lists in src/places.js.
 const PLACE_LISTS = { '@world': WORLD, '@usa': USA };

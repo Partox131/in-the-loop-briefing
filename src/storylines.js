@@ -8,8 +8,9 @@
 // each other. Embeddings and LLM claim extraction would plug in at
 // `mergeSimilar`/`claimsOf` later.
 
-import { mergeSimilar } from './similar.js?v=355b4e7eab';
-import { roleOf } from './credibility.js?v=355b4e7eab';
+import { mergeSimilar } from './similar.js?v=8159273ad1';
+import { roleOf } from './credibility.js?v=8159273ad1';
+import { markCopies } from './copies.js?v=8159273ad1';
 
 const TRACKING_PARAMS = /^(utm_|fbclid|gclid|ref|smid|cmpid|at_|taid|ito|mc_)/i;
 
@@ -218,6 +219,8 @@ export function buildStorylines(posts, { textMatch = true } = {}) {
   const stories = [];
   for (const { posts: group, matched } of merged) {
     group.sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
+    // Reprints of one agency story count as one source from here on.
+    const copies = markCopies(group, (p) => roleOf(p, conflictOf(group), { copies: false }).witness);
     const voicesInvolved = [...new Map(group.filter((p) => p.voice).map((p) => [p.did, p.voice])).values()];
     const times = group.map((p) => Date.parse(p.createdAt)).filter((t) => !Number.isNaN(t));
     const story = {
@@ -239,6 +242,8 @@ export function buildStorylines(posts, { textMatch = true } = {}) {
       disagreements: findDisagreements(group),
       // true when similar wording (not a shared link or quote) joined its posts
       matchedByText: matched,
+      // items that count as another source's copy (agency reprints)
+      ...(copies ? { copies } : {}),
     };
     if (story.disagreements.length) story.status = 'disputed';
     stories.push(story);
