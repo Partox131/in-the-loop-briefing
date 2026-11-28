@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Studio · In the Loop</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+  /* Studio (scripts/studio.js): the day's drafts, edit, pick channels, Approve once to post everywhere. Phone first. */
+  :root {
+    --bg: #F5F6F8; --raise: #FFFFFF; --ink: #1D2147; --muted: #5B6080; --line: #E2E5EF;
+    --loop: #3047D6; --on-loop: #FFFFFF; --ok: #0F6B5C; --ok-bg: #DDF3EE; --warn: #8A5608; --warn-bg: #FBEFD8; --bad: #B3261E; --bad-bg: #FBE3E1;
+    --display: 'Bricolage Grotesque', 'Figtree', system-ui, sans-serif;
+    --body: 'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    --bg: #12142B; --raise: #1B1E3B; --ink: #E7E9F5; --muted: #A3A8C8; --line: #2C3056;
+    --loop: #7C8FFF; --on-loop: #12142B; --ok: #7FD6C2; --ok-bg: #143A33; --warn: #F0C27A; --warn-bg: #3A2E14; --bad: #FF8A80; --bad-bg: #3D1C1B; color-scheme: dark } }
+  :root[data-theme="dark"] {
+    --bg: #12142B; --raise: #1B1E3B; --ink: #E7E9F5; --muted: #A3A8C8; --line: #2C3056;
+    --loop: #7C8FFF; --on-loop: #12142B; --ok: #7FD6C2; --ok-bg: #143A33; --warn: #F0C27A; --warn-bg: #3A2E14; --bad: #FF8A80; --bad-bg: #3D1C1B; color-scheme: dark }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 400 16px/1.5 var(--body); }
+  .wrap { max-width: 680px; margin: 0 auto; padding: 24px max(16px, env(safe-area-inset-right)) 80px max(16px, env(safe-area-inset-left)); display: grid; gap: 20px; }
+  header { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .brand { display: flex; align-items: center; gap: 8px; font: 800 18px/1 var(--display); }
+  .brand small { font: 600 12px var(--body); color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+  h1 { font: 800 30px/1.1 var(--display); margin: 0; letter-spacing: -0.01em; text-wrap: balance; }
+  h2 { font: 700 19px/1.25 var(--display); margin: 0; text-wrap: balance; }
+  .meta, .muted { color: var(--muted); font-size: 14px; }
+  .card { background: var(--raise); border: 1px solid var(--line); border-radius: 16px; padding: 16px; display: grid; gap: 14px; min-width: 0; }
+  .notes { background: var(--warn-bg); border-radius: 12px; padding: 12px 14px; font-size: 15px; }
+  .notes strong { color: var(--warn); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; }
+  .notes ul { margin: 6px 0 0; padding-left: 18px; }
+  .when { color: var(--muted); font-size: 13px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+  .why { color: var(--muted); font-size: 14px; margin: 0; }
+  .video video { width: min(100%, 240px); aspect-ratio: 9 / 16; border-radius: 12px; background: #000; display: block; }
+  .ch { border-top: 1px solid var(--line); padding-top: 12px; display: grid; gap: 8px; min-width: 0; }
+  .chhead { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .chhead label { display: flex; align-items: center; gap: 8px; font-weight: 700; cursor: pointer; }
+  .chhead input[type=checkbox] { width: 20px; height: 20px; accent-color: var(--loop); }
+  .count { margin-left: auto; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .count.over { color: var(--bad); font-weight: 700; }
+  textarea, input[type=text], input[type=password] { width: 100%; font: 15px/1.45 var(--body); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+  textarea { resize: vertical; min-height: 96px; }
+  textarea:focus, input:focus { outline: 2px solid var(--loop); outline-offset: 1px; }
+  .sub { font-size: 13px; color: var(--muted); font-weight: 600; }
+  .chip { font-size: 12px; font-weight: 700; border-radius: 999px; padding: 2px 10px; }
+  .chip.sent { background: var(--ok-bg); color: var(--ok); }
+  .chip.sending { background: var(--warn-bg); color: var(--warn); }
+  .chip.failed { background: var(--bad-bg); color: var(--bad); }
+  .chip.off { background: var(--bg); color: var(--muted); }
+  .chip a { color: inherit; }
+  .err { color: var(--bad); font-size: 14px; }
+  .actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  button { font: 700 15px var(--body); border: 0; border-radius: 999px; padding: 10px 18px; background: var(--loop); color: var(--on-loop); cursor: pointer; }
+  button.quiet { background: transparent; color: var(--loop); border: 1px solid var(--line); }
+  button.armed { background: var(--bad); color: #fff; }
+  button:disabled { opacity: .5; cursor: default; }
+  button:focus-visible { outline: 3px solid var(--loop); outline-offset: 2px; }
+  .done { opacity: .75; }
+  details summary { cursor: pointer; font-weight: 700; }
+  .acct { display: grid; gap: 8px; padding: 12px 0; border-top: 1px solid var(--line); }
+  .acct:first-of-type { border-top: 0; }
+  .acct p { margin: 0; font-size: 14px; color: var(--muted); }
+  .acct a { color: var(--loop); }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .signin { max-width: 420px; margin: 12vh auto 0; }
+  .empty { text-align: center; color: var(--muted); padding: 24px 0; }
+</style>
+</head>
+<body>
+<div class="wrap" id="app"><p class="empty">Loading Studio…</p></div>
+<script>
+(() => {
+  const API = (new URLSearchParams(location.search).get('api') || 'https://api.inthelooplive.com').replace(/\/$/, '');
+  const KEY = 'itl-studio-token';
+  const NAMES = { bluesky: 'Bluesky', threads: 'Threads', x: 'X', instagram: 'Instagram Reels', tiktok: 'TikTok', youtube: 'YouTube Shorts' };
+  const LIMIT = { bluesky: 300, threads: 500, x: 280, instagram: 2200, tiktok: 2200, youtube: 5000 };
+  const seg = typeof Intl !== 'undefined' && Intl.Segmenter ? new Intl.Segmenter('en', { granularity: 'grapheme' }) : null;
+  const len = (c, t) => c === 'x' ? [...t.replace(/https?:\/\/\S+/g, 'x'.repeat(23))].length : c === 'bluesky' && seg ? [...seg.segment(t)].length : [...t].length;
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const app = document.getElementById('app');
+  let token = null; try { token = localStorage.getItem(KEY); } catch {}
+  let S = null, timer = null;
+  const edits = {}; // postId -> channel -> {text, reply, title, on}
+
+  async function api(path, body) {
+    const r = await fetch(API + path, { method: body ? 'POST' : 'GET', headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: 'Bearer ' + token } : {}) }, body: body ? JSON.stringify(body) : undefined });
+    const j = await r.json().catch(() => ({ ok: false, error: 'No answer from the server.' }));
+    if (r.status === 401) { setToken(null); signin(j.setup); throw new Error('signin'); }
+    return j;
+  }
+  function setToken(t) { token = t; try { t ? localStorage.setItem(KEY, t) : localStorage.removeItem(KEY); } catch {} }
+
+  function signin(setup, msg) {
+    clearTimeout(timer);
+    app.innerHTML = `<div class="card signin"><div class="brand">in the loop <small>Studio</small></div>
+      <h1>${setup ? 'Set your Studio password' : 'Sign in'}</h1>
+      ${setup ? '<p class="muted">Paste the one-time setup code Claude gave you, then choose a password (10+ characters).</p><input type="text" id="code" placeholder="Setup code" autocomplete="off">' : ''}
+      <input type="password" id="pw" placeholder="Password" autocomplete="${setup ? 'new-password' : 'current-password'}">
+      <div class="actions"><button id="go">${setup ? 'Set password' : 'Sign in'}</button></div>
+      <p class="err" id="msg">${esc(msg || '')}</p></div>`;
+    const go = async () => {
+      const pw = document.getElementById('pw').value;
+      const j = setup ? await api('/studio/setup', { code: document.getElementById('code').value, password: pw }) : await api('/studio/login', { password: pw });
+      if (j.ok) { setToken(j.token); load(); }
+      else if (j.setup) signin(true);
+      else document.getElementById('msg').textContent = j.error || 'That did not work.';
+    };
+    document.getElementById('go').onclick = () => go().catch(() => {});
+    document.getElementById('pw').onkeydown = (e) => { if (e.key === 'Enter') go().catch(() => {}); };
+  }
+
+  async function load() {
+    clearTimeout(timer);
+    if (!token) return signin(false);
+    try {
+      const j = await api('/studio/state');
+      if (!j.ok) { app.innerHTML = `<p class="err">${esc(j.error || 'Could not load the drafts.')}</p>`; return; }
+      S = j; render();
+    } catch (e) { if (e.message !== 'signin') app.innerHTML = '<p class="err">Could not reach the server. Pull to refresh in a minute.</p>'; return; }
+    const busy = Object.values(S.sends).some((p) => Object.values(p).some((x) => x.status === 'sending'));
+    timer = setTimeout(load, busy ? 5000 : 60000);
+  }
+
+  function edit(id, ch, item, send) {
+    const e = ((edits[id] ||= {})[ch] ||= { text: item.text || '', reply: item.reply || '', title: item.title || '', on: undefined });
+    if (e.on === undefined) e.on = S.ready[ch] && !(send && (send.status === 'sent' || send.status === 'sending' || send.status === 'skipped'));
+    return e;
+  }
+
+  function chip(send, ready) {
+    if (send?.status === 'sent') return `<span class="chip sent">Posted${send.url ? ` · <a href="${esc(send.url)}" target="_blank" rel="noopener">view</a>` : ''}</span>`;
+    if (send?.status === 'sending') return '<span class="chip sending">Posting…</span>';
+    if (send?.status === 'failed') return '<span class="chip failed">Failed</span>';
+    if (send?.status === 'skipped') return '<span class="chip off">Skipped</span>';
+    if (!ready) return '<span class="chip off">Not connected</span>';
+    return '';
+  }
+
+  function render() {
+    const d = S.drafts;
+    const day = d.date ? new Date(d.date + 'T12:00:00').toLocaleDateString('en-CA', { weekday: 'long', month: 'long', day: 'numeric' }) : 'No drafts yet';
+    const made = d.generatedAt ? `Written ${new Date(d.generatedAt).toLocaleString('en-CA', { hour: 'numeric', minute: '2-digit', month: 'short', day: 'numeric' })}` : '';
+    const posts = (d.posts || []).map((p) => {
+      const sends = S.sends[p.id] || {};
+      const chans = Object.keys(p.items);
+      const allDone = chans.length && chans.every((c) => ['sent', 'skipped'].includes(sends[c]?.status));
+      const rows = chans.map((c) => {
+        const it = p.items[c], s = sends[c], e = edit(p.id, c, it, s);
+        const locked = s && (s.status === 'sent' || s.status === 'sending');
+        const n = len(c, e.text);
+        return `<div class="ch" data-post="${esc(p.id)}" data-ch="${c}">
+          <div class="chhead"><label><input type="checkbox" data-f="on" ${e.on ? 'checked' : ''} ${locked || !S.ready[c] ? 'disabled' : ''}>${NAMES[c]}</label>${chip(s, S.ready[c])}<span class="count${n > LIMIT[c] ? ' over' : ''}">${n} / ${LIMIT[c]}</span></div>
+          ${c === 'youtube' ? `<div class="sub">Title</div><input type="text" data-f="title" maxlength="100" value="${esc(e.title)}" ${locked ? 'disabled' : ''}><div class="sub">Description</div>` : ''}
+          <textarea data-f="text" ${locked ? 'disabled' : ''}>${esc(e.text)}</textarea>
+          ${c === 'x' ? `<div class="sub">Reply with the link</div><textarea data-f="reply" style="min-height:64px" ${locked ? 'disabled' : ''}>${esc(e.reply)}</textarea>` : ''}
+          ${s?.status === 'failed' ? `<div class="err">${esc(s.error || '')}. Tick it and approve again to retry.</div>` : ''}
+        </div>`;
+      }).join('');
+      const skipped = chans.length && chans.every((c) => sends[c]?.status === 'skipped');
+      return `<article class="card${allDone ? ' done' : ''}" data-id="${esc(p.id)}">
+        <div><div class="when">${esc(p.when || '')}</div><h2>${esc(p.title || '')}</h2></div>
+        ${p.why ? `<p class="why">${esc(p.why)}</p>` : ''}
+        ${p.video ? `<div class="video"><video controls playsinline preload="metadata" src="${esc(p.video)}"></video></div>` : ''}
+        ${rows}
+        <div class="actions">${skipped ? `<button class="quiet" data-act="unskip">Undo skip</button>` : `<button data-act="approve">Approve</button><button class="quiet" data-act="skip">Skip</button>`}</div>
+        <div class="err" data-msg></div>
+      </article>`;
+    }).join('');
+    const a = S.accounts;
+    const st = (x, extra = '') => x.connected ? `<span class="chip sent">Connected${x.as ? ' as ' + esc(x.as) : ''}</span>${extra}` : '<span class="chip off">Not connected</span>';
+    const buf = a.buffer.connected ? ['x', 'tiktok', 'youtube'].map((c) => `${NAMES[c]}: ${a.buffer.channels[c] ? esc(a.buffer.channels[c]) : 'not in Buffer'}`).join(' · ') : '';
+    app.innerHTML = `
+      <header><div class="brand">in the loop <small>Studio</small></div><button class="quiet" id="out">Sign out</button></header>
+      <div><h1>${esc(day)}</h1><div class="meta">${esc(made)}</div></div>
+      ${d.notes?.length ? `<section class="notes"><strong>Check before approving</strong><ul>${d.notes.map((n) => `<li>${esc(n)}</li>`).join('')}</ul></section>` : ''}
+      ${posts || '<p class="empty">No drafts yet. They appear after the next routine run.</p>'}
+      <details class="card" id="accts" ${Object.values(S.ready).some(Boolean) ? '' : 'open'}><summary>Channels</summary>
+        <div class="acct" data-acct="bluesky"><div class="row"><strong>Bluesky</strong>${st(a.bluesky)}</div>
+          <p>Bluesky → Settings → Privacy and security → App passwords → Add. Paste it here with the handle.</p>
+          <input type="text" data-k="identifier" placeholder="Handle, e.g. inthelooplive.com" autocomplete="off"><input type="password" data-k="appPassword" placeholder="App password" autocomplete="off">
+          <div class="row"><button data-connect>Connect</button>${a.bluesky.connected ? '<button class="quiet" data-remove>Disconnect</button>' : ''}</div></div>
+        <div class="acct" data-acct="threads"><div class="row"><strong>Threads</strong>${st(a.threads)}</div>
+          <p>A long-lived access token from our Meta app (Threads use case → User token generator). Studio renews it every week.</p>
+          <input type="password" data-k="token" placeholder="Threads access token" autocomplete="off">
+          <div class="row"><button data-connect>Connect</button>${a.threads.connected ? '<button class="quiet" data-remove>Disconnect</button>' : ''}</div></div>
+        <div class="acct" data-acct="instagram"><div class="row"><strong>Instagram</strong>${st(a.instagram)}</div>
+          <p>A long-lived access token from our Meta app (Instagram API with Instagram login → Generate token). The account must be Professional. Studio renews it every week.</p>
+          <input type="password" data-k="token" placeholder="Instagram access token" autocomplete="off">
+          <div class="row"><button data-connect>Connect</button>${a.instagram.connected ? '<button class="quiet" data-remove>Disconnect</button>' : ''}</div></div>
+        <div class="acct" data-acct="buffer"><div class="row"><strong>Buffer</strong> <span class="muted">(X, TikTok, YouTube)</span>${st(a.buffer)}</div>
+          ${buf ? `<p>${buf}</p>` : ''}
+          <p>Buffer → Settings → API → create a key. Connect X, TikTok and YouTube in Buffer first. After adding a channel in Buffer, tap Refresh.</p>
+          <input type="password" data-k="apiKey" placeholder="Buffer API key" autocomplete="off">
+          <div class="row"><button data-connect>${a.buffer.connected ? 'Refresh' : 'Connect'}</button>${a.buffer.connected ? '<button class="quiet" data-remove>Disconnect</button>' : ''}</div></div>
+        <p class="err" id="acctmsg"></p>
+      </details>`;
+    document.getElementById('out').onclick = async () => { await api('/studio/logout', {}).catch(() => {}); setToken(null); signin(false); };
+  }
+
+  app.addEventListener('input', (ev) => {
+    const row = ev.target.closest('.ch'); if (!row) return;
+    const e = edits[row.dataset.post][row.dataset.ch];
+    const f = ev.target.dataset.f;
+    if (f === 'on') e.on = ev.target.checked; else e[f] = ev.target.value;
+    if (f === 'text') { const c = row.dataset.ch, n = len(c, e.text), el = row.querySelector('.count'); el.textContent = `${n} / ${LIMIT[c]}`; el.classList.toggle('over', n > LIMIT[c]); }
+    clearTimeout(timer); timer = setTimeout(load, 120000); // don't redraw while typing
+    const b = row.closest('article')?.querySelector('[data-act=approve]'); if (b) disarm(b);
+  });
+  app.addEventListener('change', (ev) => { if (ev.target.dataset.f === 'on') ev.target.dispatchEvent(new Event('input', { bubbles: true })); });
+
+  function disarm(b) { b.classList.remove('armed'); b.textContent = 'Approve'; delete b.dataset.armed; }
+  app.addEventListener('click', async (ev) => {
+    const b = ev.target.closest('button'); if (!b) return;
+    const card = b.closest('article');
+    const msg = card?.querySelector('[data-msg]');
+    if (b.dataset.act === 'approve') {
+      const id = card.dataset.id;
+      const items = Object.fromEntries(Object.entries(edits[id] || {}).filter(([, e]) => e.on).map(([c, e]) => [c, { text: e.text, ...(c === 'x' && e.reply ? { reply: e.reply } : {}), ...(c === 'youtube' ? { title: e.title } : {}) }]));
+      const n = Object.keys(items).length;
+      if (!n) { msg.textContent = 'Tick at least one channel.'; return; }
+      if (!b.dataset.armed) { b.dataset.armed = '1'; b.classList.add('armed'); b.textContent = `Tap again to post to ${n} channel${n > 1 ? 's' : ''}`; setTimeout(() => disarm(b), 5000); return; }
+      b.disabled = true; b.textContent = 'Posting…';
+      try {
+        const j = await api('/studio/approve', { postId: id, items });
+        if (!j.ok) { msg.textContent = j.error; b.disabled = false; disarm(b); return; }
+        for (const c of j.started || []) delete edits[id][c];
+        S = j; render();
+        const refused = Object.entries(j.refused || {});
+        if (refused.length) document.querySelector(`article[data-id="${CSS.escape(id)}"] [data-msg]`).textContent = 'Not posted: ' + refused.map(([c, why]) => `${NAMES[c]} (${why})`).join('; ');
+        clearTimeout(timer); timer = setTimeout(load, 4000);
+      } catch { b.disabled = false; disarm(b); }
+    }
+    if (b.dataset.act === 'skip' || b.dataset.act === 'unskip') {
+      const j = await api('/studio/skip', { postId: card.dataset.id, undo: b.dataset.act === 'unskip' }).catch(() => null);
+      if (j?.ok) { delete edits[card.dataset.id]; S = j; render(); }
+    }
+    const acct = b.closest('[data-acct]');
+    if (acct && (b.hasAttribute('data-connect') || b.hasAttribute('data-remove'))) {
+      const body = { name: acct.dataset.acct };
+      if (b.hasAttribute('data-remove')) body.remove = true;
+      else acct.querySelectorAll('[data-k]').forEach((i) => { if (i.value.trim()) body[i.dataset.k] = i.value.trim(); });
+      b.disabled = true; const label = b.textContent; b.textContent = 'Checking…';
+      const j = await api('/studio/accounts', body).catch(() => null);
+      b.disabled = false; b.textContent = label;
+      if (j?.ok) { for (const k of Object.keys(edits)) delete edits[k]; load(); document.getElementById('accts')?.setAttribute('open', ''); }
+      else document.getElementById('acctmsg').textContent = j?.error || 'Could not connect.';
+    }
+  });
+
+  load();
+})();
+</script>
+</body>
+</html>
