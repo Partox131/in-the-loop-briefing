@@ -1,0 +1,102 @@
+outlet,domain,kind,state_affiliated,based_in,feeds,feeds_working,status,articles_in_feed,articles_kept_24h,problem
+Reuters,reuters.com,RSS,No,international,0,0,No RSS feed,0,0,No RSS feed listed
+Associated Press,apnews.com,RSS,No,US,0,0,No RSS feed,0,0,No RSS feed listed
+BBC,bbc.co.uk,RSS,No,UK,4,4,Working,93,1,
+New York Times,nytimes.com,RSS,No,US,5,5,Working,137,3,
+Washington Post,washingtonpost.com,RSS,No,US,2,2,Working,27,2,
+NPR,npr.org,RSS,No,US,2,2,Working,20,0,
+Axios,axios.com,RSS,No,US,0,0,No RSS feed,0,0,No RSS feed listed
+CNN,cnn.com,RSS,No,US,0,0,No RSS feed,0,0,No RSS feed listed
+Guardian,theguardian.com,RSS,No,UK,3,3,Working,85,6,
+Financial Times,ft.com,RSS,No,UK,0,0,No RSS feed,0,0,No RSS feed listed
+The Economist,economist.com,RSS,No,UK,0,0,No RSS feed,0,0,No RSS feed listed
+Independent,independent.co.uk,RSS,No,UK,0,0,No RSS feed,0,0,No RSS feed listed
+CBC News,cbc.ca,RSS,No,Canada,1,0,Failing,0,0,The operation was aborted due to timeout
+France 24,france24.com,RSS,Yes,France,4,4,Working,114,12,
+DW,dw.com,RSS,Yes,Germany,1,1,Working,12,2,
+Euronews,euronews.com,RSS,No,Europe,1,1,Working,50,2,
+POLITICO Europe,politico.eu,RSS,No,Europe,1,1,Working,10,1,
+UN News,news.un.org,RSS,No,international,1,1,Working,30,1,
+Al Jazeera,aljazeera.com,RSS,Yes,Qatar,1,1,Working,25,17,
+Al-Monitor,al-monitor.com,RSS,No,Middle East,1,1,Working,20,14,
+Amwaj.media,amwaj.media,RSS,No,"Iran, Iraq and Gulf",0,0,No RSS feed,0,0,No RSS feed listed
+Times of Israel,timesofisrael.com,RSS,No,Israel,1,0,Failing,0,0,HTTP 403
+Haaretz,haaretz.com,RSS,No,Israel,0,0,No RSS feed,0,0,No RSS feed listed
+Jerusalem Post,jpost.com,RSS,No,Israel,1,1,Working,30,0,
+Ynet News,ynetnews.com,RSS,No,Israel,0,0,No RSS feed,0,0,No RSS feed listed
++972 Magazine,972mag.com,RSS,No,Israel and Palestine,1,0,Failing,0,0,HTTP 403
+Middle East Eye,middleeasteye.net,RSS,No,UK,1,1,Working,20,20,
+Middle East Monitor,middleeastmonitor.com,RSS,No,UK,1,1,Working,50,18,
+The New Arab,newarab.com,RSS,No,Qatar,1,1,Working,99,14,
+The National,thenationalnews.com,RSS,Yes,UAE,1,1,Working,100,7,
+Arab News,arabnews.com,RSS,Yes,Saudi Arabia,1,1,Working,50,31,
+Anadolu Agency,aa.com.tr,RSS,Yes,Turkey,1,1,Working,30,25,
+Tehran Times,tehrantimes.com,RSS,Yes,Iran,1,1,Working,30,11,
+Press TV,presstv.ir,RSS,Yes,Iran,0,0,No RSS feed,0,0,No RSS feed listed
+Kyiv Independent,kyivindependent.com,RSS,No,Ukraine,1,1,Working,15,17,
+Kyiv Post,kyivpost.com,RSS,No,Ukraine,0,0,No RSS feed,0,0,No RSS feed listed
+Ukrainska Pravda,pravda.com.ua,RSS,No,Ukraine,1,1,Working,20,35,
+Ukrinform,ukrinform.net,RSS,Yes,Ukraine,1,1,Working,30,37,
+Meduza,meduza.io,RSS,No,"Russia (independent, in exile)",1,1,Working,30,0,
+TASS,tass.com,RSS,Yes,Russia,1,1,Working,72,37,
+RFE/RL,rferl.org,RSS,Yes,US,0,0,No RSS feed,0,0,No RSS feed listed
+Notes from Poland,notesfrompoland.com,RSS,No,Poland,1,1,Working,12,1,
+ERR News,news.err.ee,RSS,No,Estonia,1,1,Working,50,1,
+LRT,lrt.lt,RSS,No,Lithuania,0,0,No RSS feed,0,0,No RSS feed listed
+Barents Observer,thebarentsobserver.com,RSS,No,Nordics,0,0,No RSS feed,0,0,No RSS feed listed
+The Diplomat,thediplomat.com,RSS,No,Asia-Pacific,1,1,Working,96,0,
+Nikkei,asia.nikkei.com,RSS,No,Japan,0,0,No RSS feed,0,0,No RSS feed listed
+South China Morning Post,scmp.com,RSS,No,Hong Kong,1,1,Working,50,18,
+Japan Times,japantimes.co.jp,RSS,No,Japan,1,1,Working,30,5,
+Yonhap,en.yna.co.kr,RSS,Yes,South Korea,1,1,Working,94,0,
+Central News Agency,focustaiwan.tw,RSS,Yes,Taiwan,0,0,No RSS feed,0,0,No RSS feed listed
+Taipei Times,taipeitimes.com,RSS,No,Taiwan,1,1,Working,38,1,
+Global Times,globaltimes.cn,RSS,Yes,China,1,1,Working,50,0,
+CGTN,cgtn.com,RSS,Yes,China,1,1,Working,50,0,
+Xinhua,news.cn,RSS,Yes,China,0,0,No RSS feed,0,0,No RSS feed listed
+Politico,politico.com,RSS,No,US,1,1,Working,30,0,
+The Hill,thehill.com,RSS,No,US,1,1,Working,15,2,
+Roll Call,rollcall.com,RSS,No,US,1,1,Working,100,0,
+PBS NewsHour,pbs.org,RSS,No,US,1,1,Working,20,0,
+CBS News,cbsnews.com,RSS,No,US,1,1,Working,30,0,
+NBC News,nbcnews.com,RSS,No,US,1,1,Working,25,0,
+ABC News,abcnews.go.com,RSS,No,US,1,1,Working,25,0,
+The Atlantic,theatlantic.com,RSS,No,US,1,1,Working,25,0,
+ProPublica,propublica.org,RSS,No,US,1,1,Working,20,0,
+Mother Jones,motherjones.com,RSS,No,US,1,1,Working,10,0,
+Talking Points Memo,talkingpointsmemo.com,RSS,No,US,1,1,Working,10,0,
+The Nation,thenation.com,RSS,No,US,1,0,Failing,0,0,no items
+The Wall Street Journal,wsj.com,RSS,No,US,1,1,Working,21,0,
+The Dispatch,thedispatch.com,RSS,No,US,1,1,Working,10,0,
+Reason,reason.com,RSS,No,US,1,1,Working,48,0,
+The Free Press,thefp.com,RSS,No,US,1,1,Working,20,0,
+The Bulwark,thebulwark.com,RSS,No,US,1,1,Working,20,0,
+Fox News,foxnews.com,RSS,No,US,1,1,Working,25,0,
+New York Post,nypost.com,RSS,No,US,1,1,Working,20,0,
+National Review,nationalreview.com,RSS,No,US,1,1,Working,20,0,
+Washington Examiner,washingtonexaminer.com,RSS,No,US,1,1,Working,10,2,
+Washington Free Beacon,freebeacon.com,RSS,No,US,1,1,Working,20,0,
+The Washington Times,washingtontimes.com,RSS,No,US,1,0,Failing,0,1,HTTP 403
+SCOTUSblog,scotusblog.com,RSS,No,US,1,1,Working,25,0,
+The Globe and Mail,theglobeandmail.com,RSS,No,Canada,1,1,Working,65,0,
+National Post,nationalpost.com,RSS,No,Canada,2,0,Failing,0,0,no items
+Toronto Sun,torontosun.com,RSS,No,Canada,1,1,Working,10,0,
+Toronto Star,thestar.com,RSS,No,Canada,1,1,Working,50,0,
+CTV News,ctvnews.ca,RSS,No,Canada,1,1,Working,18,0,
+Global News,globalnews.ca,RSS,No,Canada,1,1,Working,10,0,
+The Hill Times,hilltimes.com,RSS,No,Canada,1,0,Failing,0,0,no items
+iPolitics,ipolitics.ca,RSS,No,Canada,1,0,Failing,0,0,HTTP 403
+Maclean's,macleans.ca,RSS,No,Canada,1,0,Failing,0,0,HTTP 403
+The Hub,thehub.ca,RSS,No,Canada,1,1,Working,10,0,
+The Line,readtheline.ca,RSS,No,Canada,1,1,Working,20,0,
+Western Standard,westernstandard.news,RSS,No,Canada,1,1,Working,8,0,
+Canada's National Observer,nationalobserver.com,RSS,No,Canada,1,1,Working,25,0,
+The Tyee,thetyee.ca,RSS,No,Canada,1,1,Working,21,0,
+Policy Options,policyoptions.irpp.org,RSS,No,Canada,1,1,Working,25,0,
+Israel Defense Forces,t.me/idfofficial,Telegram,Yes,Israel,1,1,Working,17,1,
+Press TV,t.me/presstv,Telegram,Yes,Iran,1,1,Working,16,56,
+IRNA,t.me/irna_en,Telegram,Yes,Iran,1,1,Working,11,9,
+Quds News Network,t.me/qudsnen,Telegram,No,Palestine,1,1,Working,13,54,
+The Kyiv Independent,t.me/kyivindependent_official,Telegram,No,Ukraine,1,1,Working,20,12,
+Russian Ministry of Defence,t.me/mod_russia_en,Telegram,Yes,Russia,1,1,Working,17,4,
+Russian Foreign Ministry,t.me/mfarussia,Telegram,Yes,Russia,1,1,Working,6,2,

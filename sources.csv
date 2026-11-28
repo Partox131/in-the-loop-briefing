@@ -1,0 +1,221 @@
+type,name,affiliation,handle,link,role,based_in,state_affiliated,state_country,status,items_24h,items_48h,detail
+RSS outlet,+972 Magazine,+972 Magazine,972mag.com,https://972mag.com,Outlet,Israel and Palestine,No,,Failing,0,0,https://www.972mag.com/feed/ (HTTP 403)
+RSS outlet,ABC News,ABC News,abcnews.go.com,https://abcnews.go.com,Outlet,US,No,,Working,0,0,https://abcnews.go.com/abcnews/politicsheadlines
+RSS outlet,Al Jazeera,Al Jazeera,aljazeera.com,https://aljazeera.com,Outlet,Qatar,Yes,QA,Working,17,42,https://www.aljazeera.com/xml/rss/all.xml
+RSS outlet,Al-Monitor,Al-Monitor,al-monitor.com,https://al-monitor.com,Outlet,Middle East,No,,Working,14,20,https://www.al-monitor.com/rss
+RSS outlet,Amwaj.media,Amwaj.media,amwaj.media,https://amwaj.media,Outlet,"Iran, Iraq and Gulf",No,,No RSS feed,0,0,No RSS feed listed
+RSS outlet,Anadolu Agency,Anadolu Agency,aa.com.tr,https://aa.com.tr,Outlet,Turkey,Yes,TR,Working,25,69,https://www.aa.com.tr/en/rss/default?cat=guncel
+RSS outlet,Arab News,Arab News,arabnews.com,https://arabnews.com,Outlet,Saudi Arabia,Yes,SA,Working,31,64,https://www.arabnews.com/rss.xml
+RSS outlet,Associated Press,Associated Press,apnews.com,https://apnews.com,Outlet,US,No,,No RSS feed,0,0,No RSS feed listed
+RSS outlet,Axios,Axios,axios.com,https://axios.com,Outlet,US,No,,No RSS feed,0,0,No RSS feed listed
+RSS outlet,Barents Observer,Barents Observer,thebarentsobserver.com,https://thebarentsobserver.com,Outlet,Nordics,No,,No RSS feed,0,0,No RSS feed listed
+RSS outlet,BBC,BBC,bbc.co.uk,https://bbc.co.uk,Outlet,UK,No,,Working,1,7,https://feeds.bbci.co.uk/news/world/rss.xml ; https://feeds.bbci.co.uk/news/world/middle_east/rss.xml ; https://feeds.bbci.co.uk/news/world/asia/rss.xml ; https://feeds.bbci.co.uk/news/world/europe/rss.xml
+RSS outlet,Canada's National Observer,National Observer,nationalobserver.com,https://nationalobserver.com,Outlet,Canada,No,,Working,0,0,https://www.nationalobserver.com/front/rss
+RSS outlet,CBC News,CBC News,cbc.ca,https://cbc.ca,Outlet,Canada,No,,Failing,0,0,https://www.cbc.ca/webfeed/rss/rss-world (The operation was aborted due to timeout)
+RSS outlet,CBS News,CBS News,cbsnews.com,https://cbsnews.com,Outlet,US,No,,Working,0,3,https://www.cbsnews.com/latest/rss/politics
+RSS outlet,Central News Agency,Central News Agency,focustaiwan.tw,https://focustaiwan.tw,Outlet,Taiwan,Yes,TW,No RSS feed,0,0,No RSS feed listed
+RSS outlet,CGTN,CGTN,cgtn.com,https://cgtn.com,Outlet,China,Yes,CN,Working,0,5,https://www.cgtn.com/subscribe/rss/section/world.xml
+RSS outlet,CNN,CNN,cnn.com,https://cnn.com,Outlet,US,No,,No RSS feed,0,0,No RSS feed listed
+RSS outlet,CTV News,CTV News,ctvnews.ca,https://ctvnews.ca,Outlet,Canada,No,,Working,0,0,https://www.ctvnews.ca/arc/outboundfeeds/rss/category/politics/
+RSS outlet,DW,DW,dw.com,https://dw.com,Outlet,Germany,Yes,DE,Working,2,6,https://rss.dw.com/rdf/rss-en-world
+RSS outlet,ERR News,ERR News,news.err.ee,https://news.err.ee,Outlet,Estonia,No,,Working,1,6,https://news.err.ee/rss
+RSS outlet,Euronews,Euronews,euronews.com,https://euronews.com,Outlet,Europe,No,,Working,2,7,https://www.euronews.com/rss?format=mrss&level=theme&name=news
+RSS outlet,Financial Times,Financial Times,ft.com,https://ft.com,Outlet,UK,No,,No RSS feed,0,0,No RSS feed listed
+RSS outlet,Fox News,Fox News,foxnews.com,https://foxnews.com,Outlet,US,No,,Working,0,1,https://moxie.foxnews.com/google-publisher/politics.xml
+RSS outlet,France 24,France 24,france24.com,https://france24.com,Outlet,France,Yes,FR,Working,12,23,https://www.france24.com/en/middle-east/rss ; https://www.france24.com/en/europe/rss ; https://www.france24.com/en/asia-pacific/rss ; https://www.france24.com/en/rss
+RSS outlet,Global News,Global News,globalnews.ca,https://globalnews.ca,Outlet,Canada,No,,Working,0,0,https://globalnews.ca/politics/feed/
+RSS outlet,Global Times,Global Times,globaltimes.cn,https://globaltimes.cn,Outlet,China,Yes,CN,Working,0,0,https://www.globaltimes.cn/rss/outbrain.xml
+RSS outlet,Guardian,Guardian,theguardian.com,https://theguardian.com,Outlet,UK,No,,Working,6,14,https://www.theguardian.com/world/rss ; https://www.theguardian.com/world/middleeast/rss ; https://www.theguardian.com/world/ukraine/rss
+RSS outlet,Haaretz,Haaretz,haaretz.com,https://haaretz.com,Outlet,Israel,No,,No RSS feed,0,0,No RSS feed listed
+RSS outlet,Independent,Independent,independent.co.uk,https://independent.co.uk,Outlet,UK,No,,No RSS feed,0,0,No RSS feed listed
+RSS outlet,iPolitics,iPolitics,ipolitics.ca,https://ipolitics.ca,Outlet,Canada,No,,Failing,0,0,https://ipolitics.ca/feed/ (HTTP 403)
+RSS outlet,Japan Times,Japan Times,japantimes.co.jp,https://japantimes.co.jp,Outlet,Japan,No,,Working,5,8,https://www.japantimes.co.jp/feed/
+RSS outlet,Jerusalem Post,Jerusalem Post,jpost.com,https://jpost.com,Outlet,Israel,No,,Working,0,0,https://www.jpost.com/rss/rssfeedsheadlines.aspx
+RSS outlet,Kyiv Independent,Kyiv Independent,kyivindependent.com,https://kyivindependent.com,Outlet,Ukraine,No,,Working,17,40,https://kyivindependent.com/news-archive/rss/
+RSS outlet,Kyiv Post,Kyiv Post,kyivpost.com,https://kyivpost.com,Outlet,Ukraine,No,,No RSS feed,0,0,No RSS feed listed
+RSS outlet,LRT,LRT,lrt.lt,https://lrt.lt,Outlet,Lithuania,No,,No RSS feed,0,0,No RSS feed listed
+RSS outlet,Maclean's,Maclean's,macleans.ca,https://macleans.ca,Outlet,Canada,No,,Failing,0,0,https://macleans.ca/politics/feed/ (HTTP 403)
+RSS outlet,Meduza,Meduza,meduza.io,https://meduza.io,Outlet,"Russia (independent, in exile)",No,,Working,0,9,https://meduza.io/rss/en/all
+RSS outlet,Middle East Eye,Middle East Eye,middleeasteye.net,https://middleeasteye.net,Outlet,UK,No,,Working,20,38,https://www.middleeasteye.net/rss
+RSS outlet,Middle East Monitor,Middle East Monitor,middleeastmonitor.com,https://middleeastmonitor.com,Outlet,UK,No,,Working,18,36,https://www.middleeastmonitor.com/feed/
+RSS outlet,Mother Jones,Mother Jones,motherjones.com,https://motherjones.com,Outlet,US,No,,Working,0,0,https://www.motherjones.com/politics/feed/
+RSS outlet,National Post,National Post,nationalpost.com,https://nationalpost.com,Outlet,Canada,No,,Failing,0,0,https://nationalpost.com/category/news/feed (no items) ; https://nationalpost.com/feed (no items)
+RSS outlet,National Review,National Review,nationalreview.com,https://nationalreview.com,Outlet,US,No,,Working,0,0,https://www.nationalreview.com/feed/
+RSS outlet,NBC News,NBC News,nbcnews.com,https://nbcnews.com,Outlet,US,No,,Working,0,0,https://feeds.nbcnews.com/nbcnews/public/politics
+RSS outlet,New York Post,New York Post,nypost.com,https://nypost.com,Outlet,US,No,,Working,0,1,https://nypost.com/politics/feed/
+RSS outlet,New York Times,New York Times,nytimes.com,https://nytimes.com,Outlet,US,No,,Working,3,6,https://rss.nytimes.com/services/xml/rss/nyt/MiddleEast.xml ; https://rss.nytimes.com/services/xml/rss/nyt/World.xml ; https://rss.nytimes.com/services/xml/rss/nyt/Europe.xml ; https://rss.nytimes.com/services/xml/rss/nyt/AsiaPacific.xml ; https://rss.nytimes.com/services/xml/rss/nyt/Politics.xml
+RSS outlet,Nikkei,Nikkei,asia.nikkei.com,https://asia.nikkei.com,Outlet,Japan,No,,No RSS feed,0,0,No RSS feed listed
+RSS outlet,Notes from Poland,Notes from Poland,notesfrompoland.com,https://notesfrompoland.com,Outlet,Poland,No,,Working,1,2,https://notesfrompoland.com/feed/
+RSS outlet,NPR,NPR,npr.org,https://npr.org,Outlet,US,No,,Working,0,0,https://feeds.npr.org/1004/rss.xml ; https://feeds.npr.org/1014/rss.xml
+RSS outlet,PBS NewsHour,PBS,pbs.org,https://pbs.org,Outlet,US,No,,Working,0,0,https://www.pbs.org/newshour/feeds/rss/politics
+RSS outlet,Policy Options,IRPP,policyoptions.irpp.org,https://policyoptions.irpp.org,Outlet,Canada,No,,Working,0,0,https://policyoptions.irpp.org/feed/
+RSS outlet,Politico,Politico,politico.com,https://politico.com,Outlet,US,No,,Working,0,0,https://rss.politico.com/politics-news.xml
+RSS outlet,POLITICO Europe,POLITICO Europe,politico.eu,https://politico.eu,Outlet,Europe,No,,Working,1,6,https://www.politico.eu/feed/
+RSS outlet,Press TV,Press TV,presstv.ir,https://presstv.ir,Outlet,Iran,Yes,IR,No RSS feed,0,0,No RSS feed listed
+RSS outlet,ProPublica,ProPublica,propublica.org,https://propublica.org,Outlet,US,No,,Working,0,0,https://feeds.propublica.org/propublica/main
+RSS outlet,Reason,Reason,reason.com,https://reason.com,Outlet,US,No,,Working,0,0,https://reason.com/feed/
+RSS outlet,Reuters,Reuters,reuters.com,https://reuters.com,Outlet,international,No,,No RSS feed,0,0,No RSS feed listed
+RSS outlet,RFE/RL,RFE/RL,rferl.org,https://rferl.org,Outlet,US,Yes,US,No RSS feed,0,0,No RSS feed listed
+RSS outlet,Roll Call,Roll Call,rollcall.com,https://rollcall.com,Outlet,US,No,,Working,0,0,https://rollcall.com/feed/
+RSS outlet,SCOTUSblog,SCOTUSblog,scotusblog.com,https://scotusblog.com,Outlet,US,No,,Working,0,0,https://www.scotusblog.com/feed/
+RSS outlet,South China Morning Post,South China Morning Post,scmp.com,https://scmp.com,Outlet,Hong Kong,No,,Working,18,30,https://www.scmp.com/rss/91/feed
+RSS outlet,Taipei Times,Taipei Times,taipeitimes.com,https://taipeitimes.com,Outlet,Taiwan,No,,Working,1,3,https://www.taipeitimes.com/xml/index.rss
+RSS outlet,Talking Points Memo,Talking Points Memo,talkingpointsmemo.com,https://talkingpointsmemo.com,Outlet,US,No,,Working,0,0,https://talkingpointsmemo.com/feed
+RSS outlet,TASS,TASS,tass.com,https://tass.com,Outlet,Russia,Yes,RU,Working,37,95,https://tass.com/rss/v2.xml
+RSS outlet,Tehran Times,Tehran Times,tehrantimes.com,https://tehrantimes.com,Outlet,Iran,Yes,IR,Working,11,21,https://www.tehrantimes.com/rss
+RSS outlet,The Atlantic,The Atlantic,theatlantic.com,https://theatlantic.com,Outlet,US,No,,Working,0,0,https://www.theatlantic.com/feed/channel/politics/
+RSS outlet,The Bulwark,The Bulwark,thebulwark.com,https://thebulwark.com,Outlet,US,No,,Working,0,0,https://www.thebulwark.com/feed
+RSS outlet,The Diplomat,The Diplomat,thediplomat.com,https://thediplomat.com,Outlet,Asia-Pacific,No,,Working,0,1,https://thediplomat.com/feed/
+RSS outlet,The Dispatch,The Dispatch,thedispatch.com,https://thedispatch.com,Outlet,US,No,,Working,0,0,https://thedispatch.com/feed/
+RSS outlet,The Economist,The Economist,economist.com,https://economist.com,Outlet,UK,No,,No RSS feed,0,0,No RSS feed listed
+RSS outlet,The Free Press,The Free Press,thefp.com,https://thefp.com,Outlet,US,No,,Working,0,0,https://www.thefp.com/feed
+RSS outlet,The Globe and Mail,The Globe and Mail,theglobeandmail.com,https://theglobeandmail.com,Outlet,Canada,No,,Working,0,0,https://www.theglobeandmail.com/arc/outboundfeeds/rss/category/politics/
+RSS outlet,The Hill,The Hill,thehill.com,https://thehill.com,Outlet,US,No,,Working,2,7,https://thehill.com/homenews/feed/
+RSS outlet,The Hill Times,The Hill Times,hilltimes.com,https://hilltimes.com,Outlet,Canada,No,,Failing,0,0,https://www.hilltimes.com/feed/ (no items)
+RSS outlet,The Hub,The Hub,thehub.ca,https://thehub.ca,Outlet,Canada,No,,Working,0,0,https://thehub.ca/feed/
+RSS outlet,The Line,The Line,readtheline.ca,https://readtheline.ca,Outlet,Canada,No,,Working,0,0,https://www.readtheline.ca/feed
+RSS outlet,The Nation,The Nation,thenation.com,https://thenation.com,Outlet,US,No,,Failing,0,0,https://www.thenation.com/feed/ (no items)
+RSS outlet,The National,The National,thenationalnews.com,https://thenationalnews.com,Outlet,UAE,Yes,AE,Working,7,22,https://www.thenationalnews.com/arc/outboundfeeds/rss/?outputType=xml
+RSS outlet,The New Arab,The New Arab,newarab.com,https://newarab.com,Outlet,Qatar,No,,Working,14,38,https://www.newarab.com/rss
+RSS outlet,The Tyee,The Tyee,thetyee.ca,https://thetyee.ca,Outlet,Canada,No,,Working,0,0,https://thetyee.ca/rss2.xml
+RSS outlet,The Wall Street Journal,Wall Street Journal,wsj.com,https://wsj.com,Outlet,US,No,,Working,0,0,https://feeds.content.dowjones.io/public/rss/socialpoliticsfeed
+RSS outlet,The Washington Times,Washington Times,washingtontimes.com,https://washingtontimes.com,Outlet,US,No,,Failing,1,2,https://www.washingtontimes.com/rss/headlines/news/politics/ (HTTP 403)
+RSS outlet,Times of Israel,Times of Israel,timesofisrael.com,https://timesofisrael.com,Outlet,Israel,No,,Failing,0,0,https://www.timesofisrael.com/feed/ (HTTP 403)
+RSS outlet,Toronto Star,Toronto Star,thestar.com,https://thestar.com,Outlet,Canada,No,,Working,0,0,https://www.thestar.com/search/?f=rss&t=article&c=politics*&l=50&s=start_time&sd=desc
+RSS outlet,Toronto Sun,Toronto Sun,torontosun.com,https://torontosun.com,Outlet,Canada,No,,Working,0,0,https://torontosun.com/category/news/national/feed
+RSS outlet,Ukrainska Pravda,Ukrainska Pravda,pravda.com.ua,https://pravda.com.ua,Outlet,Ukraine,No,,Working,35,83,https://www.pravda.com.ua/eng/rss/
+RSS outlet,Ukrinform,Ukrinform,ukrinform.net,https://ukrinform.net,Outlet,Ukraine,Yes,UA,Working,37,72,https://www.ukrinform.net/rss/block-lastnews
+RSS outlet,UN News,United Nations,news.un.org,https://news.un.org,Outlet,international,No,,Working,1,1,https://news.un.org/feed/subscribe/en/news/all/rss.xml
+RSS outlet,Washington Examiner,Washington Examiner,washingtonexaminer.com,https://washingtonexaminer.com,Outlet,US,No,,Working,2,12,https://www.washingtonexaminer.com/feed/
+RSS outlet,Washington Free Beacon,Washington Free Beacon,freebeacon.com,https://freebeacon.com,Outlet,US,No,,Working,0,0,https://freebeacon.com/feed/
+RSS outlet,Washington Post,Washington Post,washingtonpost.com,https://washingtonpost.com,Outlet,US,No,,Working,2,4,https://feeds.washingtonpost.com/rss/politics ; https://feeds.washingtonpost.com/rss/world
+RSS outlet,Western Standard,Western Standard,westernstandard.news,https://westernstandard.news,Outlet,Canada,No,,Working,0,0,https://www.westernstandard.news/feed
+RSS outlet,Xinhua,Xinhua,news.cn,https://news.cn,Outlet,China,Yes,CN,No RSS feed,0,0,No RSS feed listed
+RSS outlet,Ynet News,Ynet News,ynetnews.com,https://ynetnews.com,Outlet,Israel,No,,No RSS feed,0,0,No RSS feed listed
+RSS outlet,Yonhap,Yonhap,en.yna.co.kr,https://en.yna.co.kr,Outlet,South Korea,Yes,KR,Working,0,1,https://en.yna.co.kr/RSS/news.xml
+Telegram channel,IRNA,IRNA,t.me/irna_en,https://t.me/s/irna_en,Outlet,Iran,Yes,IR,Working,9,12,
+Telegram channel,Israel Defense Forces,Israel Defense Forces,t.me/idfofficial,https://t.me/s/idfofficial,Official,Israel,Yes,IL,Working,1,6,
+Telegram channel,Press TV,Press TV,t.me/presstv,https://t.me/s/presstv,Outlet,Iran,Yes,IR,Working,56,97,
+Telegram channel,Quds News Network,Quds News Network,t.me/qudsnen,https://t.me/s/qudsnen,Outlet,Palestine,No,,Working,54,111,
+Telegram channel,Russian Foreign Ministry,Russian Government,t.me/mfarussia,https://t.me/s/mfarussia,Official,Russia,Yes,RU,Working,2,3,
+Telegram channel,Russian Ministry of Defence,Russian Government,t.me/mod_russia_en,https://t.me/s/mod_russia_en,Official,Russia,Yes,RU,Working,4,8,
+Telegram channel,The Kyiv Independent,Kyiv Independent,t.me/kyivindependent_official,https://t.me/s/kyivindependent_official,Outlet,Ukraine,No,,Working,12,33,
+Bluesky account,+972 Magazine,+972 Magazine,972mag.com,https://bsky.app/profile/972mag.com,Outlet,Israel and Palestine,No,,No matching posts in 48 hours,0,0,Domain handle
+Bluesky account,338Canada,338Canada,338canada.bsky.social,https://bsky.app/profile/338canada.bsky.social,Analyst,Canada,No,,No matching posts in 48 hours,0,0,
+Bluesky account,Aaron Stein,Foreign Policy Research Institute,aaronstein1.bsky.social,https://bsky.app/profile/aaronstein1.bsky.social,Analyst,US,No,,No matching posts in 48 hours,0,0,
+Bluesky account,Abby Sewell (AP),Associated Press,sewella.bsky.social,https://bsky.app/profile/sewella.bsky.social,Reporter,Lebanon,No,,Posting,0,2,
+Bluesky account,Al Jazeera,Al Jazeera,aljazeera.com,https://bsky.app/profile/aljazeera.com,Outlet,Qatar,Yes,QA,Posting,12,24,Domain handle
+Bluesky account,Al-Monitor,Al-Monitor,almonitor.bsky.social,https://bsky.app/profile/almonitor.bsky.social,Outlet,Middle East,No,,Posting,5,12,
+Bluesky account,Ali Vaez,International Crisis Group,alivaez.bsky.social,https://bsky.app/profile/alivaez.bsky.social,Analyst,international,No,,No matching posts in 48 hours,0,0,
+Bluesky account,Amwaj.media,Amwaj.media,amwajmedia.bsky.social,https://bsky.app/profile/amwajmedia.bsky.social,Outlet,"Iran, Iraq and Gulf",No,,Posting,5,8,
+Bluesky account,Anna Bower,Lawfare,annabower.bsky.social,https://bsky.app/profile/annabower.bsky.social,Reporter,US,No,,No matching posts in 48 hours,0,0,
+Bluesky account,AP,Associated Press,apnews.com,https://bsky.app/profile/apnews.com,Outlet,US,No,,Posting,1,1,Domain handle
+Bluesky account,Aron Lund,Century International,aronlund.bsky.social,https://bsky.app/profile/aronlund.bsky.social,Analyst,Europe,No,,Posting,1,1,
+Bluesky account,Axios,Axios,axios.com,https://bsky.app/profile/axios.com,Outlet,US,No,,No matching posts in 48 hours,0,0,Domain handle
+Bluesky account,Bellingcat,Bellingcat,bellingcat.com,https://bsky.app/profile/bellingcat.com,OSINT,international,No,,No matching posts in 48 hours,0,0,Domain handle
+Bluesky account,Bonnie Glaser,German Marshall Fund,bglaser.bsky.social,https://bsky.app/profile/bglaser.bsky.social,Analyst,US,No,,No matching posts in 48 hours,0,0,
+Bluesky account,Brian Hioe (New Bloom),New Bloom,brianhioe.bsky.social,https://bsky.app/profile/brianhioe.bsky.social,Reporter,Taiwan,No,,Posting,3,3,
+Bluesky account,Canada's National Observer,National Observer,nationalobserver.com,https://bsky.app/profile/nationalobserver.com,Outlet,Canada,No,,No matching posts in 48 hours,0,0,Domain handle
+Bluesky account,Carnegie Endowment,Carnegie Endowment,carnegieendowment.org,https://bsky.app/profile/carnegieendowment.org,Analyst,US,No,,No matching posts in 48 hours,0,0,Domain handle
+Bluesky account,CBS News,CBS News,cbsnews.com,https://bsky.app/profile/cbsnews.com,Outlet,US,No,,No matching posts in 48 hours,0,0,Domain handle
+Bluesky account,CEPA,CEPA,cepa.org,https://bsky.app/profile/cepa.org,Analyst,US,No,,Posting,0,1,Domain handle
+Bluesky account,Chatham House,Chatham House,chathamhouse.org,https://bsky.app/profile/chathamhouse.org,Analyst,UK,No,,Posting,4,7,Domain handle
+Bluesky account,ChinaFile,Asia Society,chinafile.bsky.social,https://bsky.app/profile/chinafile.bsky.social,Analyst,US,No,,No matching posts in 48 hours,0,0,
+Bluesky account,Chris Geidner,Law Dork,chrisgeidner.bsky.social,https://bsky.app/profile/chrisgeidner.bsky.social,Reporter,US,No,,No matching posts in 48 hours,0,0,
+Bluesky account,CNN,CNN,cnn.com,https://bsky.app/profile/cnn.com,Outlet,US,No,,Posting,3,4,Domain handle
+Bluesky account,Cornelius Dieckmann (Der Spiegel),Der Spiegel,codieckmann.bsky.social,https://bsky.app/profile/codieckmann.bsky.social,Reporter,Germany,No,,No matching posts in 48 hours,0,0,
+Bluesky account,CPAC,CPAC,cpac.ca,https://bsky.app/profile/cpac.ca,Outlet,Canada,No,,No matching posts in 48 hours,0,0,Domain handle
+Bluesky account,CSIS,CSIS,csis.org,https://bsky.app/profile/csis.org,Analyst,US,No,,Posting,1,2,Domain handle
+Bluesky account,Dave Weigel,Semafor,daveweigel.bsky.social,https://bsky.app/profile/daveweigel.bsky.social,Reporter,US,No,,No matching posts in 48 hours,0,0,
+Bluesky account,David Coletto,Abacus Data,davidcoletto.bsky.social,https://bsky.app/profile/davidcoletto.bsky.social,Analyst,Canada,No,,No matching posts in 48 hours,0,0,
+Bluesky account,Drop Site News,Drop Site News,dropsitenews.com,https://bsky.app/profile/dropsitenews.com,Outlet,US,No,,No matching posts in 48 hours,0,0,Domain handle
+Bluesky account,ECFR,ECFR,ecfr.eu,https://bsky.app/profile/ecfr.eu,Analyst,Europe,No,,Posting,2,3,Domain handle
+Bluesky account,Elections Canada,Elections Canada,e.electionscanada.ca,https://bsky.app/profile/e.electionscanada.ca,Official,Canada,No,,No matching posts in 48 hours,0,0,Domain handle
+Bluesky account,Elizabeth Thompson,CBC News,lizt1.bsky.social,https://bsky.app/profile/lizt1.bsky.social,Reporter,Canada,No,,No matching posts in 48 hours,0,0,
+Bluesky account,Emmett Macfarlane,University of Waterloo,emmettmacfarlane.com,https://bsky.app/profile/emmettmacfarlane.com,Analyst,Canada,No,,No matching posts in 48 hours,0,0,Domain handle
+Bluesky account,Éric Grenier,The Writ,ericgrenier.bsky.social,https://bsky.app/profile/ericgrenier.bsky.social,Analyst,Canada,No,,No matching posts in 48 hours,0,0,
+Bluesky account,Euromaidan Press,Euromaidan Press,euromaidanpress.bsky.social,https://bsky.app/profile/euromaidanpress.bsky.social,Outlet,Ukraine,No,,Posting,11,33,
+Bluesky account,Euronews,Euronews,euronews.com,https://bsky.app/profile/euronews.com,Outlet,Europe,No,,Posting,4,17,Domain handle
+Bluesky account,Financial Times,Financial Times,financialtimes.com,https://bsky.app/profile/financialtimes.com,Outlet,UK,No,,Posting,2,3,Domain handle
+Bluesky account,"Focus Taiwan (CNA, unofficial bridge)",Central News Agency,focus-taiwan-en.pbs.idv.tw.ap.brid.gy,https://bsky.app/profile/focus-taiwan-en.pbs.idv.tw.ap.brid.gy,Outlet,Taiwan,Yes,TW,Posting,22,28,Unofficial bridge of the website
+Bluesky account,France 24,France 24,en.france24.com,https://bsky.app/profile/en.france24.com,Outlet,France,Yes,FR,Posting,5,9,Domain handle
+Bluesky account,G. Elliott Morris,Strength In Numbers,gelliottmorris.com,https://bsky.app/profile/gelliottmorris.com,Analyst,US,No,,No matching posts in 48 hours,0,0,Domain handle
+Bluesky account,GeoConfirmed,GeoConfirmed,geoconfirmed.org,https://bsky.app/profile/geoconfirmed.org,OSINT,international,No,,No matching posts in 48 hours,0,0,Domain handle
+Bluesky account,Global News,Global News,globalnews.ca,https://bsky.app/profile/globalnews.ca,Outlet,Canada,No,,No matching posts in 48 hours,0,0,Domain handle
+Bluesky account,Haaretz,Haaretz,haaretzcom.bsky.social,https://bsky.app/profile/haaretzcom.bsky.social,Outlet,Israel,No,,No matching posts in 48 hours,0,0,
+Bluesky account,Human Rights Watch,Human Rights Watch,hrw.org,https://bsky.app/profile/hrw.org,Analyst,international,No,,No matching posts in 48 hours,0,0,Domain handle
+Bluesky account,ICRC,ICRC,icrc.org,https://bsky.app/profile/icrc.org,Official,international,No,,No matching posts in 48 hours,0,0,Domain handle
+Bluesky account,Institute for the Study of War,Institute for the Study of War,thestudyofwar.bsky.social,https://bsky.app/profile/thestudyofwar.bsky.social,Analyst,US,No,,Posting,2,2,
+Bluesky account,International Crisis Group,International Crisis Group,crisisgroup.org,https://bsky.app/profile/crisisgroup.org,Analyst,international,No,,Posting,0,1,Domain handle
+Bluesky account,iPolitics,iPolitics,ipolitics.bsky.social,https://bsky.app/profile/ipolitics.bsky.social,Outlet,Canada,No,,No matching posts in 48 hours,0,0,
+Bluesky account,Jonas Olsson (Breaking Defense),Breaking Defense,jonasolsson.bsky.social,https://bsky.app/profile/jonasolsson.bsky.social,Reporter,Nordics,No,,Posting,1,1,
+Bluesky account,Josh Gerstein,Politico,joshgerstein.bsky.social,https://bsky.app/profile/joshgerstein.bsky.social,Reporter,US,No,,No matching posts in 48 hours,0,0,
+Bluesky account,Kyiv Post,Kyiv Post,kyivpost.com,https://bsky.app/profile/kyivpost.com,Outlet,Ukraine,No,,Posting,20,42,Domain handle
+Bluesky account,Kyle Cheney,Politico,kyledcheney.bsky.social,https://bsky.app/profile/kyledcheney.bsky.social,Reporter,US,No,,No matching posts in 48 hours,0,0,
+Bluesky account,Laura Rozen,Diplomatic (newsletter),lkrozen.bsky.social,https://bsky.app/profile/lkrozen.bsky.social,Reporter,US,No,,No matching posts in 48 hours,0,0,
+Bluesky account,Lawfare,Lawfare,lawfaremedia.org,https://bsky.app/profile/lawfaremedia.org,Outlet,US,No,,No matching posts in 48 hours,0,0,Domain handle
+Bluesky account,Lev Nachman,National Taiwan University,lnachman32.bsky.social,https://bsky.app/profile/lnachman32.bsky.social,Analyst,Taiwan,No,,Posting,6,8,
+Bluesky account,Maclean's,Maclean's,macleans.bsky.social,https://bsky.app/profile/macleans.bsky.social,Outlet,Canada,No,,No matching posts in 48 hours,0,0,
+Bluesky account,Max Fawcett,National Observer,maxfawcett.bsky.social,https://bsky.app/profile/maxfawcett.bsky.social,Reporter,Canada,No,,No matching posts in 48 hours,0,0,
+Bluesky account,Meduza,Meduza,meduza.io,https://bsky.app/profile/meduza.io,Outlet,"Russia (independent, in exile)",No,,Posting,1,9,Domain handle
+Bluesky account,Michael Kofman,Carnegie Endowment,michaelkofman.bsky.social,https://bsky.app/profile/michaelkofman.bsky.social,Analyst,US,No,,No matching posts in 48 hours,0,0,
+Bluesky account,Middle East Monitor,Middle East Monitor,middleeastmonitor.bsky.social,https://bsky.app/profile/middleeastmonitor.bsky.social,Outlet,UK,No,,Posting,29,48,
+Bluesky account,Mondoweiss,Mondoweiss,mondoweiss.net,https://bsky.app/profile/mondoweiss.net,Outlet,US,No,,Posting,2,3,Domain handle
+Bluesky account,Mother Jones,Mother Jones,motherjones.com,https://bsky.app/profile/motherjones.com,Outlet,US,No,,No matching posts in 48 hours,0,0,Domain handle
+Bluesky account,NBC News,NBC News,nbcnews.com,https://bsky.app/profile/nbcnews.com,Outlet,US,No,,No matching posts in 48 hours,0,0,Domain handle
+Bluesky account,New York Post,New York Post,nypost.com,https://bsky.app/profile/nypost.com,Outlet,US,No,,No matching posts in 48 hours,0,0,Domain handle
+Bluesky account,Nikkei Asia,Nikkei,asia.nikkei.com,https://bsky.app/profile/asia.nikkei.com,Outlet,Japan,No,,Posting,1,6,Domain handle
+Bluesky account,Notes from Poland,Notes from Poland,notesfrompoland.bsky.social,https://bsky.app/profile/notesfrompoland.bsky.social,Outlet,Poland,No,,Posting,1,3,
+Bluesky account,NPR,NPR,npr.org,https://bsky.app/profile/npr.org,Outlet,US,No,,Posting,1,1,Domain handle
+Bluesky account,Phillips O'Brien,University of St Andrews,phillipspobrien.bsky.social,https://bsky.app/profile/phillipspobrien.bsky.social,Analyst,UK,No,,Posting,1,1,
+Bluesky account,Policy Options,IRPP,policyoptions.irpp.org,https://bsky.app/profile/policyoptions.irpp.org,Analyst,Canada,No,,No matching posts in 48 hours,0,0,Domain handle
+Bluesky account,Politico,Politico,politico.com,https://bsky.app/profile/politico.com,Outlet,US,No,,No matching posts in 48 hours,0,0,Domain handle
+Bluesky account,POLITICO Europe,POLITICO Europe,politico.eu,https://bsky.app/profile/politico.eu,Outlet,Europe,No,,Posting,3,10,Domain handle
+Bluesky account,Press TV,Press TV,presstv.bsky.social,https://bsky.app/profile/presstv.bsky.social,Official,Iran,Yes,IR,No matching posts in 48 hours,0,0,
+Bluesky account,ProPublica,ProPublica,propublica.org,https://bsky.app/profile/propublica.org,Outlet,US,No,,No matching posts in 48 hours,0,0,Domain handle
+Bluesky account,Reason,Reason,reason.com,https://bsky.app/profile/reason.com,Outlet,US,No,,No matching posts in 48 hours,0,0,Domain handle
+Bluesky account,Reuters,Reuters,reuters.com,https://bsky.app/profile/reuters.com,Outlet,international,No,,Posting,3,4,Domain handle
+Bluesky account,RFE/RL (unofficial bridge of its website),RFE/RL,rferl.org.web.brid.gy,https://bsky.app/profile/rferl.org.web.brid.gy,Outlet,US,Yes,US,No matching posts in 48 hours,0,0,Unofficial bridge of the website
+Bluesky account,SCOTUSblog,SCOTUSblog,scotusblog.com,https://bsky.app/profile/scotusblog.com,Outlet,US,No,,No matching posts in 48 hours,0,0,Domain handle
+Bluesky account,Semafor,Semafor,semafor.com,https://bsky.app/profile/semafor.com,Outlet,US,No,,No matching posts in 48 hours,0,0,Domain handle
+Bluesky account,Shannon Proudfoot,The Globe and Mail,sproudfoot.bsky.social,https://bsky.app/profile/sproudfoot.bsky.social,Reporter,Canada,No,,No matching posts in 48 hours,0,0,
+Bluesky account,Shashank Joshi,The Economist,shashj.bsky.social,https://bsky.app/profile/shashj.bsky.social,Reporter,UK,No,,No matching posts in 48 hours,0,0,
+Bluesky account,States Newsroom,States Newsroom,statesnewsroom.com,https://bsky.app/profile/statesnewsroom.com,Outlet,US,No,,No matching posts in 48 hours,0,0,Domain handle
+Bluesky account,Steve Gutterman (RFE/RL),RFE/RL,sgutterman.bsky.social,https://bsky.app/profile/sgutterman.bsky.social,Reporter,US,Yes,US,No matching posts in 48 hours,0,0,
+Bluesky account,Steve Paikin,The Paikin Podcast,spaikin.bsky.social,https://bsky.app/profile/spaikin.bsky.social,Reporter,Canada,No,,No matching posts in 48 hours,0,0,
+Bluesky account,Steve Vladeck,One First (Georgetown Law),stevevladeck.bsky.social,https://bsky.app/profile/stevevladeck.bsky.social,Analyst,US,No,,No matching posts in 48 hours,0,0,
+Bluesky account,Steven Chase,The Globe and Mail,stevenchase.bsky.social,https://bsky.app/profile/stevenchase.bsky.social,Reporter,Canada,No,,No matching posts in 48 hours,0,0,
+Bluesky account,Taipei Times (unofficial bridge),Taipei Times,taipei-times.pbs.idv.tw.ap.brid.gy,https://bsky.app/profile/taipei-times.pbs.idv.tw.ap.brid.gy,Outlet,Taiwan,No,,Posting,7,18,Unofficial bridge of the website
+Bluesky account,Taiwan Security Monitor,George Mason University,taiwanmonitor.bsky.social,https://bsky.app/profile/taiwanmonitor.bsky.social,Analyst,US,No,,No matching posts in 48 hours,0,0,
+Bluesky account,Talking Points Memo,Talking Points Memo,talkingpointsmemo.com,https://bsky.app/profile/talkingpointsmemo.com,Outlet,US,No,,No matching posts in 48 hours,0,0,Domain handle
+Bluesky account,The Atlantic,The Atlantic,theatlantic.com,https://bsky.app/profile/theatlantic.com,Outlet,US,No,,No matching posts in 48 hours,0,0,Domain handle
+Bluesky account,The Barents Observer,Barents Observer,thebarentsobserver.com,https://bsky.app/profile/thebarentsobserver.com,Outlet,Nordics,No,,No matching posts in 48 hours,0,0,Domain handle
+Bluesky account,The Bulwark,The Bulwark,thebulwark.com,https://bsky.app/profile/thebulwark.com,Outlet,US,No,,No matching posts in 48 hours,0,0,Domain handle
+Bluesky account,The Cook Political Report,Cook Political Report,cookpolitical.com,https://bsky.app/profile/cookpolitical.com,Analyst,US,No,,No matching posts in 48 hours,0,0,Domain handle
+Bluesky account,The Diplomat,The Diplomat,thediplomat.com,https://bsky.app/profile/thediplomat.com,Outlet,Asia-Pacific,No,,Posting,0,1,Domain handle
+Bluesky account,The Economist,The Economist,economist.com,https://bsky.app/profile/economist.com,Outlet,UK,No,,Posting,1,5,Domain handle
+Bluesky account,The Free Press,The Free Press,thefp.com,https://bsky.app/profile/thefp.com,Outlet,US,No,,No matching posts in 48 hours,0,0,Domain handle
+Bluesky account,The Globe and Mail,The Globe and Mail,theglobeandmail.com,https://bsky.app/profile/theglobeandmail.com,Outlet,Canada,No,,No matching posts in 48 hours,0,0,Domain handle
+Bluesky account,The Guardian,Guardian,theguardian.com,https://bsky.app/profile/theguardian.com,Outlet,UK,No,,Posting,0,4,Domain handle
+Bluesky account,The Hill,The Hill,thehill.com,https://bsky.app/profile/thehill.com,Outlet,US,No,,No matching posts in 48 hours,0,0,Domain handle
+Bluesky account,The Hill Times,The Hill Times,hilltimes.com,https://bsky.app/profile/hilltimes.com,Outlet,Canada,No,,No matching posts in 48 hours,0,0,Domain handle
+Bluesky account,The Independent,Independent,the-independent.com,https://bsky.app/profile/the-independent.com,Outlet,UK,No,,Posting,0,2,Domain handle
+Bluesky account,The Jerusalem Post,Jerusalem Post,thejerusalempost.bsky.social,https://bsky.app/profile/thejerusalempost.bsky.social,Outlet,Israel,No,,Posting,15,26,
+Bluesky account,The Kyiv Independent,Kyiv Independent,kyivindependent.com,https://bsky.app/profile/kyivindependent.com,Outlet,Ukraine,No,,Posting,13,34,Domain handle
+Bluesky account,The Nation,The Nation,thenation.com,https://bsky.app/profile/thenation.com,Outlet,US,No,,No matching posts in 48 hours,0,0,Domain handle
+Bluesky account,The National,The National,thenationalnews.com,https://bsky.app/profile/thenationalnews.com,Outlet,UAE,Yes,AE,Posting,2,6,Domain handle
+Bluesky account,The New Arab,The New Arab,thenewarab.bsky.social,https://bsky.app/profile/thenewarab.bsky.social,Outlet,Qatar,No,,Posting,4,16,
+Bluesky account,The New Republic,The New Republic,newrepublic.com,https://bsky.app/profile/newrepublic.com,Outlet,US,No,,No matching posts in 48 hours,0,0,Domain handle
+Bluesky account,The New York Times,New York Times,nytimes.com,https://bsky.app/profile/nytimes.com,Outlet,US,No,,Posting,0,1,Domain handle
+Bluesky account,The Times of Israel,Times of Israel,timesofisrael.com,https://bsky.app/profile/timesofisrael.com,Outlet,Israel,No,,Posting,1,2,Domain handle
+Bluesky account,The Tyee,The Tyee,thetyee.ca,https://bsky.app/profile/thetyee.ca,Outlet,Canada,No,,No matching posts in 48 hours,0,0,Domain handle
+Bluesky account,The Wall Street Journal,Wall Street Journal,wsj.com,https://bsky.app/profile/wsj.com,Outlet,US,No,,No matching posts in 48 hours,0,0,Domain handle
+Bluesky account,The Walrus,The Walrus,thewalrus.ca,https://bsky.app/profile/thewalrus.ca,Outlet,Canada,No,,No matching posts in 48 hours,0,0,Domain handle
+Bluesky account,The Washington Post,Washington Post,washingtonpost.com,https://bsky.app/profile/washingtonpost.com,Outlet,US,No,,Posting,3,4,Domain handle
+Bluesky account,Trita Parsi,Quincy Institute,tparsi.bsky.social,https://bsky.app/profile/tparsi.bsky.social,Analyst,US,No,,No matching posts in 48 hours,0,0,
+Bluesky account,Ukrainska Pravda,Ukrainska Pravda,pravda.ua,https://bsky.app/profile/pravda.ua,Outlet,Ukraine,No,,Posting,9,20,Domain handle
+Bluesky account,Ulrike Franke,ECFR,rikefranke.eu,https://bsky.app/profile/rikefranke.eu,Analyst,Europe,No,,Posting,0,1,Domain handle
+Bluesky account,UNRWA,United Nations,unrwa.org,https://bsky.app/profile/unrwa.org,Official,international,No,,No matching posts in 48 hours,0,0,Domain handle
+Bluesky account,USA Today,USA Today,usatoday.com,https://bsky.app/profile/usatoday.com,Outlet,US,No,,No matching posts in 48 hours,0,0,Domain handle
+Bluesky account,Vali Nasr,Johns Hopkins SAIS,valinasr.bsky.social,https://bsky.app/profile/valinasr.bsky.social,Analyst,US,No,,Posting,0,1,
+Bluesky account,Yemen Data Project,Yemen Data Project,yemendataproject.org,https://bsky.app/profile/yemendataproject.org,OSINT,international,No,,No matching posts in 48 hours,0,0,Domain handle

@@ -1,0 +1,664 @@
+{
+  "generatedAt": "2026-11-28T18:25:45.312Z",
+  "site": "https://inthelooplive.com/",
+  "hours": 24,
+  "areas": [
+    {
+      "id": "middle-east",
+      "segment": "Geopolitics",
+      "link": "https://inthelooplive.com/?view=middle-east",
+      "label": "Middle East",
+      "stories": 243,
+      "posts": 379,
+      "confirmed": 33,
+      "disputed": 0,
+      "newStories": 77,
+      "busiestPlace": "Gaza",
+      "top": [
+        {
+          "headline": "Middle East latest: Saudi Arabia intercepts Houthi ballistic missile targeting Al Shuqaiq",
+          "url": "https://www.thenationalnews.com/news/mena/2026/11/28/live-iran-war-houthi-missile-saudi-arabia-al-shuqaiq/",
+          "status": "corroborated",
+          "statusWords": "confirmed by several outlets",
+          "outlets": [
+            "The National",
+            "Arab News",
+            "Middle East Monitor",
+            "Middle East Eye",
+            "Anadolu Agency"
+          ],
+          "outletCount": 5,
+          "place": "Yemen and Red Sea",
+          "firstSeen": "2026-11-28T09:39:40.000Z",
+          "lastSeen": "2026-11-28T16:25:57.214Z"
+        },
+        {
+          "headline": "An adviser to Iran’s supreme leader warned Iraq not to become a “tool of Trump’s policies” after US President Donald Trump on Friday praised Baghdad’s efforts to “stop the smuggli…",
+          "url": "https://bsky.app/profile/middleeastmonitor.bsky.social/post/3n3f54qqtbk2s",
+          "status": "corroborated",
+          "statusWords": "confirmed by several outlets",
+          "outlets": [
+            "Middle East Monitor",
+            "Press TV",
+            "Arab News",
+            "Anadolu Agency",
+            "Middle East Eye"
+          ],
+          "outletCount": 5,
+          "place": "Iraq",
+          "firstSeen": "2026-11-28T11:57:06.000Z",
+          "lastSeen": "2026-11-28T16:35:57.430Z"
+        },
+        {
+          "headline": "An investigation aired on Israeli TV into soldiers’ alleged use of Palestinians as human shields in Gaza has provoked a nationalist backlash, showing the country’s struggle to com…",
+          "url": "https://bsky.app/profile/wsj.com/post/3n3cu3pucgr2f",
+          "status": "corroborated",
+          "statusWords": "confirmed by several outlets",
+          "outlets": [
+            "Wall Street Journal",
+            "Middle East Monitor",
+            "Press TV",
+            "Anadolu Agency"
+          ],
+          "outletCount": 4,
+          "place": "Gaza",
+          "firstSeen": "2026-11-27T18:48:59.495Z",
+          "lastSeen": "2026-11-28T12:05:19.884Z"
+        },
+        {
+          "headline": "Israeli strike on Gaza kills 2 Doctors Without Borders staff, charity says",
+          "url": "https://bsky.app/profile/washingtonpost.com/post/3n3f6qrmlxn2g",
+          "status": "corroborated",
+          "statusWords": "confirmed by several outlets",
+          "outlets": [
+            "Washington Post",
+            "Tehran Times",
+            "Arab News",
+            "Al-Monitor"
+          ],
+          "outletCount": 4,
+          "place": "Gaza",
+          "firstSeen": "2026-11-28T01:30:21.000Z",
+          "lastSeen": "2026-11-28T17:51:40.000Z"
+        },
+        {
+          "headline": "US military maintained a \"strict\" blockade of Iranian ports by firing at a ship that violated the naval containment on Thursday.",
+          "url": "https://bsky.app/profile/euronews.com/post/3n3eav6n4e72l",
+          "status": "corroborated",
+          "statusWords": "confirmed by several outlets",
+          "outlets": [
+            "Euronews",
+            "Japan Times",
+            "The New Arab",
+            "Al-Monitor"
+          ],
+          "outletCount": 4,
+          "place": "War in Iran",
+          "firstSeen": "2026-11-27T21:30:26.000Z",
+          "lastSeen": "2026-11-28T10:31:35.555Z"
+        },
+        {
+          "headline": "Costa Rica bars UN rapporteur on Palestinian territories from entering the country.",
+          "url": "https://www.theguardian.com/world/2026/nov/28/costa-rica-bars-un-rapporteur-francesca-albanese-palestinian-territories",
+          "status": "corroborated",
+          "statusWords": "confirmed by several outlets",
+          "outlets": [
+            "Guardian",
+            "The National",
+            "Al-Monitor",
+            "Al Jazeera"
+          ],
+          "outletCount": 4,
+          "place": "Gaza",
+          "firstSeen": "2026-11-27T20:10:30.000Z",
+          "lastSeen": "2026-11-28T14:11:53.000Z"
+        },
+        {
+          "headline": "Israeli strike kills two Médecins Sans Frontières workers in Gaza",
+          "url": "https://bsky.app/profile/financialtimes.com/post/3n3eimwivex2u",
+          "status": "corroborated",
+          "statusWords": "confirmed by several outlets",
+          "outlets": [
+            "Financial Times",
+            "The New Arab",
+            "Guardian",
+            "Quds News Network"
+          ],
+          "outletCount": 4,
+          "place": "Gaza",
+          "firstSeen": "2026-11-28T09:05:02.000Z",
+          "lastSeen": "2026-11-28T13:02:55.000Z"
+        },
+        {
+          "headline": "Hamas chief’s son survives Israeli assassination attempt in Gaza.",
+          "url": "https://www.newarab.com/news/hamas-chiefs-son-survives-israeli-assassination-attempt-gaza",
+          "status": "corroborated",
+          "statusWords": "confirmed by several outlets",
+          "outlets": [
+            "The New Arab",
+            "Japan Times",
+            "South China Morning Post",
+            "Al Jazeera"
+          ],
+          "outletCount": 4,
+          "place": "Gaza",
+          "firstSeen": "2026-11-27T20:18:45.000Z",
+          "lastSeen": "2026-11-28T11:49:01.000Z"
+        }
+      ],
+      "breaking": [],
+      "hot": []
+    },
+    {
+      "id": "eastern-europe",
+      "segment": "Geopolitics",
+      "link": "https://inthelooplive.com/?view=eastern-europe",
+      "label": "Eastern Europe",
+      "stories": 170,
+      "posts": 249,
+      "confirmed": 27,
+      "disputed": 0,
+      "newStories": 51,
+      "busiestPlace": "Ukraine–Russia war",
+      "top": [
+        {
+          "headline": "Austrian court again remands 2 Ukrainians linked to military intelligence on suspicion of espionage",
+          "url": "https://bsky.app/profile/kyivindependent.com/post/3n3fa4lrh7c2l",
+          "status": "corroborated",
+          "statusWords": "confirmed by several outlets",
+          "outlets": [
+            "Kyiv Independent",
+            "Kyiv Post",
+            "Ukrainska Pravda",
+            "TASS"
+          ],
+          "outletCount": 4,
+          "place": "Ukraine–Russia war",
+          "firstSeen": "2026-11-28T06:33:55.000Z",
+          "lastSeen": "2026-11-28T17:29:33.429Z"
+        },
+        {
+          "headline": "Ukraine commemorates victims of Holodomor famine",
+          "url": "https://bsky.app/profile/kyivindependent.com/post/3n3eplreq2c26",
+          "status": "corroborated",
+          "statusWords": "confirmed by several outlets",
+          "outlets": [
+            "Kyiv Independent",
+            "Ukrainska Pravda",
+            "Ukrinform"
+          ],
+          "outletCount": 3,
+          "place": "Ukraine–Russia war",
+          "firstSeen": "2026-11-28T06:44:00.000Z",
+          "lastSeen": "2026-11-28T12:52:08.071Z"
+        },
+        {
+          "headline": "Seven killed as rescue operation concludes after Russian attack on Nizhyn.",
+          "url": "https://www.ukrinform.net/rubric-ato/4189499-seven-killed-as-rescue-operation-concludes-after-russian-attack-on-nizhyn.html",
+          "status": "corroborated",
+          "statusWords": "confirmed by several outlets",
+          "outlets": [
+            "Ukrinform",
+            "Ukrainska Pravda",
+            "Kyiv Post"
+          ],
+          "outletCount": 3,
+          "place": "Strikes on Ukrainian cities",
+          "firstSeen": "2026-11-27T18:42:00.000Z",
+          "lastSeen": "2026-11-28T08:14:41.370Z"
+        },
+        {
+          "headline": "Jared Kushner has drawn sharp criticism in Ukraine and across Europe after praising Vladimir Putin as a \"grandmaster of politics\" and calling Russia's war a European \"proxy war\".",
+          "url": "https://bsky.app/profile/kyivpost.com/post/3n3elwemyq22i",
+          "status": "corroborated",
+          "statusWords": "confirmed by several outlets",
+          "outlets": [
+            "Kyiv Post",
+            "The Atlantic",
+            "POLITICO Europe"
+          ],
+          "outletCount": 3,
+          "place": "Ukraine–Russia war",
+          "firstSeen": "2026-11-27T21:48:53.534Z",
+          "lastSeen": "2026-11-28T11:28:09.779Z"
+        },
+        {
+          "headline": "A Russian military flotilla bound for Libya has reversed course in the Mediterranean after Ukraine sank a Russian warship in Benghazi on Nov.",
+          "url": "https://bsky.app/profile/kyivpost.com/post/3n3easmrdlc2i",
+          "status": "corroborated",
+          "statusWords": "confirmed by several outlets",
+          "outlets": [
+            "Kyiv Post",
+            "The New Arab",
+            "Arab News"
+          ],
+          "outletCount": 3,
+          "place": "Ukraine–Russia war",
+          "firstSeen": "2026-11-27T18:33:03.000Z",
+          "lastSeen": "2026-11-28T12:05:59.000Z"
+        },
+        {
+          "headline": "At least 10 reported killed across Ukraine as Russia downs near-record number of drones",
+          "url": "https://bsky.app/profile/cbsnews.com/post/3n3fayay3qh2u",
+          "status": "corroborated",
+          "statusWords": "confirmed by several outlets",
+          "outlets": [
+            "CBS News",
+            "South China Morning Post",
+            "New York Post"
+          ],
+          "outletCount": 3,
+          "place": "Ukraine–Russia war",
+          "firstSeen": "2026-11-28T14:09:55.000Z",
+          "lastSeen": "2026-11-28T17:45:01.594Z"
+        },
+        {
+          "headline": "Ukraine's Volodymyr Zelenskyy said President Donald Trump calling Russia's Vladimir Putin \"my friend\" was strange and akin to making the same comment about Adolf Hitler during Wor…",
+          "url": "https://bsky.app/profile/usatoday.com/post/3n3ct2mudk62v",
+          "status": "corroborated",
+          "statusWords": "confirmed by several outlets",
+          "outlets": [
+            "USA Today",
+            "Guardian",
+            "Jerusalem Post"
+          ],
+          "outletCount": 3,
+          "place": "Ukraine–Russia war",
+          "firstSeen": "2026-11-27T18:30:29.000Z",
+          "lastSeen": "2026-11-28T10:01:23.066Z"
+        },
+        {
+          "headline": "Fire reported near oil refinery in Russia's Rostov Oblast amid Ukrainian drone attack",
+          "url": "https://bsky.app/profile/kyivindependent.com/post/3n3dtp5hxgk2f",
+          "status": "corroborated",
+          "statusWords": "confirmed by several outlets",
+          "outlets": [
+            "Kyiv Independent",
+            "Kyiv Post"
+          ],
+          "outletCount": 2,
+          "place": "Strikes inside Russia",
+          "firstSeen": "2026-11-28T04:06:01.000Z",
+          "lastSeen": "2026-11-28T09:52:16.278Z"
+        }
+      ],
+      "breaking": [],
+      "hot": []
+    },
+    {
+      "id": "east-asia",
+      "segment": "Geopolitics",
+      "link": "https://inthelooplive.com/?view=east-asia",
+      "label": "East Asia",
+      "stories": 70,
+      "posts": 74,
+      "confirmed": 2,
+      "disputed": 0,
+      "newStories": 41,
+      "busiestPlace": "Taiwan",
+      "top": [
+        {
+          "headline": "Taipei mayor re-elected in tight race.",
+          "url": "https://www.arabnews.com/world/taipei-mayor-re-elected-in-tight-race-3014411",
+          "status": "corroborated",
+          "statusWords": "confirmed by several outlets",
+          "outlets": [
+            "Arab News",
+            "France 24"
+          ],
+          "outletCount": 2,
+          "place": "Taiwan",
+          "firstSeen": "2026-11-28T14:35:57.000Z",
+          "lastSeen": "2026-11-28T18:06:13.000Z"
+        },
+        {
+          "headline": "Trump to visit groundbreaking for semiconductor manufacturer that supplies Nvidia: Reports.",
+          "url": "https://thehill.com/homenews/administration/6245480-trump-phoenix-tsmc-nvidia/",
+          "status": "corroborated",
+          "statusWords": "confirmed by several outlets",
+          "outlets": [
+            "The Hill",
+            "USA Today"
+          ],
+          "outletCount": 2,
+          "place": "Taiwan",
+          "firstSeen": "2026-11-27T18:49:53.000Z",
+          "lastSeen": "2026-11-27T22:00:39.000Z"
+        },
+        {
+          "headline": "A Critic of Beijing Falls Short in Taiwan’s Key Mayoral Election.",
+          "url": "https://www.nytimes.com/2026/11/28/world/asia/taiwan-election-taipei-china.html",
+          "status": "reported",
+          "statusWords": "reported, not yet confirmed",
+          "outlets": [
+            "New York Times",
+            "National Taiwan University"
+          ],
+          "outletCount": 2,
+          "place": "Taiwan",
+          "firstSeen": "2026-11-28T15:09:10.000Z",
+          "lastSeen": "2026-11-28T15:27:29.784Z"
+        },
+        {
+          "headline": "Taiwan holds local elections under Beijing's watchful gaze.",
+          "url": "https://www.france24.com/en/asia-pacific/20261128-taiwan-holds-local-elections-under-beijing-s-watchful-gaze",
+          "status": "reported",
+          "statusWords": "reported, not yet confirmed",
+          "outlets": [
+            "France 24"
+          ],
+          "outletCount": 1,
+          "place": "Taiwan",
+          "firstSeen": "2026-11-28T06:25:33.000Z",
+          "lastSeen": "2026-11-28T06:37:30.000Z"
+        },
+        {
+          "headline": "Taiwan loves Threads.",
+          "url": "https://bsky.app/profile/washingtonpost.com/post/3n3fbtgl4vd2w",
+          "status": "reported",
+          "statusWords": "reported, not yet confirmed",
+          "outlets": [
+            "Washington Post"
+          ],
+          "outletCount": 1,
+          "place": "Taiwan",
+          "firstSeen": "2026-11-28T18:00:13.457Z",
+          "lastSeen": "2026-11-28T18:00:13.457Z"
+        },
+        {
+          "headline": "Re Taiwan's election results: 1.",
+          "url": "https://bsky.app/profile/lnachman32.bsky.social/post/3n3ermw4s6k2m",
+          "status": "reported",
+          "statusWords": "reported, not yet confirmed",
+          "outlets": [
+            "National Taiwan University"
+          ],
+          "outletCount": 1,
+          "place": "Taiwan",
+          "firstSeen": "2026-11-28T13:10:15.034Z",
+          "lastSeen": "2026-11-28T13:10:15.034Z"
+        },
+        {
+          "headline": "Puma Shen concedes the election for Taipei mayor",
+          "url": "https://bsky.app/profile/brianhioe.bsky.social/post/3n3en4gg3hs2d",
+          "status": "reported",
+          "statusWords": "reported, not yet confirmed",
+          "outlets": [
+            "New Bloom"
+          ],
+          "outletCount": 1,
+          "place": "Taiwan",
+          "firstSeen": "2026-11-28T11:49:26.724Z",
+          "lastSeen": "2026-11-28T11:49:26.724Z"
+        },
+        {
+          "headline": "China-friendly candidate clings on to power in Taipei mayoral race",
+          "url": "https://bsky.app/profile/lnachman32.bsky.social/post/3n3eyrlw54s2m",
+          "status": "reported",
+          "statusWords": "reported, not yet confirmed",
+          "outlets": [
+            "National Taiwan University"
+          ],
+          "outletCount": 1,
+          "place": "Taiwan",
+          "firstSeen": "2026-11-28T15:18:08.295Z",
+          "lastSeen": "2026-11-28T15:18:08.295Z"
+        }
+      ],
+      "breaking": [],
+      "hot": []
+    },
+    {
+      "id": "us-politics",
+      "segment": "US politics",
+      "link": "https://inthelooplive.com/?segment=us",
+      "label": "US politics",
+      "stories": 106,
+      "posts": 118,
+      "confirmed": 6,
+      "disputed": 0,
+      "newStories": 36,
+      "busiestPlace": "Congress",
+      "top": [
+        {
+          "headline": "Sen. Deb Fischer's office says her husband died by suicide.",
+          "url": "https://thehill.com/homenews/senate/6245545-deb-fischer-nebraska/",
+          "status": "corroborated",
+          "statusWords": "confirmed by several outlets",
+          "outlets": [
+            "The Hill",
+            "Washington Examiner",
+            "Washington Post"
+          ],
+          "outletCount": 3,
+          "place": "Congress",
+          "firstSeen": "2026-11-27T18:28:40.000Z",
+          "lastSeen": "2026-11-28T00:15:01.974Z"
+        },
+        {
+          "headline": "Years after Sandy Hook massacre, US Supreme Court case targets assault weapons ban",
+          "url": "https://bsky.app/profile/reuters.com/post/3n3ekwbkfhw23",
+          "status": "corroborated",
+          "statusWords": "confirmed by several outlets",
+          "outlets": [
+            "Reuters",
+            "Jerusalem Post"
+          ],
+          "outletCount": 2,
+          "place": "Supreme Court",
+          "firstSeen": "2026-11-28T11:10:12.000Z",
+          "lastSeen": "2026-11-28T15:19:39.103Z"
+        },
+        {
+          "headline": "AOC leads DSA voting for party’s 2028 endorsement — as closest ‘Squad’ rival trails far behind.",
+          "url": "https://nypost.com/2026/11/28/us-news/aoc-leads-dsa-voting-for-partys-2028-endorsement-as-closest-squad-rival-trails-far-behind/",
+          "status": "corroborated",
+          "statusWords": "confirmed by several outlets",
+          "outlets": [
+            "New York Post",
+            "Washington Times"
+          ],
+          "outletCount": 2,
+          "place": "The 2028 race",
+          "firstSeen": "2026-11-28T14:58:49.000Z",
+          "lastSeen": "2026-11-28T17:13:23.000Z"
+        },
+        {
+          "headline": "Indian police disperse protest outside Meta offices with water cannon.",
+          "url": "https://www.arabnews.com/world/indian-police-disperse-protest-outside-meta-offices-with-water-cannon-3014394",
+          "status": "corroborated",
+          "statusWords": "confirmed by several outlets",
+          "outlets": [
+            "Arab News",
+            "Anadolu Agency"
+          ],
+          "outletCount": 2,
+          "place": "Congress",
+          "firstSeen": "2026-11-28T13:32:16.000Z",
+          "lastSeen": "2026-11-28T15:36:37.000Z"
+        },
+        {
+          "headline": "NY Senate leader Andrea Stewart-Cousins, first woman in the role, dies at 76.",
+          "url": "https://www.washingtontimes.com/news/2026/nov/28/andrea-stewart-cousins-first-woman-serve-new-york-senate-leader-dies/",
+          "status": "corroborated",
+          "statusWords": "confirmed by several outlets",
+          "outlets": [
+            "Washington Times",
+            "Washington Examiner"
+          ],
+          "outletCount": 2,
+          "place": "Midterm results",
+          "firstSeen": "2026-11-28T03:59:50.000Z",
+          "lastSeen": "2026-11-28T14:06:03.000Z"
+        },
+        {
+          "headline": "Texas attorney general-elect refuses to defend Ten Commandments classroom law.",
+          "url": "https://www.foxnews.com/politics/texas-attorney-general-elect-refuses-defend-ten-commandments-classroom-law",
+          "status": "corroborated",
+          "statusWords": "confirmed by several outlets",
+          "outlets": [
+            "Fox News",
+            "The Hill"
+          ],
+          "outletCount": 2,
+          "place": "Justice Department and FBI",
+          "firstSeen": "2026-11-28T03:44:48.000Z",
+          "lastSeen": "2026-11-28T10:32:06.000Z"
+        },
+        {
+          "headline": "GOP governors invite Texans to move to their states to flee blue wave",
+          "url": "https://bsky.app/profile/washingtonpost.com/post/3n3djnym6hl2h",
+          "status": "reported",
+          "statusWords": "reported, not yet confirmed",
+          "outlets": [
+            "Washington Post"
+          ],
+          "outletCount": 1,
+          "place": "States",
+          "firstSeen": "2026-11-27T18:54:39.000Z",
+          "lastSeen": "2026-11-28T01:15:01.504Z"
+        },
+        {
+          "headline": "How one of America’s least-known senators helped pass the permitting bill",
+          "url": "https://bsky.app/profile/washingtonpost.com/post/3n3fa5jpsim2j",
+          "status": "reported",
+          "statusWords": "reported, not yet confirmed",
+          "outlets": [
+            "Washington Post"
+          ],
+          "outletCount": 1,
+          "place": "Bills and votes",
+          "firstSeen": "2026-11-28T10:00:00.000Z",
+          "lastSeen": "2026-11-28T17:30:04.820Z"
+        }
+      ],
+      "breaking": [],
+      "hot": []
+    },
+    {
+      "id": "ca-politics",
+      "segment": "Canadian politics",
+      "link": "https://inthelooplive.com/?segment=ca",
+      "label": "Canadian politics",
+      "stories": 83,
+      "posts": 93,
+      "confirmed": 4,
+      "disputed": 0,
+      "newStories": 24,
+      "busiestPlace": "PM and cabinet",
+      "top": [
+        {
+          "headline": "Carney names Mackenzie Valley Highway first northern project of national interest.",
+          "url": "https://thehub.ca/2026/11/28/carney-names-mackenzie-valley-highway-first-northern-project-of-national-interest/",
+          "status": "corroborated",
+          "statusWords": "confirmed by several outlets",
+          "outlets": [
+            "The Hub",
+            "Western Standard"
+          ],
+          "outletCount": 2,
+          "place": "PM and cabinet",
+          "firstSeen": "2026-11-27T19:09:39.000Z",
+          "lastSeen": "2026-11-28T12:12:43.000Z"
+        },
+        {
+          "headline": "Employer, nurse at odds over alleged Poilievre photo fallout.",
+          "url": "https://www.ctvnews.ca/politics/article/employer-denies-allegation-nurse-contract-not-being-renewed-over-poilievre-photo/",
+          "status": "corroborated",
+          "statusWords": "confirmed by several outlets",
+          "outlets": [
+            "CTV News",
+            "Global News"
+          ],
+          "outletCount": 2,
+          "place": "House of Commons",
+          "firstSeen": "2026-11-27T23:59:56.000Z",
+          "lastSeen": "2026-11-28T06:44:01.000Z"
+        },
+        {
+          "headline": "Canada’s top court upholds Quebec ban on religious symbols for public servants.",
+          "url": "https://www.scmp.com/news/world/united-states-canada/article/3376103/canadas-top-court-upholds-quebec-ban-religious-symbols-public-servants",
+          "status": "reported",
+          "statusWords": "reported, not yet confirmed",
+          "outlets": [
+            "South China Morning Post",
+            "Arab News"
+          ],
+          "outletCount": 2,
+          "place": "Quebec",
+          "firstSeen": "2026-11-27T20:05:07.000Z",
+          "lastSeen": "2026-11-27T20:25:58.000Z"
+        },
+        {
+          "headline": "Ontario's Doug Ford calls for US-style self-defense laws after violent home invasions.",
+          "url": "https://thehill.com/policy/international/6245638-ontario-doug-ford-self-defense-toronto-home-invasions/",
+          "status": "corroborated",
+          "statusWords": "confirmed by several outlets",
+          "outlets": [
+            "The Hill",
+            "Western Standard"
+          ],
+          "outletCount": 2,
+          "place": "Ontario",
+          "firstSeen": "2026-11-27T18:59:57.000Z",
+          "lastSeen": "2026-11-27T21:12:06.000Z"
+        },
+        {
+          "headline": "The Carney government talks a lot about building housing.",
+          "url": "https://bsky.app/profile/davidcoletto.bsky.social/post/3n3cx7w6ors2m",
+          "status": "reported",
+          "statusWords": "reported, not yet confirmed",
+          "outlets": [
+            "Abacus Data"
+          ],
+          "outletCount": 1,
+          "place": "Elections and polls",
+          "firstSeen": "2026-11-27T19:45:01.851Z",
+          "lastSeen": "2026-11-28T14:30:03.971Z"
+        },
+        {
+          "headline": "BC Conservatives Give Up on Climate Change Battle | The Tyee",
+          "url": "https://bsky.app/profile/thetyee.ca/post/3n3dcijveb22n",
+          "status": "reported",
+          "statusWords": "reported, not yet confirmed",
+          "outlets": [
+            "The Tyee"
+          ],
+          "outletCount": 1,
+          "place": "British Columbia",
+          "firstSeen": "2026-11-27T20:53:00.000Z",
+          "lastSeen": "2026-11-27T23:06:42.123Z"
+        },
+        {
+          "headline": "\"A North that's connected year round makes Canada strong and gives communities more options,\" says PM Mark Carney in Yellowknife as he announces the Mackenzie Valley Highway a pro…",
+          "url": "https://bsky.app/profile/cpac.ca/post/3n3cyprrmqc2b",
+          "status": "reported",
+          "statusWords": "reported, not yet confirmed",
+          "outlets": [
+            "CPAC"
+          ],
+          "outletCount": 1,
+          "place": "PM and cabinet",
+          "firstSeen": "2026-11-27T20:11:18.509Z",
+          "lastSeen": "2026-11-27T20:11:47.854Z"
+        },
+        {
+          "headline": "Carney’s Arctic ambitions grow with listing of MacKenzie Valley Highway.",
+          "url": "https://www.nationalobserver.com/2026/11/27/news/carneys-arctic-ambitions-grow-listing-mackenzie-valley-highway",
+          "status": "reported",
+          "statusWords": "reported, not yet confirmed",
+          "outlets": [
+            "National Observer"
+          ],
+          "outletCount": 1,
+          "place": "PM and cabinet",
+          "firstSeen": "2026-11-27T22:16:01.000Z",
+          "lastSeen": "2026-11-27T22:16:01.000Z"
+        }
+      ],
+      "breaking": [],
+      "hot": []
+    }
+  ],
+  "errors": 0
+}
